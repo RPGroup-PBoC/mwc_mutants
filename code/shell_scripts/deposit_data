@@ -1,0 +1,7 @@
+#!/bin/bash
+#DEPOSIT_DATA deposits data into a given directory on the data server
+#ARGS:  1 - source file 
+#	2 - your username on the data server
+# 	3 - destination within mwc_induction on data server
+
+scp -rP 22415 $1 $2@spicybeef.caltech.edu:~/mwc_induction/$3
