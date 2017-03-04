@@ -6,6 +6,14 @@ import glob
 import re
 import numpy as np
 import pandas as pd
+import scipy
+
+# Import matplotlib stuff for plotting
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+
+# Seaborn, useful for graphics
+import seaborn as sns
 
 # Set the plotting style.
 import sys
@@ -19,9 +27,9 @@ mwc.set_plotting_style()
 #============================================================================== 
 # Define variables to use over the script
 date = 20170303
-username = 'username'
-run = 'rx'
-operator = 'Ox'
+username = 'mrazomej'
+run = 'r1'
+operator = 'O2'
 mutant_class = 'dna' # options dna/inducer/double
 #============================================================================== 
 # Define function that extracts information from file name

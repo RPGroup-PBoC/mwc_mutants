@@ -151,6 +151,7 @@ import statsmodels.tools.numdiff as smnd # to comput the Hessian matrix
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
+from fit_bivariate_gaussian_astroML import *
 
 # #################
 # Generic thermodynamic functions
