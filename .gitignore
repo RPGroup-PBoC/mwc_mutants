@@ -57,4 +57,5 @@ graphicspath.tex
 /data/microscopy/*
 /data/mcmc/*
 /data/misc/*
+/data/plate_reader/*
 doc/induction_paper/graphicspath.tex
