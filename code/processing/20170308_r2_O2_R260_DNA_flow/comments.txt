@@ -1,4 +1,4 @@
-# Date : 2017-03-07
+# Date : 2017-03-08
 # Equipment : MACSQuant (Bjorkman lab)
 # User : mrazomej
 # Description :
@@ -8,5 +8,5 @@
 # IPTG concentrations:
 # 0uM, 0.1uM, 5uM, 10uM, 25uM, 50uM, 75uM, 100uM, 250uM, 500uM, 1000uM, 5000uM
 # Comments :
-# The plate was prepared by me (Manuel) early in the morning and Nathan added the cells to the plate at 11 am
-# Nathan ran the plate and the flow rates looked okay, so everything about this plate looks fine
+# Steph prepared the plate, Nathan let it run in the flow cytometer and I just pick up the data. The flow
+# rates looked okay and everything ran normally.
