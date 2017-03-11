@@ -42,6 +42,14 @@ df = df[(df.strain != 'auto') & (df.strain != 'delta')]
 #===============================================================================
 # Plot available raw data
 #===============================================================================
+# Define the IPTG concentrations to evaluate
+IPTG = np.logspace(-7, -2, 100)
+IPTG_lin = np.array([0, 1E-7])
+
+energies = {'O1': -15.3, 'O2': -13.9, 'O3': -9.7, 'Oid': -17}
+ea = -np.log(139.59)
+ei = -np.log(0.53)
+
 # Set the colors for the strains
 colors = sns.color_palette('colorblind', n_colors=7)
 colors[4] = sns.xkcd_palette(['dusty purple'])[0]
@@ -60,7 +68,7 @@ with PdfPages(output + 'raw_data.pdf') as pdf:
         # group data by unique strains
         # extract the wt data for those sets
         dates = data.date.unique()
-        df_wt = df[df.date.isin(dates)]
+        df_wt = df[(df.date.isin(dates)) & (df.strain=='wt')]
         # compute the mean value for each concentration
         fc_mean = df_wt.groupby('IPTG_uM').fold_change.mean()
         # compute the standard error of the mean
@@ -69,7 +77,21 @@ with PdfPages(output + 'raw_data.pdf') as pdf:
         ax.errorbar(np.sort(df_wt.IPTG_uM.unique()) / 1E6,
                 fc_mean, yerr=fc_err, fmt='o', 
                 label= 'wild-type', zorder=100)
+        # Plot theoretical prediction
+        # Log scale
+        ax.plot(IPTG, mwc.fold_change_log(IPTG * 1E6,
+            ea=ea, ei=ei, epsilon=4.5,
+            R=df_wt.repressors.unique()[0],
+            epsilon_r=energies[df_wt.operator.unique()[0]]),
+            color='black', label='prediction')
+        # Linear scale
+        ax.plot(IPTG_lin, mwc.fold_change_log(IPTG_lin * 1E6,
+            ea=ea, ei=ei, epsilon=4.5,
+            R=df_wt.repressors.unique()[0],
+            epsilon_r=energies[df_wt.operator.unique()[0]]),
+            linestyle='--', color='black', label=None)
 
+        # Plot the mutants data
         data_strain = data.groupby('strain')
         for strain, sdata in data_strain:
             # compute the mean value for each concentration
@@ -87,6 +109,7 @@ with PdfPages(output + 'raw_data.pdf') as pdf:
             ax.set_xlim(left=-5E-9)
             ax.tick_params(labelsize=14)
             ax.legend(loc='upper left')
+            ax.set_title(str(group))
         plt.tight_layout()
         pdf.savefig()
         plt.close()

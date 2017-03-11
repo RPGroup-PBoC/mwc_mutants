@@ -200,7 +200,7 @@ def pact_log(iptg, ea, ei, epsilon=4.5, n=2):
 
 # #################
 def fold_change_log(iptg, ea, ei, epsilon, R, epsilon_r, n=2,
-                    quaternary_state=2, nonspec_sites=4.6E6):
+                    quaternary_state=1, nonspec_sites=4.6E6):
     '''
     Returns the gene expression fold change according to the
     thermodynamic model with the extension that takes into account the
