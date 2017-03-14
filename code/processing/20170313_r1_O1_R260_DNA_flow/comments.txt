@@ -1,12 +1,13 @@
-# Date : 2017-03-10
+# Date : 2017-03-09
 # Equipment : MACSQuant (Bjorkman lab)
-# User : gchure
+# User : nbellive
 # Description :
-# IPTG titration with all the O2+11 YFP inducer mutant strains
+# IPTG titration with all the O1+11 YFP DNA mutant strains 
 # The strains were grown in deep 96-well plates in 1 mL of LB + Kan + Spec and then
 # diluted next morning 1:1000 into 0.5 mL of M9 + 0.5% glucose also in deep 96-well plates with the following
 # IPTG concentrations:
 # 0uM, 0.1uM, 5uM, 10uM, 25uM, 50uM, 75uM, 100uM, 250uM, 500uM, 1000uM, 5000uM
 # Comments :
-# The plate was prepared and run by Griffin. These data correspond to the
-# inducer binding mutants F164T, Q294K, and Q294V.  The flow rates were on the order of 3000 events per second. The run ran without any apparent issue.
+# Steph prepared the plate, Nathan ran the flow cytometer and processed data.
+# The flow rates looked okay and everything ran normally. 
+#
