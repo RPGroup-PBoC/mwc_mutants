@@ -430,10 +430,12 @@ def log_post_mcmc(param, indep_var, dep_var, epsilon=4.5,
     return -(len(indep_var) + 1) * np.log(sigma) -\
         log_likelihood_mcmc(param, indep_var, dep_var, epsilon)
 
+#============================================================================== 
+# Non-linear regression parameter estimation
+#============================================================================== 
 
-# #################
-def log_post(param, indep_var, dep_var, epsilon=4.5, quaternary_state=2,
-             nonspec_sites=4.6E6):
+def nonlin_log_post(param, indep_var, dep_var, epsilon=4.5, quaternary_state=2,
+                    nonspec_sites=4.6E6):
     '''
     Computes the log posterior of the fold-change expression for a single set
     of parameters.
@@ -441,13 +443,13 @@ def log_post(param, indep_var, dep_var, epsilon=4.5, quaternary_state=2,
     Parameters
     ----------
     param : array-like.
-        param[0] = epsilon_a
-        param[1] = epsilon_i
-    indep_var : N x 3 array.
+        param[0] = epsilon_r
+        param[1] = ka == -lnKa
+        param[2] = ki == -lnKi
+        indep_var : N x 2 array.
         series of independent variables to compute the theoretical fold-change.
         1st column : iptg concentration
         2nd column : repressor copy number
-        3rd column : repressor binding energy
     dep_var : array-like
         dependent variable, i.e. experimental fold-change. The length
         of this array should be the same as the number of rows in
@@ -457,7 +459,7 @@ def log_post(param, indep_var, dep_var, epsilon=4.5, quaternary_state=2,
         indicating that there are two functional heads per repressor molecule.
         This value must not be zero.
     nonspec_sites : int
-        Number of nonspecific binding sites for the repressor. Default value
+        Numbe,,r of nonspecific binding sites for the repressor. Default value
         is 4.6E6. This must be larger than zero.
 
     Returns
@@ -482,28 +484,27 @@ def log_post(param, indep_var, dep_var, epsilon=4.5, quaternary_state=2,
         raise ValueError('quaternary_state must be positive.')
     if nonspec_sites <= 0:
         raise ValueError('nonspec_sites must be greater than zero')
-    if np.shape(indep_var)[-1] != 3 or len(np.shape(indep_var)) == 1:
+    if np.shape(indep_var)[-1] != 2 or len(np.shape(indep_var)) == 1:
         raise RuntimeError('indep_var must have Nx3 elements.')
     if len(dep_var) != np.shape(indep_var)[0]:
         raise RuntimeError('length of dependent variables must equal to depth\
             of indep_var')
 
     # Unpack parameters and independent variables.
-    ea, ei = param
+    epsilon_r, ka, ki = param
     iptg = indep_var[:, 0]
     num_rep = indep_var[:, 1]
-    epsilon_r = indep_var[:, 2]
 
     # compute the theoretical fold-change
-    fc_theory = fold_change_log(iptg, ea, ei, epsilon, num_rep, epsilon_r,
+    fc_theory = fold_change_log(iptg, ka, ki, epsilon, num_rep, epsilon_r,
                                 quaternary_state=quaternary_state,
                                 nonspec_sites=nonspec_sites)
 
     # return the log posterior
     return -len(dep_var) / 2 * np.log(np.sum((dep_var - fc_theory)**2))
 
+#============================================================================== 
 
-# #################
 def resid(param, indep_var, dep_var, epsilon=4.5):
     '''
     Residuals for the theoretical fold change.
@@ -511,112 +512,86 @@ def resid(param, indep_var, dep_var, epsilon=4.5):
     Parameters
     ----------
     param : array-like.
-        param[0] = epsilon_a
-        param[1] = epsilon_i
-    indep_var : n x 3 array.
-        series of independent variables to compute the theoretical
-        fold-change.
+        param[0] = epsilon_r
+        param[1] = ka == -lnKa
+        param[2] = ki == -lnKi
+        indep_var : N x 2 array.
+        series of independent variables to compute the theoretical fold-change.
         1st column : iptg concentration
         2nd column : repressor copy number
-        3rd column : repressor binding energy
     dep_var : array-like
-        dependent variable, i.e. experimental fold-change. Then length of
-        this array should be the same as the number of rows in indep_var.
+        dependent variable, i.e. experimental fold-change. The length
+        of this array should be the same as the number of rows in
+        indep_var.
 
     Returns
     -------
     fold-change_exp - fold-change_theory
     '''
     # unpack parameters
-    ea, ei = param
+    epsilon_r, ka, ki = param
 
     # unpack independent variables
-    iptg, R, epsilon_r = indep_var[:, 0], indep_var[:, 1], indep_var[:, 2]
+    iptg, R = indep_var[:, 0], indep_var[:, 1]
 
     # compute the theoretical fold-change
-    fc_theory = fold_change_log(iptg, ea, ei, epsilon, R, epsilon_r)
+    fc_theory = fold_change_log(iptg, ka, ki, epsilon, R, epsilon_r)
 
     # return the log posterior
     return dep_var - fc_theory
 
 
 # #################
-def non_lin_reg_mwc(df, p0,
-                    indep_var=['IPTG_uM', 'repressors', 'binding_energy'],
-                    dep_var='fold_change_A', epsilon=4.5, diss_const=False):
+def non_lin_reg(p0, indep_var, dep_var, epsilon=4.5):
     '''
-    Performs a non-linear regression on the lacI IPTG titration data assuming
-    Gaussian errors with constant variance. Returns the parameters
-    e_A == -ln(K_A)
-    e_I == -ln(K_I)
+    Performs a non-linkar regression on the lacI IPTG titration data assuming
+    Gaussian errors with constant variance. Returns the parameters 
+    k_A == -ln(K_A)
+    k_I == -ln(K_I)
     and it's corresponding error bars by approximating the posterior distribution
     as Gaussian.
     Parameters
     ----------
-    df : DataFrame.
-        DataFrame containing all the titration information. It should at minimum
-        contain the IPTG concentration used, the repressor copy number for each
-        strain and the binding energy of such strain as the independent variables
-        and obviously the gene expression fold-change as the dependent variable.
-    p0 : array-like (length = 2).
-        Initial guess for the parameter values. The first entry is the guess for
-        e_A == -ln(K_A) and the second is the initial guess for e_I == -ln(K_I).
-    indep_var : array-like (length = 3).
-        Array of length 3 with the name of the DataFrame columns that contain
-        the following parameters:
-        1) IPTG concentration
-        2) repressor copy number
-        3) repressor binding energy to the operator
-    dep_var : str.
-        Name of the DataFrame column containing the gene expression fold-change.
+    p0: array-like.
+        The initial guess for the parameters to be fit.  This must be an array 
+        of length 3 with the following entries:
+        param[0] = epsilon_r
+        param[1] = ka == -lnKa
+        param[2] = ki == -lnKi
+        likelihood.
+    indep_var : n x 3 array.
+        Series of independent variables to compute the theoretical fold-change.
+        1st column : IPTG concentration
+        2nd column : repressor copy number
+    dep_var : array-like
+        Dependent variable, i.e. experimental fold-change. Then length of this
+        array should be the same as the number of rows in indep_var.
     epsilon : float.
         Value of the allosteric parameter, i.e. the energy difference between
         the active and the inactive state.
-    diss_const : bool.
-        Indicates if the dissociation constants should be returned instead of
-        the e_A and e_I parameteres.
     Returns
     -------
-    if diss_const  == True:
-        e_A : MAP for the e_A parameter.
-        de_A : error bar on the e_A parameter
-        e_I : MAP for the e_I parameter.
-        de_I : error bar on the e_I parameter
-    else:
-        K_A : MAP for the K_A parameter.
-        dK_A : error bar on the K_A parameter
-        K_I : MAP for the K_I parameter.
-        dK_I : error bar on the K_I parameter
+    epsilon_r : map for the epsilon_r parameter
+    depsilon_r : error bar on the k_A parameter
+    k_A : MAP for the k_A parameter.
+    dk_A : error bar on the k_A parameter
+    k_I : MAP for the k_I parameter.
+    dk_I : error bar on the k_I parameter
     '''
-    df_indep = df[indep_var]
-    df_dep = df[dep_var]
-
     # Extra arguments given as tuple
-    args = (df_indep.values, df_dep.values, epsilon)
+    args = (indep_var, dep_var, epsilon)
 
     # Compute the MAP
     popt, _ = scipy.optimize.leastsq(resid, p0, args=args)
 
-    # Extract the values
-    ea, ei = popt
-
     # Compute the Hessian at the map
-    hes = smnd.approx_hess(popt, log_post,
-                           args=(df_indep.values, df_dep.values))
+    hes = smnd.approx_hess(popt, nonlin_log_post,
+                           args=(indep_var, dep_var))
 
     # Compute the covariance matrix
     cov = -np.linalg.inv(hes)
 
-    if diss_const:
-        # Get the values for the dissociation constants and their
-        # respective error bars
-        Ka = np.exp(-ea)
-        Ki = np.exp(-ei)
-        deltaKa = np.sqrt(cov[0,0]) * Ka
-        deltaKi = np.sqrt(cov[1,1]) * Ki
-        return Ka, deltaKa, Ki, deltaKi
-    else:
-        return ea, cov[0,0], ei, cov[1,1]
+    return popt, cov
 
 # #################
 def hpd(trace, mass_frac):
