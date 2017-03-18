@@ -1246,3 +1246,22 @@ def set_plotting_style():
     sns.set_style('darkgrid', rc=rc)
     sns.set_palette("colorblind", color_codes=True)
     sns.set_context('notebook', rc=rc)
+
+def color_dict(names, color_palette='colorblind'):
+    '''
+    Generates a color palette dictionary given a set of names from the
+    indicated seaborn color palette 
+    Parameters
+    ----------
+    names : array-like
+        Set of names that will serve as keys for the colors. This can
+        be the name of strains or operators or whatever is desired.
+    color_palette : str.
+        Name of the seaborn palette to be used to generate the dictionary
+    '''
+    colors = sns.color_palette(color_palette, n_colors=len(names))
+    # Change the ugly yellow in the case of the colorblind palette
+    if (color_palette=='colorblind') and (len(names) >=5):
+        colors[4] = sns.xkcd_palette(['dusty purple'])[0]
+
+    return dict(zip(names, colors))
