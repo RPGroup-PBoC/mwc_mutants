@@ -47,8 +47,8 @@ IPTG = np.logspace(-7, -2, 100)
 IPTG_lin = np.array([0, 1E-7])
 
 energies = {'O1': -15.3, 'O2': -13.9, 'O3': -9.7, 'Oid': -17}
-ea = -np.log(139.59)
-ei = -np.log(0.53)
+ka = -np.log(139.59)
+ki = -np.log(0.53)
 
 # Set the colors for the strains
 colors = sns.color_palette('colorblind', n_colors=7)
@@ -80,15 +80,15 @@ with PdfPages(output + 'raw_data.pdf') as pdf:
         # Plot theoretical prediction
         # Log scale
         ax.plot(IPTG, mwc.fold_change_log(IPTG * 1E6,
-            ea=ea, ei=ei, epsilon=4.5,
+            ka=ka, ki=ki, epsilon=4.5,
             R=df_wt.repressors.unique()[0],
-            epsilon_r=energies[df_wt.operator.unique()[0]]),
+            epsilon_RA=energies[df_wt.operator.unique()[0]]),
             color='black', label='prediction')
         # Linear scale
         ax.plot(IPTG_lin, mwc.fold_change_log(IPTG_lin * 1E6,
-            ea=ea, ei=ei, epsilon=4.5,
+            ka=ka, ki=ki, epsilon=4.5,
             R=df_wt.repressors.unique()[0],
-            epsilon_r=energies[df_wt.operator.unique()[0]]),
+            epsilon_RA=energies[df_wt.operator.unique()[0]]),
             linestyle='--', color='black', label=None)
 
         # Plot the mutants data

@@ -53,7 +53,7 @@ df_group = df.groupby(['class', 'operator', 'repressors'])
 groups = [g[0] for g in df_group]
 
 # Save plots in multipage PDF
-with PdfPages(output + 'theory_vs_data.pdf') as pdf:
+with PdfPages(output + 'theory_vs_data_epsilonRA.pdf') as pdf:
     for group, data in df_group:
         # Define color palette
         colors = mwc.color_dict(np.append(data.strain.unique(), 'wt'), 'colorblind')
@@ -65,8 +65,8 @@ with PdfPages(output + 'theory_vs_data.pdf') as pdf:
         df_wt = df[(df.date.isin(dates)) & (df.strain=='wt')\
                 & (df.operator==data.operator.unique()[0])]
         # Load pre-computed fold-change with credible region
-        df_fc = pd.read_csv(datadir + 'mcmc/fold_change_cred_reg/' +\
-                'fold_change_cred_reg_' + df_wt.operator.unique()[0] +\
+        df_fc = pd.read_csv(datadir + 'mcmc/epsilonRA/fold_change/' +\
+                'fold_change_' + df_wt.operator.unique()[0] +\
                 '_' + str(df_wt.repressors.unique()[0]) + '_wt.csv')
         # sort by IPTG concentration
         df_fc.sort_values('IPTG_M', inplace=True)
@@ -92,12 +92,12 @@ with PdfPages(output + 'theory_vs_data.pdf') as pdf:
                 fc_mean, yerr=fc_err, fmt='o', 
                 label= 'wild-type', zorder=100, color=colors['wt'])
 
-#        # Plot the mutants data
+        # Plot the mutants data
         data_strain = data.groupby('strain')
         for strain, sdata in data_strain:
             # Load pre-computed fold-change with credible region
-            df_fc = pd.read_csv(datadir + 'mcmc/fold_change_cred_reg/' +\
-                    'fold_change_cred_reg_' + sdata.operator.unique()[0] +\
+            df_fc = pd.read_csv(datadir + 'mcmc/epsilonRA/fold_change/' +\
+                    'fold_change_' + sdata.operator.unique()[0] +\
                     '_' + str(sdata.repressors.unique()[0]) + '_' + strain + '.csv')
             # sort by IPTG concentration
             df_fc.sort_values('IPTG_M', inplace=True)
