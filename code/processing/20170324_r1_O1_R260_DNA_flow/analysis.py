@@ -34,9 +34,9 @@ mwc.set_plotting_style()
 
 
 # Define variables to use over the script
-date = 20170303
-run = 'rx'
-operator = 'Ox'
+date = 20170324
+run = 'r1'
+operator = 'O1'
 mutant_class = 'dna' # options dna/inducer/double
 
 # Read the CSV file with the mean fold change
@@ -44,9 +44,9 @@ df = pd.read_csv('output/' + str(date) + '_' + run + '_' + operator + '_' + \
           mutant_class + '_IPTG_titration_MACSQuant.csv', comment='#')
 rbs = df.strain.unique()
 
-#============================================================================== 
+#==============================================================================
 # Plot all raw data
-#============================================================================== 
+#==============================================================================
 
 plt.figure()
 for strain in rbs[np.array([r != 'auto' and r != 'delta' for r in rbs])]:
@@ -63,10 +63,10 @@ plt.tight_layout()
 plt.savefig('output/' + str(date) + '_' + operator + '_' + mutant_class + \
             '_IPTG_titration_data.png')
 
-#============================================================================== 
+#==============================================================================
 # Plot the WT control with the parameters determined from the MWC induction
 # project
-#============================================================================== 
+#==============================================================================
 # Define the IPTG concentrations to evaluate
 IPTG = np.logspace(-7, -2, 100)
 IPTG_lin = np.array([0, 1E-7])
@@ -106,4 +106,3 @@ plt.tick_params(labelsize=14)
 plt.tight_layout()
 plt.savefig('output/' + str(date) + '_' + operator + '_' + mutant_class + \
             '_wt_titration.png')
-
