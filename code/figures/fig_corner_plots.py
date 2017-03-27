@@ -37,30 +37,25 @@ output = output[:-1]
 # List the MCMC flat chains
 #===============================================================================
 # read the flow_master
-datadir = '../../data/mcmc/'
+datadir = '../../data/mcmc/epsilonRA_ka_ki/'
 
-files = glob.glob(datadir + '*pkl')
+files = glob.glob(datadir + '*csv')
 
 #===============================================================================
 # Plot available flat chains
 #===============================================================================
 # Save plots in multipage PDF
-with PdfPages(output + 'corner_plots.pdf') as pdf:
+with PdfPages(output + 'corner_plots_epsilonRA_ka_ki.pdf') as pdf:
     for i, filename in enumerate(files):
         print(filename)
-        # Initialize the plot to set the size
-        with open('../../data/mcmc/' + filename, 'rb') as file:
-            unpickler = pickle.Unpickler(file)
-            gauss_flatchain = unpickler.load()
-            gauss_flatlnprobability = unpickler.load()
-
+        df_mcmc = pd.read_csv(filename, index_col=0)
         # Draw the corner plot
-        chain = np.vstack([gauss_flatchain[:,0], np.exp(-gauss_flatchain[:,1]),
-                        np.exp(-gauss_flatchain[:,2])]).T
         fig, ax = plt.subplots(3, 3, figsize=(7, 7))
-        corner.corner(chain, bins=50, plot_contours=True,
-                        labels=[r'$\Delta\varepsilon_{RA}$', r'$K_A$', 
-                                r'$K_I$'], fig=fig)
+        corner.corner(df_mcmc[['epsilon_RA', 'ka', 'ki']].values, bins=50, 
+                        plot_contours=True,
+                        labels=[r'$\Delta\varepsilon_{RA}$', 
+                                r'$\tilde{k}_A$', 
+                                r'$\tilde{k}_I$'], fig=fig)
         plt.suptitle(re.split(pattern='/', string=filename)[-1])
         plt.tight_layout()
         pdf.savefig()
