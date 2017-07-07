@@ -21,6 +21,7 @@ df = pd.concat(pd.read_csv(f, comment='#') for f in files)
 # Rename the column class to mut_class to avoid conflicts
 df.rename(columns={'class': 'mut_class'}, inplace=True)
 
+
 # Export data frame as flow_master.csv
 df.to_csv('../../data/flow_lacI_master.csv')
 
