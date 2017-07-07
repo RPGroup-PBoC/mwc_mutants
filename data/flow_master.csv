@@ -1,4 +1,4 @@
-,IPTG_uM,class,date,fold_change,mean_YFP,mean_YFP_bgcorr,operator,pseudo_fold_change,repressors,strain,username
+,IPTG_uM,mut_class,date,fold_change,mean_YFP,mean_YFP_bgcorr,operator,pseudo_fold_change,repressors,strain,username
 0,0.1,,20170303,0.0,4146.382542196838,0.0,O2,,260,auto,mrazomej
 1,0.0,,20170303,0.0,4316.221826508704,0.0,O2,,260,auto,mrazomej
 2,1000.0,,20170303,0.0,4180.005468936722,0.0,O2,,260,auto,mrazomej

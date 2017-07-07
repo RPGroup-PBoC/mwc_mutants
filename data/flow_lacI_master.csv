@@ -1,4 +1,4 @@
-,date,username,operator,class,strain,repressors,IPTG_uM,mean_YFP,mean_YFP_bgcorr,fold_change
+,date,username,operator,mut_class,strain,repressors,IPTG_uM,mean_YFP,mean_YFP_bgcorr,fold_change
 0,20170613,sbarnes,O1,,auto,0,0.0,3087.6431860293633,-59.63321236459114,-0.006591785522836396
 1,20170613,sbarnes,O1,,delta,0,0.0,11605.536556251183,8458.260157857228,0.9349661815309692
 2,20170613,sbarnes,O1,,auto,0,0.0,3132.9122101301723,-14.36418826378258,-0.0015878005643164155
