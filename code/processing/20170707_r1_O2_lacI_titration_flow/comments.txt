@@ -1,0 +1,10 @@
+# Date : 2017-07-07
+# Equipment : MACSQuant (Bjorkman lab)
+# User : mrazomej
+# Description :
+# LacI titration for the 3 DNA binding domain mutants plus the wild-type for the O2 operator.
+# The strains were grown in deep 96-well plates in 1 mL of LB + Kan + Spec and then
+# diluted next morning 1:1000 into 0.5 mL of M9 + 0.5% glucose also in deep 96-well plates 
+# Comments :
+# The O2 - Y20I - R260 strain had a terrible flow rate and the data will be useless
+# The O2 - wt - R124 strain had a terrible flow rate and the data will be useless
