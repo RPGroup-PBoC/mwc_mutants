@@ -1,0 +1,9 @@
+# Date : 2017-07-08
+# Equipment : MACSQuant (Bjorkman lab)
+# User : mrazomej
+# Description :
+# LacI titration for the 3 DNA binding domain mutants plus the wild-type for the O2 operator.
+# The strains were grown in deep 96-well plates in 1 mL of LB + Kan + Spec and then
+# diluted next morning 1:1000 into 0.5 mL of M9 + 0.5% glucose also in deep 96-well plates 
+# Comments :
+# Everything ran smoothly with this experiment.
