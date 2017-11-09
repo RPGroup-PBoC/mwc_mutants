@@ -15,7 +15,7 @@ fc_file = glob.glob('output/*fold_change.csv')[0]
 data = pd.read_csv(fc_file)
 
 # Instantiate the figure canvas
-fig, ax = plt.subplots(1, 1)
+fig, ax = plt.subplots(1, 1, figsize=(6, 4))
 
 # Add labels and scaling
 ax.set_xlabel('IPTG [M]')
@@ -36,6 +36,5 @@ for g, d in grouped:
 _ = ax.legend(loc='upper right', title='operator')
 
 # Save the figure.
-plt.tight_layout()
 plt.savefig('output/{0}_r{1}_{2}_fold_change_curve.png'.format(DATE, RUN_NO,
                                                                MUTANT))
