@@ -8,7 +8,7 @@ colors = pboc.plotting.set_plotting_style(return_colors=True)
 
 # Set the experiment constants.
 DATE = 20171114
-RUN_NO = 1j
+RUN_NO = 1
 MUTANT = 'IND'
 op_en = {'O1': -15.3, 'O2': -13.9, 'O3': -9.7}
 # Load the data set.
