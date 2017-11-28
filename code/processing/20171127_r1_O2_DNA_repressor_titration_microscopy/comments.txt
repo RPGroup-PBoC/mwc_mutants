@@ -1,0 +1,8 @@
+# Date : 2017-11-27
+# Equipment : Nikon Ti-Eclipse (Artemis)
+# User : mrazomej
+# Description :
+# A RBS titration experiment on the DNA mutants using the fluorescence microscope.
+# All samples were grown for 8 hours without IPTG in a 96 2mL-deep well plate
+# covered with a nylon cover. The cells were diluted and mounted on agarose
+# pads and imaged in the normal fashion.
