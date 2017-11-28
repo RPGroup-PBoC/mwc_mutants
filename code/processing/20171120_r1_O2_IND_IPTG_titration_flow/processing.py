@@ -52,7 +52,6 @@ fold_change_df.insert(0, 'repressors', int(strain.split('R')[-1]))
 fold_change_df.to_csv(
     'output/{0}_r{1}_{2}_fold_change.csv'.format(DATE, RUN_NO, CLASS))
 
-
 # Add the comments and save to the data/csv file.
 target = '../../../data/csv/{0}_r{1}_{2}_fold_change.csv'.format(DATE, RUN_NO,
                                                                  mutant)

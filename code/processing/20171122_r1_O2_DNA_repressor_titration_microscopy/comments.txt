@@ -1,0 +1,12 @@
+# Date : 2017-11-22
+# Equipment : Nikon Ti-Eclipse (Artemis)
+# User : mrazomej
+# Description :
+# A RBS titration experiment on the DNA mutants using the fluorescence microscope.
+# All samples were grown for 8 hours without IPTG in a 96 2mL-deep well plate
+# covered with a nylon cover. The cells were diluted and mounted on agarose
+# pads and imaged in the normal fashion.
+# Comments:
+# The original files for Q21A R1220 were accidentally named as Y20I, and the
+# Y20I R1220 samples were named Y20IREAL. These file names were corrected
+# in post, but the metadata remains incorrect.
