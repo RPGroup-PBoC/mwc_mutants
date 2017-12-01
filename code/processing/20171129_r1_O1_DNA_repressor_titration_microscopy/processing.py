@@ -17,8 +17,9 @@ MUT_CLASS = 'DNA'
 IP_DIST = 0.16  # in units of µm per pixel
 
 # Load the images of the slides.
-slide_files = glob.glob('../../../data/images/*profile*/*/*.tif')
-noise_files = glob.glob('../../../data/images/*noise*/*/*.tif')
+slide_files = glob.glob(
+    '../../../data/images/{0}*profile*/*/*.tif'.format(DATE))
+noise_files = glob.glob('../../../data/images/{0}*noise*/*/*.tif'.format(DATE))
 slide_ims = skimage.io.ImageCollection(slide_files)
 noise_ims = skimage.io.ImageCollection(noise_files)
 mean_field = pboc.image.projection(slide_ims, mode='mean')
