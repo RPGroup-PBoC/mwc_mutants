@@ -19,9 +19,9 @@ files = \
 glob.glob('*repressor_titration_microscopy/output/*microscopy_foldchange.csv')
 
 # Import them as a single data frame
-df = pd.concat(pd.read_csv(f, comment='#') for f in files)
+df = pd.concat(pd.read_csv(f, comment='#', index_col=0) for f in files)
 
 # Export data frame as
-df.to_csv('../../data/microscopy_repressor_master.csv')
+df.to_csv('../../data/microscopy_repressor_master.csv', index=False)
 
 print('done!')
