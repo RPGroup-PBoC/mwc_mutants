@@ -4,18 +4,18 @@ import os
 import glob
 
 # Define the details fo the expriment.
-USERNAME = 'gchure'
-DATE = 20180125
+USERNAME = 'sbarnes'
+DATE = 20180123
 CLASS = 'DNA'
-R = [0, 0, 260, 124, 60, 260, 1220]
+R = 260
 RUN_NO = 1
 OPERATOR = 'O2'
-FCS_PATTERN = 'RP2018-01-25'
+FCS_PATTERN = 'RP2018-01-23'
 
 savedir = '../../../data/flow/csv/'
 
 # Define the order of rows and the cols.
-ROWS = ('auto', 'delta', 'wt', 'Q21A', 'Q21A', 'Q21A', 'Q21A')
+ROWS = ('auto', 'delta', 'wt', 'Y20I', 'Q21A', 'Q21M')
 COLS = (0, 0.1, 5, 10, 25, 50, 75, 100, 250, 500, 1000, 5000)
 
 
@@ -31,7 +31,7 @@ for i, col in enumerate(col_groups):
     for j, samp in enumerate(col):
         # Define the new name.
         name = '{0}_r{1}_{2}_R{3}_{4}_{5}uMIPTG'.format(
-            DATE, RUN_NO, OPERATOR, R[j], ROWS[j], COLS[i])
+            DATE, RUN_NO, OPERATOR, R, ROWS[j], COLS[i])
 
         # Load the file using fcsparser and save to csv.
         _, data = fcsparser.parse(samp)

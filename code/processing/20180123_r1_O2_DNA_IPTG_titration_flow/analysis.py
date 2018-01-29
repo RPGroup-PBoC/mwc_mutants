@@ -8,7 +8,7 @@ colors = pboc.plotting.set_plotting_style(return_colors=True)
 
 # Set the experiment constants.
 DATE = 20180123
-RUN_NO = 1
+RUN_NO = 2
 MUTANT = 'DNA'
 OPERATOR = 'O2'
 op_en = {'O1': -15.3, 'O2': -13.9, 'O3': -9.7}

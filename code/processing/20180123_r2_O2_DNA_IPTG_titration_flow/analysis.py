@@ -7,7 +7,7 @@ import glob
 colors = pboc.plotting.set_plotting_style(return_colors=True)
 
 # Set the experiment constants.
-DATE = 20180125
+DATE = 20180123
 RUN_NO = 1
 MUTANT = 'DNA'
 OPERATOR = 'O2'
@@ -28,7 +28,7 @@ ax.set_xscale('log')
 # Group the data by operator
 # Remove auto and delta.
 fc = data.loc[(data['mutant'] != 'auto') & (data['mutant'] != 'delta')]
-grouped = fc.groupby(['mutant', 'repressors'])
+grouped = fc.groupby('mutant')
 
 # Plot the inensity curves.
 color_id = 0

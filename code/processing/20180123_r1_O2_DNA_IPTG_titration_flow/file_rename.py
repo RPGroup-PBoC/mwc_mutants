@@ -4,11 +4,11 @@ import os
 import glob
 
 # Define the details fo the expriment.
-USERNAME = 'sbarnes'
+USERNAME = 'gchure'
 DATE = 20180123
 CLASS = 'DNA'
 R = 260
-RUN_NO = 1
+RUN_NO = 2
 OPERATOR = 'O2'
 FCS_PATTERN = 'RP2018-01-23'
 

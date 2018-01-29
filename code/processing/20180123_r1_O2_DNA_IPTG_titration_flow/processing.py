@@ -6,8 +6,8 @@ import imp
 
 # Define the experiment parameters
 DATE = 20180123
-RUN_NO = 1
-USERNAME = 'sbarnes'
+RUN_NO = 2
+USERNAME = 'gchure'
 CLASS = 'DNA'
 gating_fraction = 0.4
 

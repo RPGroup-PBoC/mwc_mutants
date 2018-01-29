@@ -5,9 +5,9 @@ import glob
 import imp
 
 # Define the experiment parameters
-DATE = 20180125
+DATE = 20180123
 RUN_NO = 1
-USERNAME = 'gchure'
+USERNAME = 'sbarnes'
 CLASS = 'DNA'
 gating_fraction = 0.4
 
@@ -18,12 +18,10 @@ files = glob.glob('../../../data/flow/csv/{0}_r{1}*.csv'.format(DATE, RUN_NO))
 colnames = ['date', 'username', 'mutant', 'operator', 'strain', 'IPTGuM',
             'mean_FITC_H']
 df = pd.DataFrame([], columns=colnames)
-files[0]
 for f in files:
     # Get the identifying finformation.
     date, _, operator, strain, mutant, conc = f.split('/')[-1].split('_')
     conc = float(conc.split('uM')[0])
-    rep = int(strain.split('R')[-1])
 
     # Load in the data
     data = pd.read_csv(f)
@@ -35,7 +33,7 @@ for f in files:
     # Assemble the dictionary
     samp_dict = dict(date=date, username=USERNAME, mutant=mutant,
                      operator=operator, strain=strain, IPTGuM=conc,
-                     mean_FITC_H=mean_FITC, repressors=rep)
+                     mean_FITC_H=mean_FITC)
     df = df.append(samp_dict, ignore_index=True)
 
 fc_dfs = []
@@ -48,6 +46,7 @@ for g, d in grouped:
     fc_dfs.append(d)
 
 fold_change_df = pd.concat(fc_dfs, axis=0)
+fold_change_df.insert(0, 'repressors', int(strain.split('R')[-1]))
 
 # Save to a CSV.
 fold_change_df.to_csv(
