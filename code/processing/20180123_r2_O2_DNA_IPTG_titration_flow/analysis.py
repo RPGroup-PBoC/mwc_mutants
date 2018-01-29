@@ -28,7 +28,7 @@ ax.set_xscale('log')
 # Group the data by operator
 # Remove auto and delta.
 fc = data.loc[(data['mutant'] != 'auto') & (data['mutant'] != 'delta')]
-grouped = fc.groupby('mutant', 'repressors')
+grouped = fc.groupby(['mutant', 'repressors'])
 
 # Plot the inensity curves.
 color_id = 0
