@@ -1,4 +1,4 @@
-# Date : 2018-01-25
+# Date : 2018-02-01
 # Equipment : MACSQuant (Bjorkman lab)
 # User : gchure
 # Description :
