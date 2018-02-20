@@ -10,7 +10,7 @@ CLASS = 'DNA'
 R = [0, 0, 260, 124, 60, 260, 1220]
 RUN_NO = 1
 OPERATOR = 'O2'
-FCS_PATTERN = 'RP2018-01-31'
+FCS_PATTERN = 'RP2018-02-01'
 
 savedir = '../../../data/flow/csv/'
 
