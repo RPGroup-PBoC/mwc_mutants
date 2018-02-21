@@ -5,17 +5,17 @@ import glob
 
 # Define the details fo the expriment.
 USERNAME = 'gchure'
-DATE = 20180201
+DATE = 20180213
 CLASS = 'DNA'
-R = [0, 0, 260, 124, 60, 260, 1220]
+R = [0, 0, 260, 60, 124, 260, 1220]
 RUN_NO = 1
 OPERATOR = 'O2'
-FCS_PATTERN = 'RP2018-02-01'
+FCS_PATTERN = 'RP2018-02-13'
 
 savedir = '../../../data/flow/csv/'
 
 # Define the order of rows and the cols.
-ROWS = ('auto', 'delta', 'wt', 'Y20I', 'Y20I', 'Y20I', 'Y20I')
+ROWS = ('auto', 'delta', 'wt', 'Q21M', 'Q21M', 'Q21M', 'Q21M')
 COLS = (0, 0.1, 5, 10, 25, 50, 75, 100, 250, 500, 1000, 5000)
 
 
