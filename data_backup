@@ -1,0 +1,2 @@
+rsync -rtz -e 'ssh -p 22415' --progress data/flow/*
+gchure@spicybeef.caltech.edu:/mnt/rpvol/gchure/mwc_mutants/flow/

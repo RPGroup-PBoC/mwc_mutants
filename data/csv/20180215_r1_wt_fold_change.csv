@@ -1,4 +1,5 @@
-# Date : 2018-02-15# Equipment : MACSQuant (Bjorkman lab)# User : sbarnes# Description :# A titration run of the DNA mutant Q21M with all RBS modifications as well as# a WT control with R=260.# These were coupled with an O2-regulated YFP.# Comments:date,username,mutant,operator,strain,IPTGuM,mean_FITC_H,repressors,fold_change
+# Date : 2018-02-15# Equipment : MACSQuant (Bjorkman lab)# User : sbarnes# Description :# A titration run of the DNA mutant Q21M with all RBS modifications as well as# a WT control with R=260.# These were coupled with an O2-regulated YFP.# Comments:
+date,username,mutant,operator,strain,IPTGuM,mean_FITC_H,repressors,fold_change
 20180215,sbarnes,auto,O2,R0,0.0,4318.585440991282,0.0,0.0
 20180215,sbarnes,delta,O2,R0,0.0,21147.212964037873,0.0,1.0
 20180215,sbarnes,Q21M,O2,R124,0.0,4775.64185983178,124.0,0.027159458976352344
