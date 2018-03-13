@@ -1,0 +1,12 @@
+# Date : 2018-03-11
+# Equipment : MACSQuant (Bjorkman lab)
+# User : nbellive
+# Description :
+# IPTG titration with the O2+11 YFP Q21A DNA mutant strains 
+# The strains were grown in deep 96-well plates in 1 mL of LB + Kan + Spec and then
+# diluted next morning 1:1000 into 0.5 mL of M9 + 0.5% glucose also in deep 96-well plates with the following
+# IPTG concentrations:
+# 0uM, 0.1uM, 5uM, 10uM, 25uM, 50uM, 75uM, 100uM, 250uM, 500uM, 1000uM, 5000uM
+# Comments :
+# Note that I performed measurements on the Q21A lacI mutants (strains RBS1, RBS446, RBS1027, and RBS1147), as well as the wild-type RBS1027, delta LacI O2-yfp, and auto.
+# flow cytometer. The flow rates were in the order of 2500 events / sec. The run seemed to proceed with no issue; aside from the first well (auto, 0 IPTG) where I injected 100 microliters which might have introduced some bubbles.
