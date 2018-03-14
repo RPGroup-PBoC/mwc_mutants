@@ -1,116 +1,80 @@
-"""
-Title:
-    example_analysis.py
-Author:
-    Griffin Chure and Manuel Razo-Mejia
-Creation Date:
-    20170220
-Last Modified:
-    20170220
-Purpose:
-    This script serves as a representative example of an analysis script. This
-    reads in the csv file generated from the `example_processing.py` script and
-    generates a set of plots that serve as quality control checks for the
-    experiment.
-"""
-
-# Import dependencies
 import numpy as np
-import pandas as pd
-
-# Import matplotlib stuff for plotting
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
+import pandas as pd
+import glob
 
-# Seaborn, useful for graphics
-import seaborn as sns
-
-# Set the plotting style.
 import sys
-sys.path.insert(0, '../../')
+sys.path.insert(0, '../../../../pboc-py')
+import pboc.plotting
+import pboc.transcription
+colors = pboc.plotting.set_plotting_style(return_colors=True)
 
-import mwc_mutants_utils as mwc
-mwc.set_plotting_style()
 
+# Set the experiment constants.
+DATE = 20180311
+RUN_NO = 1
+MUTANT = 'DNA'
+OPERATOR = 'O2'
+op_en = {'O1': -15.3, 'O2': -13.9, 'O3': -9.7}
 
-# Define variables to use over the script
-date = 20180311
-run = 'r1'
-operator = 'O2'
-mutant_class = 'dna' # options dna/inducer/double
+# Load the data set.
+fc_file = glob.glob('output/*fold_change.csv')[0]
+data = pd.read_csv(fc_file)
 
-# Read the CSV file with the mean fold change
-df = pd.read_csv('output/' + str(date) + '_' + run + '_' + operator + '_' + \
-          mutant_class + '_IPTG_titration_MACSQuant.csv', comment='#')
-rbs = df.strain.unique()
+# Instantiate the figure canvas
+fig, ax = plt.subplots(1, 1)
 
-#==============================================================================
-# Plot all raw data
-#==============================================================================
-rep_strains = [1, 1027, 446, 1147]
-rep_dict = {1:1120, 1027:260, 446:124, 1147:60}
-plt.figure()
-for strain in rbs[np.array([r != 'auto' and r != 'delta' for r in rbs])]:
-    if strain == 'wt':
-        plt.plot(df[df.strain == strain].sort_values(by='IPTG_uM').IPTG_uM * 1E-6,
-                 df[df.strain == strain].sort_values(by='IPTG_uM').fold_change,
-                 marker='o', linewidth=1, linestyle='--', label=strain + ' - 260 rep./cell')
-    if strain != 'wt':
-        for rep in rep_strains:
-            df_r = df[df.repressors == rep]
-            plt.plot(df_r[df_r.strain == strain].sort_values(by='IPTG_uM').IPTG_uM * 1E-6,
-                    df_r[df_r.strain == strain].sort_values(by='IPTG_uM').fold_change, marker='o',
-                    linewidth=1, linestyle='--', label=strain + ' - ' + str(rep_dict[rep]) + ' rep./cell')
-plt.xscale('log')
-plt.xlabel('IPTG (M)')
-plt.ylabel('fold-change')
-plt.ylim([-0.01, 1.2])
-plt.xlim([1E-8, 1E-2])
-plt.legend(loc='upper left')
+# Add labels and scaling
+ax.set_xlabel('IPTG [M]')
+ax.set_ylabel('fold-change')
+ax.set_xscale('log')
+
+# Group the data by operator
+# Remove auto and delta.
+fc = data.loc[(data['mutant'] != 'auto') & (data['mutant'] != 'delta')]
+grouped = fc.groupby(['mutant', 'repressors'])
+
+# Plot the inensity curves.
+color_id = 0
+for g, d in grouped:
+    _ = ax.plot(d['IPTGuM'] / 1E6, d['fold_change'], '--o',
+                color=colors[color_id], label=g)
+    color_id += 1
+
+# Add a legend.
+_ = ax.legend(loc='center left', title='operator')
+
+# Save the figure.
+plt.savefig('output/{0}_r{1}_{2}_fold_change_curve.png'.format(DATE, RUN_NO,
+                                                               MUTANT))
+# Compute the expected curve from WT.
+ka = 139e-6
+ki = 0.53e-6
+ep_AI = 4.5
+ep_RA = op_en[OPERATOR]
+c_range = np.logspace(-8, -2, 500)
+R = 260
+
+# Instantiate the architecture and compute the fold-change.
+arch = pboc.transcription.SimpleRepression(R, ep_RA, ka=ka, ki=ki,
+                                           ep_ai=ep_AI, effector_conc=c_range)
+fc_theo = arch.fold_change()
+
+# Generate the figure.
+fig, ax = plt.subplots(1, 1)
+
+ax.set_xlabel('IPTG [M]')
+ax.set_ylabel('fold-change')
+ax.set_xscale('log')
+
+# Plot the data.
+wt_data = fc.loc[fc['mutant'] == 'wt']
+_ = ax.plot(wt_data['IPTGuM'] / 1E6,
+            wt_data['fold_change'], 'o', label='WT data')
+
+# Plot the prediction
+_ = ax.plot(c_range, fc_theo, 'k-', label='WT prediction')
+plt.legend()
 plt.tight_layout()
-plt.savefig('output/' + str(date) + '_' + operator + '_' + mutant_class + \
-            '_IPTG_titration_data.png')
-
-#==============================================================================
-# Plot the WT control with the parameters determined from the MWC induction
-# project
-#==============================================================================
-# Define the IPTG concentrations to evaluate
-IPTG = np.logspace(-7, -2, 100)
-IPTG_lin = np.array([0, 1E-7])
-
-energies = {'O1': -15.3, 'O2': -13.9, 'O3': -9.7, 'Oid': -17}
-ka = -np.log(139.59)
-ki = -np.log(0.53)
-
-df_wt = df[df.strain=='wt']
-
-# Initialize figure
-plt.figure()
-# Plot theoretical prediction
-# Log scale
-plt.plot(IPTG, mwc.fold_change_log(IPTG * 1E6,
-    ka=ka, ki=ki, epsilon=4.5,
-    R=df_wt.repressors.unique()[0],
-    epsilon_RA=energies[df_wt.operator.unique()[0]]),
-    color='black', label='prediction')
-# Linear scale
-plt.plot(IPTG_lin, mwc.fold_change_log(IPTG_lin * 1E6,
-    ka=ka, ki=ki, epsilon=4.5,
-    R=df_wt.repressors.unique()[0],
-    epsilon_RA=energies[df_wt.operator.unique()[0]]),
-    linestyle='--', color='black', label=None)
-
-# Plot data
-plt.scatter(df_wt.IPTG_uM / 1E6, df_wt.fold_change, label='wt data')
-
-plt.xscale('symlog', linthreshx=1E-7, linscalex=0.5)
-plt.xlabel('IPTG (M)', fontsize=15)
-plt.ylabel('fold-change', fontsize=16)
-plt.ylim([-0.05, 1.1])
-plt.xlim([-5E-9, np.max(IPTG)])
-plt.legend(loc='upper left')
-plt.tick_params(labelsize=14)
-plt.tight_layout()
-plt.savefig('output/' + str(date) + '_' + operator + '_' + mutant_class + \
-            '_wt_titration.png')
+plt.savefig(
+    'output/{0}_r{1}_{2}_WT_titration.png'.format(DATE, RUN_NO, MUTANT))
