@@ -1,5 +1,5 @@
 # Date : 2018-02-13# Equipment : MACSQuant (Bjorkman lab)# User : gchure# Description :# A titration run of the DNA mutant Q21M with all RBS modifications as well as# a WT control with R=260.# These were coupled with an O2-regulated YFP.# Comments: The flow rate was a bit slow and there appeared to# be a fair amount of debris in the sample.
-date,username,mutant,operator,strain,IPTGuM,mean_FITC_H,repressors,fold_change
+date,username,mutant,operator,strain,IPTG_uM,mean_FITC_H,repressors,fold_change
 20180213,gchure,Q21M,O2,R260,0.0,5082.246850376222,260.0,0.011940015457528609
 20180213,gchure,wt,O2,R260,0.0,4785.645314339163,260.0,-0.015005114470136298
 20180213,gchure,Q21M,O2,R124,0.0,5174.999029775786,124.0,0.020366200831980152
