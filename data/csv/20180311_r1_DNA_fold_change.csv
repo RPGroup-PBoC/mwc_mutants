@@ -1,4 +1,4 @@
-,date,username,mutant,operator,strain,IPTGuM,mean_FITC_H,repressors,fold_change
+ind,date,username,mutant,operator,strain,IPTGuM,mean_FITC_H,repressors,fold_change
 37,20180311,nbellive,wt,O2,R260,0.0,5029.0097352261255,260.0,0.02213225894065921
 38,20180311,nbellive,Q21A,O2,R1220,0.0,7953.163415654107,1220.0,0.17062656732360174
 43,20180311,nbellive,auto,O2,R0,0.0,4593.18073179647,0.0,0.0
