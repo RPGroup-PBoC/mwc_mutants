@@ -10,7 +10,7 @@ colors = mut.viz.pub_style(return_colors=True)
 colors = list(colors.values())[::3]
 
 # Set the experiment constants.
-DATE = 20180320
+DATE = 20180321
 RUN_NO = 1
 MUTANT = 'DNA'
 OPERATOR = 'O2'
@@ -41,7 +41,7 @@ for g, d in grouped:
     color_id += 1
 
 # Add a legend.
-_ = ax.legend(loc='center left', title='operator')
+_ = ax.legend(loc='upper left', title='operator')
 
 # Save the figure.
 plt.savefig('output/{0}_r{1}_{2}_fold_change_curve.png'.format(DATE, RUN_NO,
@@ -73,19 +73,7 @@ _ = ax.plot(wt_data['IPTGuM'] / 1E6,
 
 # Plot the prediction
 _ = ax.plot(c_range, fc_theo, 'k-', label='WT prediction')
-plt.legend()
+plt.legend(loc='upper left')
 plt.tight_layout()
 plt.savefig(
     'output/{0}_r{1}_{2}_WT_titration.png'.format(DATE, RUN_NO, MUTANT))
-
-# %%
-fig, ax = plt.subplots(1, 1)
-ax.set_xscale('log')
-for g, d in grouped:
-    _ = ax.plot(d['IPTGuM'] / 1E6, d['mean_FITC_H'], '--', label=g)
-
-auto = data[data['mutant'] == 'auto']
-delta = data[data['mutant'] == 'delta']
-_ = ax.plot(auto['IPTGuM'] / 1E6, auto['mean_FITC_H'], '--', label='auto')
-_ = ax.plot(delta['IPTGuM'] / 1E6, delta['mean_FITC_H'], '--', label='delta')
-ax.legend()

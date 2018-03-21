@@ -73,7 +73,7 @@ _ = ax.plot(wt_data['IPTGuM'] / 1E6,
 
 # Plot the prediction
 _ = ax.plot(c_range, fc_theo, 'k-', label='WT prediction')
-plt.legend('upper left')
+plt.legend(loc='upper left')
 plt.tight_layout()
 plt.savefig(
     'output/{0}_r{1}_{2}_WT_titration.png'.format(DATE, RUN_NO, MUTANT))

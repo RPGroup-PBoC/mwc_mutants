@@ -7,7 +7,7 @@ sys.path.insert(0, '../../../')
 import mut.flow
 
 # Define the experiment parameters
-DATE = 20180320
+DATE = 20180321
 RUN_NO = 1
 USERNAME = 'gchure'
 CLASS = 'DNA'
@@ -43,7 +43,7 @@ for f in files:
 fc_dfs = []
 grouped = df.groupby(['IPTGuM'])
 for g, d in grouped:
-    mean_auto = np.mean(d.loc[d['mutant'] == 'auto']['mean_FITC_H'].values[0])
+    mean_auto = d.loc[d['mutant'] == 'auto']['mean_FITC_H'].values[0]
     mean_delta = d.loc[d['mutant'] == 'delta']['mean_FITC_H'].values[0]
     d['fold_change'] = (d['mean_FITC_H'] - mean_auto) / \
         (mean_delta - mean_auto)

@@ -5,24 +5,23 @@ import glob
 
 # Define the details fo the expriment.
 USERNAME = 'gchure'
-DATE = 20180320
+DATE = 20180321
 CLASS = 'DNA'
 R = [0, 0, 260, 60, 124, 260, 1220]
 RUN_NO = 1
 OPERATOR = 'O2'
-FCS_PATTERN = 'RP2018-03-20'
+FCS_PATTERN = 'RP2018-03-21'
 
 savedir = '../../../data/flow/csv/'
 
 # Define the order of rows and the cols.
-ROWS = ('auto', 'delta', 'wt', 'Y20I', 'Y20I', 'Y20I', 'Y20I')
+ROWS = ('auto', 'delta', 'wt', 'Q21A', 'Q21A', 'Q21A', 'Q21A')
 COLS = (0, 0.1, 5, 10, 25, 50, 75, 100, 250, 500, 1000, 5000)
 
 
 # Get the names of the files.
 files = glob.glob('../../../data/flow/fcs/{0}*.fcs'.format(FCS_PATTERN,
                                                            RUN_NO))
-files
 files = np.sort(files)
 # Break the list up into columns.
 ncols, nrows = len(COLS), len(ROWS)
