@@ -2,13 +2,12 @@ import numpy as np
 import pandas as pd
 import glob
 import imp
-
 import sys
-sys.path.insert(0, '../../../../')
+sys.path.insert(0, '../../../')
 import mut.flow
 
 # Define the experiment parameters
-DATE = 20180316
+DATE = 20180320
 RUN_NO = 1
 USERNAME = 'gchure'
 CLASS = 'DNA'
@@ -21,7 +20,7 @@ files = glob.glob('../../../data/flow/csv/{0}_r{1}*.csv'.format(DATE, RUN_NO))
 colnames = ['date', 'username', 'mutant', 'operator', 'strain', 'IPTGuM',
             'mean_FITC_H']
 df = pd.DataFrame([], columns=colnames)
-files[0]
+
 for f in files:
     # Get the identifying finformation.
     date, _, operator, strain, mutant, conc = f.split('/')[-1].split('_')
@@ -30,7 +29,7 @@ for f in files:
 
     # Load in the data
     data = pd.read_csv(f)
-    gated = pboc.flow.gaussian_gate(data, gating_fraction)
+    gated = mut.flow.gaussian_gate(data, gating_fraction)
 
     # Compute the mean
     mean_FITC = gated['FITC-H'].mean()
