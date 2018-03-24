@@ -1,0 +1,10 @@
+# Date : 2018-03-23
+# Equipment : MACSQuant (Bjorkman lab)
+# User : gchure
+# Description :
+# A titration run of the DNA mutant Q21M with all RBS modifications as well as
+# a WT control with R=260.
+# These were coupled with an O2-regulated YFP.
+# Comments: The dilution was performed 1:5000 and allowed to grow for 10 hours
+# rather than a 1:1000 and growth for 8 hours. The cultures were approximately
+# at OD ~0.3 when the data was collected. 
