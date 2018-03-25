@@ -8,6 +8,54 @@ import statsmodels.tools.numdiff as smnd
 import theano.tensor as tt
 
 
+def chains_to_dataframe(fit, var_names=None):
+    """
+    Converts the generated traces from MCMC sampling to a tidy
+    pandas DataFrame.
+
+    Parameters
+    ----------
+    fit : pystan sampling output
+        The raw MCMC output.
+    var_names : list of str
+        Names of desired parameters. If `None`, all parameters will be
+        returned.
+
+    Returns
+    -------
+    df : pandas DataFrame
+        Pandas DataFrame containing all samples from the MCMC.
+    """
+
+    data_out = fit.extract()
+    if var_names is None:
+        _v = var_names = data_out.keys()
+        var_names = []
+        for v in _v:
+            if v != 'lp__':
+                var_names.append(v)
+
+    for v in var_names:
+        if v not in data_out.keys():
+            raise ValueError("Parameter `{}` not found in index.".format(v))
+
+    df = pd.DataFrame([])
+    for k in var_names:
+        shape = np.shape(data_out[k])
+        if len(np.shape(data_out[k])) == 1:
+            df.insert(0, k, data_out[k])
+        else:
+            for n in range(shape[1]):
+                df.insert(0, '{}__{}'.format(k, n), data_out[k][:, n])
+
+    # Compute the logp
+    logp = [fit.log_prob([data_out[v][i] for v in var_names])
+            for i in range(len(df))]
+    df.insert(0, 'logp', logp)
+
+    return df
+
+
 class MarginalizedHomoscedasticNormal(pm.Continuous):
     """
     A bivariate Normal distribution after marginalization of the
