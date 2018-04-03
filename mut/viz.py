@@ -6,7 +6,6 @@ import skimage.io
 import skimage.measure
 import seaborn as sns
 import numpy as np
-import cairosvg
 import os
 import matplotlib.pyplot as plt
 import matplotlib
