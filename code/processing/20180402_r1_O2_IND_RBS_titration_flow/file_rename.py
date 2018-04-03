@@ -15,7 +15,7 @@ FCS_PATTERN = 'RP2018-04-02'
 savedir = '../../../data/flow/csv/'
 
 # Define the order of rows and the cols.
-ROWS = ('auto', 'delta', 'wt', 'F164T', 'Q294K', 'Q294V', 'Q294R')
+ROWS = ('auto', 'delta', 'wt', 'F164T', 'Q294K', 'Q294V')
 COLS = (0, 0.1, 5, 10, 25, 50, 75, 100, 250, 500, 1000, 5000)
 
 
