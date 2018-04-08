@@ -162,7 +162,7 @@ class SimpleRepression(object):
             self.allo = False
 
     def fold_change(self, wpa=True, num_pol=None, ep_pol=None,
-                    pact=1):
+                    pact=None):
         R"""
         fold - change for simple repression.
 
@@ -189,8 +189,9 @@ class SimpleRepression(object):
         if wpa is not True:
             raise RuntimeError('not yet implemented')
 
-        if self.allo is True:
-            pact = self.mwc.pact()
+        if pact == None:
+            if self.allo is True:
+                pact = self.mwc.pact()
         else:
             if (pact < 0) or (pact > 1):
                 raise TypeError('pact must be on the range [0, 1].')
@@ -226,17 +227,9 @@ class SimpleRepression(object):
             raise RuntimeError(
                 """Saturation is only defined for allosteric molecules. (`allosteric = True`)""")
         pact = self.mwc.saturation()
-        return
-        # Determine the user provided inputs.
-        R = self.R
-        n_ns = self.n_ns
-        n = self.n
-        ep_r = self.ep_r
-        ep_ai = ep_ai
-
         # Compute the pact in limit of c -> inf.
         pact = self.mwc.saturation()
-        return fold_change(wpa, num_pol, ep_pol, pact)
+        return self.fold_change(wpa, num_pol, ep_pol, pact)
 
     def leakiness(self, wpa=True, num_pol=None, ep_pol=0):
         R"""
@@ -263,7 +256,7 @@ class SimpleRepression(object):
             pact = self.mwc.leakiness()
         else:
             pact = 1
-        return fold_change(wpa, num_pol, ep_pol, pact)
+        return self.fold_change(wpa, num_pol, ep_pol, pact)
 
     def dynamic_range(self, wpa=True, num_pol=None, ep_pol=0):
         R"""
@@ -286,13 +279,30 @@ class SimpleRepression(object):
             The leakiness of the simple repression architecture.
         """
         # Compute the saturation and leakiness.
-        sat = saturation(wpa, num_pol, ep_pol)
-        leak = leakiness(wpa, num_pol, ep_pol)
+        sat = self.saturation(wpa, num_pol, ep_pol)
+        leak = self.leakiness(wpa, num_pol, ep_pol)
         return sat - leak
 
     def ec50(self):
+        if self.allo is False:
+            raise RuntimeError('EC50 defined only for allosteric architectures.')
+        # Determine the user provided inputs.
+        R = self.R
+        n_ns = self.n_ns
+        ep_r = self.ep_r
+        ep_ai = self.mwc.ep_ai 
+        ka = self.mwc.ka
+        ki = self.mwc.ki
+        n_sites = self.mwc.n
+        # Break it into pieces
+        repression = 1 + (R / n_ns) * np.exp(-ep_r)
+        numer = repression + (ka/ki)**n_sites * (2 * np.exp(-ep_ai) * repression)
+        denom = 2 * repression + np.exp(-ep_ai) + (ka / ki)**n_sites * np.exp(-ep_ai)
 
-        raise RuntimeError('Not yet implemented.')
+        # Assemble the pieces of the ec50 calculation.
+        ec50_numer = (ka / ki) - 1  
+        ec50_denom = (ka / ki) - (numer / denom)**(1 / n_sites)
+        return ka * ((ec50_numer / ec50_denom) - 1)
 
     def effective_hill(self):
         raise RuntimeError('Not yet implemented.')
