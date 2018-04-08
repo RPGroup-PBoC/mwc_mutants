@@ -87,8 +87,9 @@ class MWC(object):
         n = self.n
         ka = self.ka
         ki = self.ki
+        ep_ai = self.ep_ai
         numer = (1 + c / ka)**n
-        denom = numer + np.exp(-self.ep_ai) * (1 + c / ki)**n
+        denom = numer + np.exp(-ep_ai) * (1 + c / ki)**n
         return numer / denom
 
     def saturation(self):
@@ -186,17 +187,15 @@ class SimpleRepression(object):
         fold_change: float or nd - array
             Fold - change in gene expression evaluated at each value of c.
         """
-        if wpa is not True:
-            raise RuntimeError('not yet implemented')
-
-        if pact == None:
-            if self.allo is True:
-                pact = self.mwc.pact()
+        if self.allo == False:
+            pact = 1 
         else:
-            if (pact < 0) or (pact > 1):
-                raise TypeError('pact must be on the range [0, 1].')
-            pact = pact
-
+            if pact == None:
+                pact = self.mwc.pact()
+            else:
+                if pact < 0 or pact > 1:
+                    raise TypeError('pact must be on the range [0, 1].')
+       
         # Compute repression and return inverse.
         repression = (1 + pact * (self.R / self.n_ns) * np.exp(-self.ep_r))
         return repression**-1
@@ -284,28 +283,76 @@ class SimpleRepression(object):
         return sat - leak
 
     def ec50(self):
+        """Computes the EC50 for allosteric architectures"""
         if self.allo is False:
-            raise RuntimeError('EC50 defined only for allosteric architectures.')
+            raise RuntimeError(
+                'EC50 defined only for allosteric architectures.')
         # Determine the user provided inputs.
         R = self.R
         n_ns = self.n_ns
         ep_r = self.ep_r
-        ep_ai = self.mwc.ep_ai 
+        ep_ai = self.mwc.ep_ai
         ka = self.mwc.ka
         ki = self.mwc.ki
         n_sites = self.mwc.n
         # Break it into pieces
         repression = 1 + (R / n_ns) * np.exp(-ep_r)
-        numer = repression + (ka/ki)**n_sites * (2 * np.exp(-ep_ai) * repression)
-        denom = 2 * repression + np.exp(-ep_ai) + (ka / ki)**n_sites * np.exp(-ep_ai)
+        numer = repression + (ka/ki)**n_sites * \
+            (2 * np.exp(-ep_ai) * repression)
+        denom = 2 * repression + \
+            np.exp(-ep_ai) + (ka / ki)**n_sites * np.exp(-ep_ai)
 
         # Assemble the pieces of the ec50 calculation.
-        ec50_numer = (ka / ki) - 1  
+        ec50_numer = (ka / ki) - 1
         ec50_denom = (ka / ki) - (numer / denom)**(1 / n_sites)
         return ka * ((ec50_numer / ec50_denom) - 1)
 
     def effective_hill(self):
-        raise RuntimeError('Not yet implemented.')
+        """Computes the effective hill coefficient of an allosteric repressor."""
+        if self.allo == False:
+            return RuntimeError("Effective hill only defined for allosteric architectures")
+
+        # Define the parameters
+        c = self.ec50()
+        ka = self.mwc.ka
+        ki = self.mwc.ki
+        ep_ai = self.mwc.ep_ai
+        n_sites = self.mwc.n
+        R = self.R
+        ep_r = self.ep_r
+        n_ns = self.n_ns
+        # Compute the fold-change
+        pact = MWC(c, ka, ki, ep_ai, n_sites).pact()
+        fc = (1 + pact * (R / n_ns) * np.exp(-ep_r))**-1
+        leakiness = self.leakiness()
+        expanded_ka = (1 + c / ka)
+        expanded_ki = (1 + c / ki)
+
+        # Break it into pieces.
+        partA = 2 / (fc - leakiness)
+        partB = -fc**2 * (R / n_ns) * np.exp(-ep_r) * 2 * c * np.exp(-ep_ai)
+        partC = 1 / ka * expanded_ka * expanded_ki**2 - \
+            1 / ki * expanded_ka**2 * expanded_ki
+        partD = (expanded_ka**2 + np.exp(-ep_ai) * expanded_ki**2)**2
+        return partA * partB * partC / partD
+
+    def compute_properties(self):
+        """
+        Computes the leakiness, saturation, dynamic range, EC50, and effective hill 
+        coefficient for the architecture. Properties are returned as a dictionary. 
+        """
+        if self.allo == False:
+            raise RuntimeError("Available for allosteric molecules only.")
+
+        # Compute the properties.
+        leak = self.leakiness()
+        sat = self.saturation()
+        dyn_rng = self.dynamic_range()
+        EC50 = self.ec50()
+        Hill = self.effective_hill()
+
+        return {'leakiness': leak, 'saturation': sat, 'dynamic_range':dyn_rng,
+                'EC50': EC50, 'effective_hill':Hill}
 
     def bohr_parameter(self):
         R"""
