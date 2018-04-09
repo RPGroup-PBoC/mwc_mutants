@@ -19,9 +19,9 @@ data {
 
 parameters {
     real ep_R[J]; // DNA binding energy
-    real<lower=0> ka[J]; // Active repressor inducer dissociation constant. 
-    real<lower=0> ki[J]; // Inactive repressor inducer dissociation constant.
-    real<lower=0> sigma[J]; // Homoscedastic error
+    real<lower=1E-12> ka[J]; // Active repressor inducer dissociation constant. 
+    real<lower=1E-12> ki[J]; // Inactive repressor inducer dissociation constant.
+    real<lower=1E-9> sigma[J]; // Homoscedastic error
 }
 
 transformed parameters {

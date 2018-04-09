@@ -163,7 +163,7 @@ class SimpleRepression(object):
             self.allo = False
 
     def fold_change(self, wpa=True, num_pol=None, ep_pol=None,
-                    pact=None):
+                    pact=False):
         R"""
         fold - change for simple repression.
 
@@ -190,12 +190,9 @@ class SimpleRepression(object):
         if self.allo == False:
             pact = 1 
         else:
-            if pact == None:
+            if type(pact) == bool:
                 pact = self.mwc.pact()
-            else:
-                if pact < 0 or pact > 1:
-                    raise TypeError('pact must be on the range [0, 1].')
-       
+
         # Compute repression and return inverse.
         repression = (1 + pact * (self.R / self.n_ns) * np.exp(-self.ep_r))
         return repression**-1
@@ -225,7 +222,6 @@ class SimpleRepression(object):
         if self.allo is False:
             raise RuntimeError(
                 """Saturation is only defined for allosteric molecules. (`allosteric = True`)""")
-        pact = self.mwc.saturation()
         # Compute the pact in limit of c -> inf.
         pact = self.mwc.saturation()
         return self.fold_change(wpa, num_pol, ep_pol, pact)
@@ -329,12 +325,10 @@ class SimpleRepression(object):
         expanded_ki = (1 + c / ki)
 
         # Break it into pieces.
-        partA = 2 / (fc - leakiness)
-        partB = -fc**2 * (R / n_ns) * np.exp(-ep_r) * 2 * c * np.exp(-ep_ai)
-        partC = 1 / ka * expanded_ka * expanded_ki**2 - \
-            1 / ki * expanded_ka**2 * expanded_ki
-        partD = (expanded_ka**2 + np.exp(-ep_ai) * expanded_ki**2)**2
-        return partA * partB * partC / partD
+        prefactor = -fc**2 * (R / n_ns) * np.exp(-ep_r) * 2 * c * np.exp(-ep_ai)
+        numer = (1 / ka) * expanded_ka * expanded_ki**2 - (1 / ki) * expanded_ka**2 * expanded_ki
+        denom = (expanded_ka**2 + np.exp(-ep_ai) * expanded_ki**2)**2
+        return (2 / (fc - leakiness)) * prefactor * numer / denom
 
     def compute_properties(self):
         """
