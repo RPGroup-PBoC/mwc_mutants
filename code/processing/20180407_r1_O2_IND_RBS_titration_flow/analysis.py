@@ -10,7 +10,7 @@ colors = mut.viz.pub_style(return_colors=True)
 colors = list(colors.values())[::3]
 
 # Set the experiment constants.
-DATE = 20180409
+DATE = 20180407
 RUN_NO = 1
 MUTANT = 'DNA'
 OPERATOR = 'O2'

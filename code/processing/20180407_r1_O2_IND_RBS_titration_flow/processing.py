@@ -7,7 +7,7 @@ sys.path.insert(0, '../../../')
 import mut.flow
 
 # Define the experiment parameters
-DATE = 20180409
+DATE = 20180407
 RUN_NO = 1
 USERNAME = 'nbellive'
 CLASS = 'IND'
@@ -64,7 +64,8 @@ target = '../../../data/csv/{0}_r{1}_{2}_fold_change.csv'.format(DATE, RUN_NO,
 with open('comments.txt', 'r') as f:
     comments = f.read().splitlines()
 
+
 with open(target, 'a') as f:
     for line in comments:
         f.write(line)
-    fold_change_df.to_csv(f, index=False)
+    fold_change_df.to_csv(f, mode='a', index=False)

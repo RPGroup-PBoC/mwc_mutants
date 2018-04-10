@@ -1,0 +1,9 @@
+real loo# Date : 2018-04-07
+# Equipment : MACSQuant (Bjorkman lab)
+# User : nbellive
+# Description :
+# A titration run of the inducer mutants Q294K, Q294V, F164T
+# in HG105 with an integrated RBS1027 LacI (R=260) and an O2 operator.
+# Note that it looks like Q294K will have to be remade - fluorescence is
+# higher than delta!
+# This mutant was not included in the final processing.
