@@ -192,7 +192,6 @@ class SimpleRepression(object):
         else:
             if type(pact) == bool:
                 pact = self.mwc.pact()
-
         # Compute repression and return inverse.
         repression = (1 + pact * (self.R / self.n_ns) * np.exp(-self.ep_r))
         return repression**-1
@@ -294,7 +293,7 @@ class SimpleRepression(object):
         # Break it into pieces
         repression = 1 + (R / n_ns) * np.exp(-ep_r)
         numer = repression + (ka/ki)**n_sites * \
-            (2 * np.exp(-ep_ai) * repression)
+            (2 * np.exp(-ep_ai) + repression)
         denom = 2 * repression + \
             np.exp(-ep_ai) + (ka / ki)**n_sites * np.exp(-ep_ai)
 
@@ -360,5 +359,5 @@ class SimpleRepression(object):
         else:
             pact = 1
         # Compute and return the Bohr.
-        bohr = np.log(pact) + np.log(self.R / self.n_ns) - self.ep_r
+        bohr = self.ep_r - np.log(pact) - np.log(self.R / self.n_ns)
         return bohr
