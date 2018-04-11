@@ -1,4 +1,4 @@
-real loo# Date : 2018-04-10
+# Date : 2018-04-10
 # Equipment : MACSQuant (Bjorkman lab)
 # User : nbellive
 # Description :

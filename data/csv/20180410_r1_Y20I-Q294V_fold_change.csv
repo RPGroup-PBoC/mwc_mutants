@@ -1,4 +1,4 @@
-real loo# Date : 2018-04-10# Equipment : MACSQuant (Bjorkman lab)# User : nbellive# Description :# A titration run of the double mutants 'Q21A-F164T', 'Q21A-Q294V', # ’Y20I-F164T', 'Y20I-Q294K', 'Y20I-Q294V' in HG105 with an integrated # RBS1027 LacI (R=260) and an O2 operator.# I started overnight, Griffin started M9 glucose dilution, and I ran on flow# cytometer.date,username,mutant,operator,strain,IPTGuM,mean_FITC_H,repressors,fold_change
+# Date : 2018-04-10# Equipment : MACSQuant (Bjorkman lab)# User : nbellive# Description :# A titration run of the double mutants 'Q21A-F164T', 'Q21A-Q294V', # ’Y20I-F164T', 'Y20I-Q294K', 'Y20I-Q294V' in HG105 with an integrated # RBS1027 LacI (R=260) and an O2 operator.# I started overnight, Griffin started M9 glucose dilution, and I ran on flow# cytometer.date,username,mutant,operator,strain,IPTGuM,mean_FITC_H,repressors,fold_change
 20180410,nbellive,auto,O2,R0,0.0,6088.827995372373,0.0,0.0
 20180410,nbellive,delta,O2,R0,0.0,22348.173472355367,0.0,1.0
 20180410,nbellive,Q21A-F164T,O2,R260,0.0,10991.405789546896,260.0,0.301523686861485
