@@ -1,7 +1,7 @@
 import glob
 import pandas as pd
 
-#============================================================================== 
+#==============================================================================
 # list directories with IPTG titration
 files = glob.glob('*flow/output/*IPTG*.csv')
 
@@ -24,4 +24,3 @@ df.rename(columns={'class': 'mut_class'}, inplace=True)
 
 # Export data frame as flow_master.csv
 df.to_csv('../../data/flow_lacI_master.csv')
-
