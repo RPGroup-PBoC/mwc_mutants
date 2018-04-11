@@ -19,17 +19,10 @@ data {
 }
 
 parameters {
-    real<lower=0> ka[J]; // Inducer dissociation constant to active repressor
-    real<lower=0> ki[J]; // Inducer dissociation constant to inactive repressor
+    real ka[J]; // Inducer dissociation constant to active repressor
+    real ki[J]; // Inducer dissociation constant to inactive repressor
     real<lower=0> sigma[J];  // Homoscedastic error
 
-}
-
-transformed parameters {
-    real ka_tilde[J]; // Log transform of ka
-    real ki_tilde[J]; // Log transform of ki
-    ka_tilde = log(ka);
-    ki_tilde = log(ki);
 }
 
 model {
@@ -42,7 +35,7 @@ model {
 
     // Likelihood
     for (i in 1:N) {
-        mu[i] = fold_change(R, n_ns, epR, c[i], ka_tilde[trial[i]], ki_tilde[trial[i]], ep_ai, n_sites);
+        mu[i] = fold_change(R, n_ns, epR, c[i], ka[trial[i]], ki[trial[i]], ep_ai, n_sites);
         fc[i] ~ normal(mu[i], sigma[trial[i]]);
     }
 }
