@@ -1,0 +1,8 @@
+# Date : 2018-04-13
+# Equipment : MACSQuant (Bjorkman lab)
+# User : nbellive
+# Description :
+# A titration run of the double mutants 'Q21M-F164T', 'Q21M-Q294K’, ’Q21M-Q294V' in
+# ’in HG105 with an integrated 
+# RBS1027 LacI (R=260) and an O2 operator. Performed overnights in replicate. 
+# Run looked fine. Note that this is labeled as r2 as first replicate.
