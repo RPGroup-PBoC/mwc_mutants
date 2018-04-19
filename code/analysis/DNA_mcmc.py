@@ -40,7 +40,7 @@ data_dict = {'J': len(leakiness['mutant'].unique()), 'N': len(
     'ep_AI': ep_ai, 'n_sites': n_sites, 'fc': leakiness['fold_change']}
 
 # Sample the posterior.
-epR_chains = epR_model.sampling(data=data_dict, iter=10000, chains=4)
+epR_chains = epR_model.sampling(data=data_dict, iter=8000, chains=4)
 epR_df = mut.bayes.chains_to_dataframe(epR_chains)
 
 # Rename the columns and save.
@@ -56,7 +56,7 @@ epR_df.to_csv('../../data/mcmc/DNA_O2_epR_chains.csv', index=False)
 
 # Compute and save the statistics.
 epR_fit_statistics = mut.stats.compute_statistics(epR_df)
-epR_fit_statistics.to_csv('../../data/mcmc/DNA_O2_epR_fit_statistics.csv')
+epR_fit_statistics.to_csv('../../data/mcmc/DNA_O2_epR_fit_statistics.csv', index=False)
 
 
 # Load the stan model.
@@ -71,7 +71,7 @@ data_dict = {'J': len(DNA['mutant'].unique()),
              'n_sites':n_sites, 'fc':DNA['fold_change'] }
 
 # Sample the posterior.
-global_fit_chains = global_model.sampling(data=data_dict, iter=10000, chains=4)
+global_fit_chains = global_model.sampling(data=data_dict, iter=8000, chains=4)
 global_fit_df = mut.bayes.chains_to_dataframe(global_fit_chains)
 
 # Rename the columns and save.
@@ -87,4 +87,4 @@ global_fit_df.to_csv('../../data/mcmc/DNA_O2_global_fit_chains.csv', index=False
 
 # Compute and save the statistics.
 global_fit_statistics = mut.stats.compute_statistics(global_fit_df)
-global_fit_statistics.to_csv('../../data/mcmc/DNA_O2_global_fit_statistics.csv')
+global_fit_statistics.to_csv('../../data/mcmc/DNA_O2_global_fit_statistics.csv', index=False)

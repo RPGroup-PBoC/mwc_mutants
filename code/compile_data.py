@@ -48,5 +48,8 @@ filtered_data = all_data[(all_data['fold_change'] >= fc_bounds[0]) &\
                          (all_data['repressors'] > 0) & (all_data['mutant'] != 'auto') &
                          (all_data['mutant'] != 'delta')]
 
+# Deal with the special case of Q21M leakiness. Remove all flow measurements.
+all_data = all_data[(all_data['mutant'] != 'Q21M') & (all_data['IPTGuM'] != 0)]
+
 # Save it to the data directory.
 filtered_data.to_csv('../data/csv/compiled_data.csv', index=False)
