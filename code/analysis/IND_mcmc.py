@@ -26,7 +26,7 @@ idx_key = {v: k for k, v in idx_dict.items()}
 for m in IND['mutant'].unique():
     IND.loc[IND['mutant'] == m, 'idx'] = idx_dict[m]
 # Load the KaKi analysis stan model
-KaKi_model_code = mut.bayes.assemble_StanModelCode('../stan/hierarchical_KaKi_fit.stan',
+KaKi_model_code = mut.bayes.assemble_StanModelCode('../stan/hierarchical_kaki_fit.stan',
                                                    '../stan/functions.stan')
 KaKi_model = pystan.StanModel(model_code=KaKi_model_code)
 
@@ -37,7 +37,7 @@ data_dict = {'J': len(IND['mutant'].unique()), 'N': len(
     'ep_AI': ep_ai, 'n_sites': n_sites, 'fc': IND['fold_change']}
 
 KaKi_chains = KaKi_model.sampling(
-    data=data_dict, iter=20000, chains=4, thin=10)
+    data=data_dict, iter=50000, chains=48, thin=50)
 KaKi_df = mut.bayes.chains_to_dataframe(KaKi_chains)
 
 # Rename the columns and save.
@@ -68,7 +68,7 @@ data_dict = {'J': len(IND['mutant'].unique()), 'N': len(
 
 # Sample and convert to a dtaframe.
 global_fit_chains = global_fit_model.sampling(
-    data=data_dict, iter=000, thin=10)
+    data=data_dict, chains=48, iter=50000, thin=50)
 global_fit_df = mut.bayes.chains_to_dataframe(global_fit_chains)
 
 # Rename the columns and save.
