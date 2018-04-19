@@ -9,7 +9,7 @@ data {
     real<lower=1> n_ns; // Number of nonspecific binding sites
     
     // Allosteric information
-    real ep_ai; // Allosteric energy difference
+    real ep_AI; // Allosteric energy difference
     int<lower=1> n_sites; // Number of allosteric binding sites
     vector[N] c; // IPTG concentration
     vector[N] fc; // Measured fold-change
@@ -38,7 +38,7 @@ model {
 
     for (i in 1:N) {
         mu[i] = fold_change(R[i], n_ns, ep_R[trial[i]], c[i], 
-                         ka_tilde[trial[i]], ki_tilde[trial[i]], ep_ai, n_sites);
+                         ka_tilde[trial[i]], ki_tilde[trial[i]], ep_AI, n_sites);
         fc[i] ~ normal(mu[i], sigma[trial[i]]);
     }
 }

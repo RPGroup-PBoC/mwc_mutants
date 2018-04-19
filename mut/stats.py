@@ -133,9 +133,7 @@ def compute_statistics(df, varnames=None, logprob_name='logp'):
         varnames = [v for v in df.keys() if v is not 'logp']
 
     # Find the max of the log posterior.
-    ind = np.argmax(df[logprob_name])
-    if type(ind) is not int:
-        ind = ind[0]
+    ind = np.argmax(df[logprob_name].values)
 
     # Instantiate the dataframe for the parameters.
     stat_df = pd.DataFrame([], columns=['parameter', 'mode', 'hpd_min',

@@ -46,7 +46,7 @@ def chains_to_dataframe(fit, var_names=None):
     for j in range(dim[0]):
         _samples = [samples[k][j] for k in fit.unconstrained_param_names()]
         if (np.nan not in _samples) & (np.inf not in samples):
-            logp.append(fit.log_prob([samples[k][j] for k in fit.unconstrained_param_names()]))
+            logp.append(fit.log_prob(_samples))
 
     samples['logp'] = logp
     return pd.DataFrame(samples)
