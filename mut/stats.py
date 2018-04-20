@@ -189,3 +189,18 @@ def compute_hpd(trace, mass_frac):
 
     # Return interval
     return np.array([d[min_int], d[min_int + n_samples]])
+
+
+
+def compute_mean_sem(df):
+    """
+    Computes the mean and standard error of the fold-change given a
+    grouped pandas Series.
+    """
+    # Compute the properties
+    mean_fc = df['fold_change'].mean()
+    sem_fc = df['fold_change'].std() / np.sqrt(len(df))
+
+    # Assemble the new pandas series and return.
+    samp_dict = {'mean': mean_fc, 'sem': sem_fc}
+    return pd.Series(samp_dict)
