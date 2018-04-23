@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 sys.path.insert(0, '../../')
 import mut.viz
 import mut.stats
@@ -23,26 +24,13 @@ DNA_MUTS = ['Q21A', 'Q21M', 'Y20I']
 # Load the entire data set along with the sampler traces.
 data = pd.read_csv('../../data/csv/compiled_data.csv')
 stats = pd.read_csv('../../data/mcmc/DNA_O2_epR_fit_statistics.csv')
+global_stats = pd.read_csv('../../data/mcmc/DNA_O2_global_fit_statistics.csv')
 DNA = data[(data['class'] == 'DNA') | (data['class'] == 'WT')]
-
-
-def compute_mean_sem(df):
-    """
-    Computes the mean and standard error of the fold-change given a
-    grouped pandas Series.
-    """
-    # Compute the properties
-    mean_fc = df['fold_change'].mean()
-    sem_fc = df['fold_change'].std() / np.sqrt(len(df))
-
-    # Assemble the new pandas series and return.
-    samp_dict = {'mean': mean_fc, 'sem': sem_fc}
-    return pd.Series(samp_dict)
-
+DNA = DNA[DNA['fold_change'] >= 0]
 
 # Group the dataframe by mutant, IPTG, and repressor and compute statistics.
 grouped = DNA.groupby(['mutant', 'repressors', 'IPTGuM']
-                      ).apply(compute_mean_sem)
+                      ).apply(mut.stats.compute_mean_sem)
 mean_sem_df = pd.DataFrame(grouped).reset_index()
 
 # Regroup now only on mutant and repressors.
@@ -51,50 +39,88 @@ grouped = mean_sem_df.groupby(['mutant', 'repressors'])
 # %%
 # Set up the figure canvas.
 fig, ax = plt.subplots(2, 3, figsize=(6, 4))
+ax[0, 0].axis('off')
 for i in range(3):
-    ax[0, i].set_xscale('log')
-    ax[0, i].set_ylim([-0.05, 1.2])
-    ax[0, i].set_xlim([1E-8, 1E-2])
+    ax[1, i].set_xscale('log')
+    ax[1, i].set_ylim([-0.05, 1.2])
+    ax[1, i].set_xlim([1E-8, 1E-2])
 
+# Plot the leakiness fits.
+ax[0, 1].set_xscale('log')
+ax[0, 1].set_yscale('log')
+ax[0, 1].set_xlabel('repressors per cell')
+ax[0, 1].set_ylabel('fold-change')
+ax[0, 1].set_xlim([1, 1E4])
 # Define the axes for the mutants.
-axes = {'Y20I': ax[0, 0], 'Q21A': ax[0, 1], 'Q21M': ax[0, 2]}
+axes = {'Y20I': ax[1, 0], 'Q21A': ax[1, 1], 'Q21M': ax[1, 2]}
 
 # Define the colors for the repressors.
-reps = DNA.repressors.unique()
+reps = DNA['repressors'].unique()
+muts = ['Q21M', 'Q21A', 'Y20I']
 color_choices = ['red', 'green', 'blue', 'purple']
 rep_colors = {i: colors[j] for i, j in zip(reps, color_choices)}
+mut_colors = {i: j for i, j in zip(
+    muts, sns.color_palette('viridis', n_colors=4))}
+
+# Plot the leakiness fits.
+rep_range = np.logspace(0, 4, 500)
+for i, m in enumerate(muts):
+    # Extract the parameters.
+    epR_vals = stats[stats['parameter']
+                     == 'ep_R_{}'.format(m)][['mode', 'hpd_min', 'hpd_max'
+                                              ]].values
+    print(m, epR_vals)
+    # mesh togehter the values
+    R, EpR = np.meshgrid(rep_range, epR_vals)
+
+    # Instantiate the architecture and compute the fold-change.
+    arch = mut.thermo.SimpleRepression(R, EpR, effector_conc=0, ep_ai=ep_ai,
+                                       ka=ka_wt, ki=ki_wt)
+    fc_theo = arch.fold_change()
+    np.shape(fc_theo)
+    _ = ax[0,1].plot(rep_range, fc_theo[0, :], color=mut_colors[m])
+    _ = ax[0,1].fill_between(rep_range, fc_theo[1, :], fc_theo[2, :], color=mut_colors[m], alpha=0.3)
 
 # Plot the theoretical curves.
 for i, m in enumerate(DNA_MUTS):
     # Extract the parameters.
     epR_vals = stats[stats['parameter']
                      == 'ep_R_{}'.format(m)][['mode', 'hpd_min', 'hpd_max'
-                     ]].values
-
+                                              ]].values
+    print(m, epR_vals)
     # mesh togehter the values
-    R, C, EpR= np.meshgrid(reps, c_range, epR_vals)
+    R, C, EpR = np.meshgrid(reps, c_range, epR_vals)
 
     # Instantiate the architecture and compute the fold-change.
-    arch= mut.thermo.SimpleRepression(R, EpR, effector_conc=C, ep_ai=ep_ai,
-    ka=ka_wt, ki=ki_wt)
-    fc_theo= arch.fold_change()
+    arch = mut.thermo.SimpleRepression(R, EpR, effector_conc=C, ep_ai=ep_ai,
+                                       ka=ka_wt, ki=ki_wt)
+    fc_theo = arch.fold_change()
 
     # Iterate through and plot.
     for j, r in enumerate(reps):
-        axis=axes[m]
-        _ = axis.plot(c_range, fc_theo[:, j, 0], lw=1.5, color=rep_colors[r], label=int(r))
-        _ = axis.fill_between(c_range, fc_theo[:, j, 1], fc_theo[:, j, 2], color=rep_colors[r], alpha=0.5)
+        axis = axes[m]
+        _ = axis.plot(c_range, fc_theo[:, j, 0],
+                      lw=1, color=rep_colors[r], label=int(r))
+        _ = axis.fill_between(
+            c_range, fc_theo[:, j, 1], fc_theo[:, j, 2], color=rep_colors[r], alpha=0.5)
+
 # Iterate through each mutant and plot the data.
 for g, d in grouped:
     if g[0] == 'wt':
         pass
     else:
         # Figure out the correct axis.
-        axis= axes[g[0]]
+        axis = axes[g[0]]
         # Plot the data with the correct colors.
         axis.errorbar(d['IPTGuM'] / 1E6, d['mean'],
-                      d['sem'], ms=3, color=rep_colors[g[1]], linestyle='none',
-                      fmt='o')
+                      d['sem'], ms=2, color=rep_colors[g[1]], linestyle='none',
+                      fmt='o', linewidth=1)
+
+        # Plot the leakiness.
+        leakiness = d[d['IPTGuM'] == 0]
+        ax[0, 1].errorbar(leakiness['repressors'], leakiness['mean'],
+                          leakiness['sem'], ms=2, color=mut_colors[g[0]], label=g[0],
+                          fmt='o', linewidth=1)
 
 
 plt.tight_layout()

@@ -1,3 +1,5 @@
+# %%
+
 # -*- coding: utf-8 -*-
 import sys
 import numpy as np
@@ -16,7 +18,7 @@ n_sites = 2
 # Load the data file.
 data = pd.read_csv('../../data/csv/compiled_data.csv')
 DNA = data[(data['class'] == 'DNA') | (data['class'] == 'WT')].copy()
-
+DNA = DNA[DNA['fold_change'] >= 0]
 # Include the identifier
 idx_dict = {i: j for i, j in zip(
     DNA['mutant'].unique(), np.arange(1, 1 + len(DNA['mutant'].unique())))}
@@ -33,14 +35,14 @@ epR_model_code = mut.bayes.assemble_StanModelCode('../stan/hierarchical_epR_fit.
                                                   '../stan/functions.stan')
 epR_model = pystan.StanModel(model_code=epR_model_code)
 
-# assemble the data dictionary.
+#%% assemble the data dictionary.
 data_dict = {'J': len(leakiness['mutant'].unique()), 'N': len(
     leakiness), 'trial': leakiness['idx'].values.astype(int),
     'R': leakiness['repressors'], 'c': leakiness['IPTGuM'], 'n_ns': N_ns, 'ka': K_a, 'ki': K_i,
     'ep_AI': ep_ai, 'n_sites': n_sites, 'fc': leakiness['fold_change']}
 
 # Sample the posterior.
-epR_chains = epR_model.sampling(data=data_dict, iter=8000, chains=4)
+epR_chains = epR_model.sampling(data=data_dict, iter=10000, chains=4)
 epR_df = mut.bayes.chains_to_dataframe(epR_chains)
 
 # Rename the columns and save.
@@ -58,8 +60,8 @@ epR_df.to_csv('../../data/mcmc/DNA_O2_epR_chains.csv', index=False)
 epR_fit_statistics = mut.stats.compute_statistics(epR_df)
 epR_fit_statistics.to_csv('../../data/mcmc/DNA_O2_epR_fit_statistics.csv', index=False)
 
-
-# Load the stan model.
+epR_chains
+#%% Load the stan model.
 global_model_code = mut.bayes.assemble_StanModelCode(
     '../stan/hierarchical_global_fit.stan', '../stan/functions.stan')
 global_model = pystan.StanModel(model_code=global_model_code)

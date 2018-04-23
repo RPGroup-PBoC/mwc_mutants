@@ -1,3 +1,4 @@
+# %%
 # -*- coding: utf-8 -*-
 import sys
 import numpy as np
@@ -17,6 +18,7 @@ n_sites = 2
 # Load the data and format as desired.
 data = pd.read_csv('../../data/csv/compiled_data.csv')
 IND = data[(data['class'] == 'IND') | (data['class'] == 'WT')].copy()
+IND = IND[IND['fold_change'] >= 0]
 
 # Include the identifier
 idx_dict = {i: j for i, j in zip(
@@ -30,14 +32,14 @@ KaKi_model_code = mut.bayes.assemble_StanModelCode('../stan/hierarchical_kaki_fi
                                                    '../stan/functions.stan')
 KaKi_model = pystan.StanModel(model_code=KaKi_model_code)
 
-# assemble the data dictionary.
+#%% assemble the data dictionary.
 data_dict = {'J': len(IND['mutant'].unique()), 'N': len(
     IND), 'trial': IND['idx'].values.astype(int),
     'R': IND['repressors'], 'c': IND['IPTGuM'], 'n_ns': N_ns, 'ep_R': ep_R,
     'ep_AI': ep_ai, 'n_sites': n_sites, 'fc': IND['fold_change']}
 
 KaKi_chains = KaKi_model.sampling(
-    data=data_dict, iter=50000, chains=48, thin=50)
+    data=data_dict, iter=10000, chains=4)
 KaKi_df = mut.bayes.chains_to_dataframe(KaKi_chains)
 
 # Rename the columns and save.
@@ -55,7 +57,7 @@ stats = mut.stats.compute_statistics(KaKi_df)
 stats.to_csv('../../data/mcmc/IND_O2_KaKi_fit_statistics.csv', index=False)
 
 
-# Perform a global fit including the binding energy.
+#%% Perform a global fit including the binding energy.
 global_fit_model_code = mut.bayes.assemble_StanModelCode(
     '../stan/hierarchical_global_fit.stan', '../stan/functions.stan')
 global_fit_model = pystan.StanModel(model_code=global_fit_model_code)
