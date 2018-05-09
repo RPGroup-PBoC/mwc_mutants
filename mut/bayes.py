@@ -7,7 +7,7 @@ import scipy.optimize
 import statsmodels.tools.numdiff as smnd
 import theano.tensor as tt
 
-def chains_to_dataframe(fit, var_names=None):
+def chains_to_dataframe(fit, varnames=None):
     """
     Converts the generated traces from MCMC sampling to a tidy
     pandas DataFrame.
@@ -28,7 +28,11 @@ def chains_to_dataframe(fit, var_names=None):
 
     data = fit.extract()
     keys = list(data.keys())
-    varnames = [k for k in keys if 'lp__' not in k]
+    if varnames == None:
+        varnames = [k for k in keys if 'lp__' not in k]
+    else:
+        varnames = fit.unconstrained_param_names()
+
     samples = {}
     for i, key in enumerate(varnames):
         # Get the shape.
@@ -40,15 +44,15 @@ def chains_to_dataframe(fit, var_names=None):
         else:
             samples[key] = data[key]
             
-    # compute the log_post. 
-    new_keys = samples.keys()
-    logp = []
-    for j in range(dim[0]):
-        _samples = [samples[k][j] for k in fit.unconstrained_param_names()]
-        if (np.nan not in _samples) & (np.inf not in samples):
-            logp.append(fit.log_prob(_samples))
+    # # compute the log_post. 
+    # new_keys = samples.keys()
+    # logp = []
+    # for j in range(dim[0]):
+    #     _samples = [samples[k][j] for k in fit.unconstrained_param_names()]
+    #     if (np.nan not in _samples) & (np.inf not in samples):
+    #         logp.append(fit.log_prob(_samples))
 
-    samples['logp'] = logp
+    samples['logp'] = data['lp__']
     return pd.DataFrame(samples)
     
 def assemble_StanModelCode(model_file, function_file):
