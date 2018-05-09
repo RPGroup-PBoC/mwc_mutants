@@ -14,7 +14,8 @@ import sys
 sys.path.insert(0, '../../')
 import mut.bayes
 import mut.viz
-colors = mut.viz.pub_style()
+mut.viz.plotting_style()
+colors = mut.viz.color_selector('mut')
 import mut.stats
 import mut.thermo
 
@@ -81,8 +82,8 @@ IPTG = np.logspace(-7, -2, 100)* 1E6
 IPTG_lin = np.array([0, 1E-7])
 
 # Set the colors for the strains
-colors = sns.color_palette('colorblind', n_colors=7)
-colors[4] = sns.xkcd_palette(['dusty purple'])[0]
+# colors = sns.color_palette('colorblind', n_colors=7)
+# colors[4] = sns.xkcd_palette(['dusty purple'])[0]
 mut_list = {'wt':0, 'Q21A':1, 'Q21M':2, 'Y20I':3, 'Q294V':4, 'F164T':5, 'Q294R':6}
 
 
@@ -106,7 +107,7 @@ for i, data in df_group:
     if i[0] in DNAmut_list:
         ax1.errorbar(i[1]*10**-6, data.fold_change.mean(),
                      yerr =data.fold_change.std()/np.sqrt(len(data.fold_change)),
-                     label=i[0], color = colors[mut_list[i[0]]],
+                     label=i[0], color = colors[i[0]],
                      fmt='o', markersize='4')
 # theory
 for m in DNAmut_list:
@@ -116,13 +117,13 @@ for m in DNAmut_list:
     fold_change = mut.thermo.SimpleRepression(R=260.0, ep_r=stat['mode'].values[0],
                             effector_conc = IPTG, ka = ka, ki = ki,
                             ep_ai=4.5, n_sites=2).fold_change(pact=True)
-    ax1.plot(IPTG*10**-6, fold_change, color = colors[mut_list[m]])
+    ax1.plot(IPTG*10**-6, fold_change, color = colors[m])
 
         # Linear scale
     fold_change = mut.thermo.SimpleRepression(R=260.0, ep_r=stat['mode'].values[0],
                             effector_conc = IPTG_lin, ka = ka, ki = ki,
                             ep_ai=4.5, n_sites=2).fold_change(pact=True)
-    ax1.plot(IPTG_lin, fold_change, color = colors[mut_list[m]],
+    ax1.plot(IPTG_lin, fold_change, color = colors[m],
             label=None, zorder=1, linestyle=':')
 
     # plot hpd bounds using fit binding energy
@@ -134,7 +135,7 @@ for m in DNAmut_list:
                             ep_ai=4.5, n_sites=2).fold_change(pact=True)
 
     ax1.fill_between(IPTG*10**-6, fold_change_min, fold_change_max,
-                     alpha=0.3, color = colors[mut_list[m]])
+                     alpha=0.3, color = colors[m])
 
 
 # Set the sclae and labels.
@@ -162,7 +163,7 @@ for i, data in df_group:
 
         ax2.errorbar(bohr, data.fold_change.mean(),
                     yerr =data.fold_change.std()/np.sqrt(len(data.fold_change)),
-                    color = colors[mut_list[i[0]]],
+                    color = colors[i[0]],
                      fmt='o', markersize='4')
 
 
@@ -185,7 +186,7 @@ for m in DNAmut_list:
 
     bohr_head = np.linspace(bohr.min(), bohr.max())
     ax2_head.plot(bohr_head,1.8*np.ones(len(bohr_head))*mut_list[m],
-                 color = colors[mut_list[m]])
+                 color = colors[m])
     bohr_head_center = (bohr.min() + bohr.max())/2
     if m=='wt':
         ax2_head.text(x=bohr_head_center-1.5,y=1.55*mut_list[m],s='wild-type',
