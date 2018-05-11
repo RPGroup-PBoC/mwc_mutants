@@ -9,9 +9,15 @@ sys.path.insert(0, '../../')
 import mut.bayes
 import mut.stats
 
+# Load the wt parameters
+wt_stats = pd.read_csv('../../data/csv/WT_global_fit_parameters.csv')
+modes = {}
+for i, p in enumerate(wt_stats['parameter'].unique()):
+    modes[p] = wt_stats[wt_stats['parameter']==p]['mode'].values[0]
+
 # Set the constants.
 N_ns = 4.6E6  # in base pairs
-ep_R = -13.9  # in k_BT
+ep_R = modes['ep_R']  # in k_BT
 ep_ai = 4.5  # in k_BT.
 n_sites = 2
 
@@ -55,7 +61,6 @@ KaKi_df.to_csv('../../data/mcmc/IND_O2_KaKi_fit_chains.csv', index=False)
 
 stats = mut.stats.compute_statistics(KaKi_df)
 stats.to_csv('../../data/mcmc/IND_O2_KaKi_fit_statistics.csv', index=False)
-
 
 #%% Perform a global fit including the binding energy.
 global_fit_model_code = mut.bayes.assemble_StanModelCode(

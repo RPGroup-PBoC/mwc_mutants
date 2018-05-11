@@ -11,9 +11,15 @@ import mut.stats
 import mut.thermo
 colors = mut.viz.pub_style()
 
+# Load the WT fits.
+wt_fit_stats = pd.read_csv('../../data/csv/WT_global_fit_parameters.csv')
+modes = {}
+for i, p in enumerate(wt_fit_stats['parameter'].unique()):
+    modes[p] = wt_fit_stats[wt_fit_stats['parameter'] == p]['mode'].values[0]
+
 # Define experimental constants.
-ka_wt = 139E-6
-ki_wt = 0.53E-6
+ka_wt = modes['ka'] / 1E6
+ki_wt = modes['ki'] / 1E6
 n_ns = 4.6E6
 ep_ai = 4.5
 c_range = np.logspace(-8, -2, 500)
@@ -38,7 +44,7 @@ grouped = mean_sem_df.groupby(['mutant', 'repressors'])
 
 # %%
 # Set up the figure canvas.
-fig, ax = plt.subplots(2, 3, figsize=(6, 4))
+fig, ax = plt.subplots(2, 3, figsize=(8, 6))
 ax[0, 0].axis('off')
 for i in range(3):
     ax[1, i].set_xscale('log')
@@ -69,7 +75,6 @@ for i, m in enumerate(muts):
     epR_vals = stats[stats['parameter']
                      == 'ep_R_{}'.format(m)][['mode', 'hpd_min', 'hpd_max'
                                               ]].values
-    print(m, epR_vals)
     # mesh togehter the values
     R, EpR = np.meshgrid(rep_range, epR_vals)
 
@@ -77,9 +82,12 @@ for i, m in enumerate(muts):
     arch = mut.thermo.SimpleRepression(R, EpR, effector_conc=0, ep_ai=ep_ai,
                                        ka=ka_wt, ki=ki_wt)
     fc_theo = arch.fold_change()
-    np.shape(fc_theo)
-    _ = ax[0,1].plot(rep_range, fc_theo[0, :], color=mut_colors[m])
-    _ = ax[0,1].fill_between(rep_range, fc_theo[1, :], fc_theo[2, :], color=mut_colors[m], alpha=0.3)
+
+    _ = ax[0, 1].plot(rep_range, fc_theo[0, :], color=mut_colors[m], label=m)
+    _ = ax[0, 1].fill_between(rep_range, fc_theo[1, :],
+                              fc_theo[2, :], color=mut_colors[m], alpha=0.3)
+
+_ = ax[0, 1].legend()
 
 # Plot the theoretical curves.
 for i, m in enumerate(DNA_MUTS):
@@ -87,7 +95,7 @@ for i, m in enumerate(DNA_MUTS):
     epR_vals = stats[stats['parameter']
                      == 'ep_R_{}'.format(m)][['mode', 'hpd_min', 'hpd_max'
                                               ]].values
-    print(m, epR_vals)
+
     # mesh togehter the values
     R, C, EpR = np.meshgrid(reps, c_range, epR_vals)
 
@@ -100,7 +108,7 @@ for i, m in enumerate(DNA_MUTS):
     for j, r in enumerate(reps):
         axis = axes[m]
         _ = axis.plot(c_range, fc_theo[:, j, 0],
-                      lw=1, color=rep_colors[r], label=int(r))
+                      lw=1, color=rep_colors[r], label='__nolegend__')
         _ = axis.fill_between(
             c_range, fc_theo[:, j, 1], fc_theo[:, j, 2], color=rep_colors[r], alpha=0.5)
 
@@ -114,13 +122,18 @@ for g, d in grouped:
         # Plot the data with the correct colors.
         axis.errorbar(d['IPTGuM'] / 1E6, d['mean'],
                       d['sem'], ms=2, color=rep_colors[g[1]], linestyle='none',
-                      fmt='o', linewidth=1)
+                      fmt='o', linewidth=1, label=int(g[1]))
+        axis.set_title(g[0] + ' $\Delta\varepsilon_{RA} = %1f\, k_BT$' % stats[stats['parameter'] == 'ep_R_{}'.format(
+            g[0])]['mode'].values[0], backgroundcolor=colors['pale_yellow'], y=1.08, fontsize=10)
+        axis.set_xlabel('IPTG [M]', fontsize=10)
+        axis.set_ylabel('fold-change', fontsize=10)
+        if g[0] == 'Q21M':
+            _ = axis.legend(loc='upper left')
 
         # Plot the leakiness.
         leakiness = d[d['IPTGuM'] == 0]
         ax[0, 1].errorbar(leakiness['repressors'], leakiness['mean'],
                           leakiness['sem'], ms=2, color=mut_colors[g[0]], label=g[0],
                           fmt='o', linewidth=1)
-
-
 plt.tight_layout()
+plt.savefig('../../figures/DNA_fits.pdf')

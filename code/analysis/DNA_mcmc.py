@@ -9,10 +9,16 @@ sys.path.insert(0, '../../')
 import mut.bayes
 import mut.stats
 
+# Load the WT stats.
+wt_stats = pd.read_csv('../../data/csv/WT_global_fit_parameters.csv')
+modes = {}
+for i, p in enumerate(wt_stats['parameter'].unique()):
+    modes[p] = wt_stats[wt_stats['parameter']==p]['mode'].values[0]
+
 # Set the constants.
 N_ns = 4.6E6  # in base pairs
-K_a = 139  # in µM
-K_i = 0.53  # in µM
+K_a = modes['ka']  # in µM
+K_i = modes['ki']  # in µM
 ep_ai = 4.5  # in k_BT.
 n_sites = 2
 # Load the data file.
