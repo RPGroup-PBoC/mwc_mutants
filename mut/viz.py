@@ -69,5 +69,5 @@ def color_selector(style):
               'blue': '#738FC1', 'light_blue': '#A9BFE3',
               'pale_blue': '#C9D7EE', 'red': '#D56C55', 'light_red': '#E8B19D',
               'pale_red': '#F1D4C9', 'purple': '#AB85AC',
-              'light_purple': '#D4C2D9'}
+              'light_purple': '#D4C2D9', 'dark_green':'#7E9D90'}
     return colors
