@@ -14,8 +14,10 @@ import mut.stats
 import mut.thermo
 mut.viz.plotting_style()
 colors = mut.viz.color_selector('mut')
+colors['wt'] = 'k'
 pboc_colors = mut.viz.color_selector('pboc')
 FIG_NO = 4
+
 
 # Load the compiled data.
 data = pd.read_csv('../../data/csv/compiled_data.csv', comment='#')
@@ -24,7 +26,7 @@ data = data[data['fold_change'] > 0]
 df = data
 
 # Load the fitting chains.
-chains = pd.read_csv('../../../data/mcmc/NB_emcee_mutants_IND_strict.csv')
+chains = pd.read_csv('../../data/mcmc/NB_emcee_mutants_IND_strict.csv')
 ind = np.argmax(chains['lnprobability'].values)
 modes = pd.DataFrame(chains.drop(
     columns=['lnprobability', 'sigma', 'Unnamed: 0']).iloc[ind]).reset_index()
@@ -66,6 +68,8 @@ IPTG_lin = np.array([0, 1E-7])
 mut_list = {'wt':0, 'Q294V':1, 'F164T':2, 'Q294R':6}
 
 fig = plt.figure(figsize=(5, 2.5))
+fig.text(0, 1, '(A)', fontsize=8)
+fig.text(0.5, 1, '(B)', fontsize=8)
 
 ax = [[],[]]
 ax[0] = plt.subplot(121)
@@ -94,24 +98,31 @@ for m in INDmut_list:
         stat = stats[stats.parameter.str.contains(m)]
 
         stat_KA = stat[stat.parameter.str.contains('Ka')]
+        stat_KA = stat_KA['mode'].values[0]
         stat_KI = stat[stat.parameter.str.contains('Ki')]
+        stat_KI = stat_KI['mode'].values[0]
+
 
     # plot average fold-change using fit binding energy
     fold_change = mut.thermo.SimpleRepression(R=260.0, ep_r=ep_r,
-                            effector_conc = IPTG, ka = stat_KA['mode'].values[0],
-                            ki = stat_KI['mode'].values[0],
+                            effector_conc = IPTG, ka = stat_KA,
+                            ki = stat_KI,
                             ep_ai=4.5, n_sites=2).fold_change(pact=True)
     ax[0].plot(IPTG*1E-6, fold_change, color = colors[m])
 
     # Linear scale
     fold_change = mut.thermo.SimpleRepression(R=260.0, ep_r=ep_r,
-                            effector_conc = IPTG_lin, ka = stat_KA['mode'].values[0],
-                            ki = stat_KI['mode'].values[0],
+                            effector_conc = IPTG_lin, ka = stat_KA,
+                            ki = stat_KI,
                             ep_ai=4.5, n_sites=2).fold_change(pact=True)
     ax[0].plot(IPTG_lin, fold_change, color = colors[m],
             label=None, zorder=1, linestyle=':')
 
     # plot hpd bounds using fit binding energy
+    stat = stats[stats.parameter.str.contains(m)]
+    stat_KA = stat[stat.parameter.str.contains('Ka')]
+    stat_KI = stat[stat.parameter.str.contains('Ki')]
+
     fold_change_min = mut.thermo.SimpleRepression(R=260.0, ep_r=ep_r,
                             effector_conc = IPTG, ka = stat_KA['hpd_min'].values[0],
                             ki = stat_KI['hpd_min'].values[0],
@@ -154,16 +165,16 @@ sc1 = ax[1].contourf(x, y, dynam, 10, vmin=0.0,vmax=1.0, cmap=cm.PuBu_r)
 # data
 for i, data in df_group:
     if i[0] in INDmut_list:
-            if m =='wt':
-                ea = -4.935
-                ei = 0.635
-                stat_KA = np.exp(-ea)
-                stat_KI = np.exp(-ei)
-            else:
-                stat = stats[stats.parameter.str.contains(i[0])]
+        if m =='wt':
+            ea = -4.935
+            ei = 0.635
+            stat_KA = np.exp(-ea)
+            stat_KI = np.exp(-ei)
+        else:
+            stat = stats[stats.parameter.str.contains(i[0])]
 
-                stat_KA = stat[stat.parameter.str.contains('Ka')]
-                stat_KI = stat[stat.parameter.str.contains('Ki')]
+            stat_KA = stat[stat.parameter.str.contains('Ka')]
+            stat_KI = stat[stat.parameter.str.contains('Ki')]
 
         dynam = mut.thermo.SimpleRepression(R=260.0,
                              ep_r=ep_r,
