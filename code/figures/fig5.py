@@ -45,11 +45,11 @@ for g, d in grouped:
 
     # Compute the mean and standard error for each one.
     leak_mean = leak.mean()
-    leak_sem = np.std(leak) / np.sqrt(len(d))
+    leak_sem = np.std(leak) / np.sqrt(len(leak))
     sat_mean = sat.mean()
-    sat_sem = np.std(sat) / np.sqrt(len(d))
+    sat_sem = np.std(sat) / np.sqrt(len(sat))
     dyn_rng_mean = dyn_rng.mean()
-    dyn_rng_sem = np.std(dyn_rng) / np.sqrt(len(d))
+    dyn_rng_sem = np.std(dyn_rng) / np.sqrt(len(leak))
 
     # Compute kdna/R
     rkda = (g[1] / Nns) * np.exp(-ep_r[g[0]])
@@ -77,7 +77,103 @@ leak_theo = fc_rkdna(rkdna_range, leak_pact)
 sat_theo = fc_rkdna(rkdna_range, sat_pact)
 dyn_theo = sat_theo - leak_theo
 
-# Set up the plots.
+# Instantiate the figure
+c_range = np.logspace(-8, -2, 300)
+fig, ax  = plt.subplots(2, 2, figsize=(6, 4.5))
+ax = ax.ravel()
+ax[0].axis('off')
+for a in ax:
+    a.tick_params(labelsize=8)
+    a.set_xscale('log')
+    a.set_ylim([-0.12, 1.12])
+
+# Format the axes.
+ax[1].set_xlabel('IPTG (M)', fontsize=8)
+ax[1].set_ylabel('fold-change', fontsize=8)
+ax[2].set_xlabel(r'$\frac{R}{N_{NS}}e^{-\beta\Delta\varepsilon_{RA}}$', fontsize=8)
+ax[2].set_ylabel('leakiness', fontsize=8)
+ax[3].set_xlabel(r'$\frac{R}{N_{NS}}e^{-\beta\Delta\varepsilon_{RA}}$', fontsize=8)
+ax[3].set_ylabel('dynamic range', fontsize=8)
+ax[1].set_xlim([1E-8, 1E-2])
+for a in ax[2:]:
+    a.set_xlim([1E-3, 1E6])
+
+# Plot the fits and the credible regions
+mutants = data['mutant'].unique()
+for i, m in enumerate(mutants):
+ # Get the parameter values
+    ep_r = modes[modes['parameter']=='{}_eps_r'.format(m)]['mode'].values[0]
+    
+    fc = mut.thermo.SimpleRepression(R=260, ep_r=ep_r, ka=ka, ki=ki, ep_ai=4.5,
+                                            effector_conc=c_range).fold_change()
+    cred_region = np.zeros((2, len(c_range)))
+    for j, c in enumerate(c_range):
+        prob = mut.thermo.SimpleRepression(R=260, ep_r=chains['{}_eps_r'.format(m)], ka=ka, ki=ki, ep_ai=4.5,
+                                            effector_conc=c).fold_change()
+        cred_region[:, j] = mut.stats.compute_hpd(prob, 0.95) 
+
+    # Plot the fits and credible regions.
+    _ = ax[1].plot(c_range, fc, color=colors[m.upper()], lw=1.5)
+    _ = ax[1].fill_between(c_range, cred_region[0, : ], cred_region[1, :], color=colors[m.upper()],
+                            alpha=0.5)
+
+
+# Plot the fold-change data
+_data = data[data['repressors'] == 260].copy()
+grouped = _data.groupby(['mutant', 'IPTGuM'])
+for g, d in grouped:
+    if g[0] == 'wt':
+        face = 'w'
+    else:
+        face = colors[g[0].upper()]
+   
+    if g[1] == 0:
+        if g[0] == 'wt':
+            label = 'wild-type'
+        else:
+            label = g[0].upper()
+    else:
+        label = '__nolegend__'
+    ax[1].errorbar(g[1]/1E6, d['fold_change'].mean(), d['fold_change'].std() / np.sqrt(len(d)), 
+        color=colors[g[0].upper()], markeredgecolor=colors[g[0].upper()], markerfacecolor=face, 
+        markeredgewidth=1.5, fmt='.', ms=6, lw=1, linestyle='none', label=label)
+
+
+markers = ['o', 's', 'D', '^']
+reps = prop_df['repressors'].unique() 
+marker_dict = {i:j for i, j in zip(reps, markers)}
+# Plot the leakiness and saturation.
+grouped = prop_df.groupby(['mutant', 'repressors'])
+for g, d in grouped:
+    if g[0] == 'wt':
+        face = 'w'
+    else:
+        face = colors[g[0].upper()]
+    ax[2].errorbar(d['rkdna'], d['leak_mean'], d['leak_sem'], color=colors[g[0].upper()], fmt=marker_dict[g[1]],
+    markerfacecolor=face, markeredgecolor=colors[g[0].upper()], ms=4, markeredgewidth=1.5, label='__nolegend__')
+    ax[3].errorbar(d['rkdna'], d['dyn_rng_mean'], d['dyn_rng_sem'], color=colors[g[0].upper()], fmt=marker_dict[g[1]],
+    markerfacecolor=face, markeredgecolor=colors[g[0].upper()], ms=4, markeredgewidth=1.5)
+
+for r, m in marker_dict.items():
+    ax[2].plot([], [], color='slategray', ms=4, marker=m, label=int(r), linestyle='none', alpha=0.5)
+ax[1].legend(fontsize=8, loc='upper left', labelspacing=0.l3, handletextpad=0.2)
+leg = ax[2].legend(title='rep. / cell', fontsize=8)
+leg.get_title().set_fontsize(8)
+
+# Plot the theoretical values for leakiness and dynamic range
+ax[2].plot(rkdna_range, leak_theo, 'k-', lw=1.5)
+ax[3].plot(rkdna_range, dyn_theo, 'k-', lw=1.5)
+plt.tight_layout()
+plt.savefig('../../figures/fig3_plots.svg')
+
+
+
+
+
+
+
+
+# %% Set up the plots.
 fig, ax = plt.subplots(2, 2, figsize=(5, 4))
 ax = ax.ravel()
 ax[-1].axis('off')

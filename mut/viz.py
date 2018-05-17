@@ -58,10 +58,17 @@ def color_selector(style):
     if  style.lower() == 'mut':
         colors = {'Y20I': '#738FC1', 'Q21A': '#7AA974', 'Q21M': '#AB85AC',
                   'F164T': '#A97C50', 'Q294K': '#EAC264', 'Q294V': '#D56C55',
-                  'Q294R': '#919796', 'Y20I-F164T': '#5D737E', 'Y20I-Q294K': '#63AFCC',
-                  'Y20I-Q294V': '#9CC7EA', 'Q21A-F164T': '#3C8468', 'Q21A-Q294K': '#63B6AD',
-                  'Q21A-Q294V': '#91D0B1', 'Q21M-F164T': '#987D7C', 'Q21M-Q294K': '#A09CB0',
-                  'Q21M-Q294V': '#DDBDD4', 'WT': '#3C3C3C'} 
+                  'Q294R': '#919796', 'Y20I-F164T': '#2d98da', 'Y20I-Q294K': '#34495e',
+                  'Y20I-Q294V': '#8854d0', 'Q21A-F164T': '#4b6584', 'Q21A-Q294K': '#EE5A24',
+                  'Q21A-Q294V': '#009432', 'Q21M-F164T': '#1289A7', 'Q21M-Q294K': '#6F1E51',
+                  'Q21M-Q294V': '#006266', 'WT': '#3C3C3C'} 
+    #     colors = {'Y20I': '#738FC1', 'Q21A': '#7AA974', 'Q21M': '#AB85AC',
+    #               'F164T': '#A97C50', 'Q294K': '#EAC264', 'Q294V': '#D56C55',
+    #               'Q294R': '#919796', 'Y20I-F164T': '#5D737E', 'Y20I-Q294K': '#63AFCC',
+    #               'Y20I-Q294V': '#9CC7EA', 'Q21A-F164T': '#3C8468', 'Q21A-Q294K': '#63B6AD',
+    #               'Q21A-Q294V': '#91D0B1', 'Q21M-F164T': '#987D7C', 'Q21M-Q294K': '#A09CB0',
+    #               'Q21M-Q294V': '#DDBDD4', 'WT': '#3C3C3C'} 
+    # e
     elif style.lower() == 'pboc':
         colors = {'green': '#7AA974', 'light_green': '#BFD598',
               'pale_green': '#DCECCB', 'yellow': '#EAC264',

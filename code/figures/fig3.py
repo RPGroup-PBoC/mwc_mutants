@@ -11,7 +11,9 @@ import mut.thermo
 import mut.bayes
 import mut.stats
 import mut.viz
-colors = mut.viz.pub_style()
+mut.viz.plotting_style()
+colors = mut.viz.color_selector('mut')
+pboc_colors = mut.viz.color_selector('pboc')
 FIG_NO = 3
 
 # Load the necessary data sets.

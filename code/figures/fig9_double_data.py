@@ -44,6 +44,9 @@ ki_wt = 0.53E-6
 ep_R_wt = -13.9
 
 # %% Set up the somewhat complicated figure.
+import imp
+imp.reload(mut.viz)
+colors = mut.viz.color_selector('mut')
 fig = plt.figure(figsize=(6.5, 3))
 
 # Set up the axes.
@@ -79,10 +82,11 @@ ind_muts = ['F164T', 'Q294K', 'Q294V']
 for i in range(3):
     axes[i][0].text(-1.1, 0.65, ind_muts[i], fontsize=8, backgroundcolor=pboc_colors['pale_yellow'],
                     transform=axes[i][0].transAxes, rotation='vertical')
-    axes[i][0].set_ylabel('fold-change', fontsize=8)
-    axes[-1][i].set_xlabel('IPTG [M]', fontsize=8)
+    if i == 1:
+        axes[i][0].set_ylabel('fold-change', fontsize=8)
+        axes[-1][i].set_xlabel('IPTG (M)', fontsize=8)
 ax_bohr.tick_params(labelsize=8)
-ax_bohr.set_xlabel('Bohr parameter [$k_BT$]', fontsize=8)
+ax_bohr.set_xlabel('Bohr parameter ($k_BT$)', fontsize=8)
 ax_bohr.set_ylabel('fold-change', fontsize=8)
 ax_bohr.set_xlim([-10, 10])
 
@@ -125,11 +129,13 @@ for g, d in grouped:
 # Plot the collapse curve.
 # All data.
 data = pd.read_csv('../../data/csv/compiled_data.csv')
-data = data[(data['mutant'] != 'Q294K') & (data['mutant'] != 'Q294R')].copy()
+for m in ['Q21A', 'Q21M', 'Y20I']:
+    data = data[data['mutant'] != m + '-Q294K']
+data = data[(data['class'] == 'DBL') | (data['class'] == 'WT')]
 grouped = data.groupby(['mutant', 'repressors', 'IPTGuM'])
 bohr = np.linspace(-10, 10, 500)
 theo = (1 + np.exp(-bohr))**-1
-ax_bohr.plot(bohr, theo, 'k-', label='prediction', zorder=1000)
+ax_bohr.plot(bohr, theo, 'k-', label='prediction', zorder=1)
 
 labeled = []
 for g, d in grouped:
