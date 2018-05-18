@@ -80,6 +80,10 @@ dyn_theo = sat_theo - leak_theo
 # Instantiate the figure
 c_range = np.logspace(-8, -2, 300)
 fig, ax  = plt.subplots(2, 2, figsize=(6, 4.5))
+fig.text(0, 0.95, '(A)', fontsize=8)
+fig.text(0.5, 0.95, '(B)', fontsize=8)
+fig.text(0, 0.5, '(C)', fontsize=8)
+fig.text(0.5, 0.5, '(D)', fontsize=8)
 ax = ax.ravel()
 ax[0].axis('off')
 for a in ax:
@@ -156,7 +160,8 @@ for g, d in grouped:
 
 for r, m in marker_dict.items():
     ax[2].plot([], [], color='slategray', ms=4, marker=m, label=int(r), linestyle='none', alpha=0.5)
-ax[1].legend(fontsize=8, loc='upper left', labelspacing=0.l3, handletextpad=0.2)
+ax[1].legend(fontsize=8, loc='upper left', labelspacing=0.3, handletextpad=0.2)
+ax[1].text(0.8, 0.15, '$R$ = 260', fontsize=8, transform=ax[1].transAxes)
 leg = ax[2].legend(title='rep. / cell', fontsize=8)
 leg.get_title().set_fontsize(8)
 
