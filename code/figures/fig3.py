@@ -17,8 +17,8 @@ pboc_colors = mut.viz.color_selector('pboc')
 FIG_NO = 3
 
 # Load the necessary data sets.
-# data_dir = '../data'
-data_dir = 'data/'
+data_dir = '../../data/csv'
+# data_dir = 'data/'
 titration_data = pd.read_csv("{}merged_dna_O2_data.csv".format(data_dir))
 epR_fit_params = pd.read_csv("{}epR_fit_DNA_O2_stats.csv".format(data_dir))
 global_fit_stats = pd.read_csv('{}global_fit_DNA_O2_stats.csv'.format(data_dir))
@@ -46,8 +46,6 @@ def compute_mean_sem(df):
 grouped = titration_data.groupby(['mutant', 'repressors', 'IPTGuM'])
 
 # %%
-import imp
-imp.reload(mut.thermo)
 # # Set up the figure axis.
 fig = plt.figure(figsize=(6, 6))
 gs = gridspec.GridSpec(10, 12)

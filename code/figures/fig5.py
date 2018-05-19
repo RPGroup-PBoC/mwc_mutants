@@ -11,6 +11,7 @@ import mut.stats
 import mut.thermo
 mut.viz.plotting_style()
 colors = mut.viz.color_selector('mut')
+pboc_colors = mut.viz.color_selector('pboc')
 
 # Load the compiled data.
 data = pd.read_csv('../../data/csv/compiled_data.csv', comment='#')
@@ -60,11 +61,56 @@ for g, d in grouped:
                  'dyn_rng_mean': dyn_rng_mean, 'dyn_rng_sem': dyn_rng_sem, 'rkdna': rkda}
     prop_df = prop_df.append(prop_dict, ignore_index=True)
 
+#%%  Compute the Delta F.
+dbl_muts = data[data['class']=='DBL']['mutant'].unique()
+# Load the chains.
+DNA_chains = pd.read_csv('../../data/mcmc/NB_emcee_mutants_DNA_strict.csv')
+IND_chains = pd.read_csv('../../data/mcmc/NB_emcee_mutants_IND_strict.csv')
+DBL_chains = pd.read_csv('../../data/mcmc/NB_emcee_mutants_DBL_strict.csv')
+global_chains = pd.read_csv('../../data/mcmc/NB_emcee_mutants_global_strict.csv')
+
+#%% Compute the statistics
+DBL_stats = mut.stats.compute_statistics(DBL_chains, logprob_name='lnprobability')
+global_stats = mut.stats.compute_statistics(global_chains, logprob_name='lnprobability')
+stats = pd.concat([DNA_stats, IND_stats], ignore_index=True)
+global_stats = pd.concat([global_stats, DBL_stats], ignore_index=True)
+
+# %%
+# Compute the WT bohr parameter.
+wt_eps_r = -13.9
+wt_ka = 139E-6
+wt_ki = 0.53E-6
+wt_bohr = mut.thermo.SimpleRepression(R=260, ep_r=wt_eps_r, ka=wt_ka, ki=wt_ki, ep_ai=4.5,
+                                       effector_conc=1E100).bohr_parameter()
+pred_delta = {}
+pred_err = {}
+meas_delta = {}
+meas_err = {}
+# Loop through each mutant and calculated the predicted F.
+for i, m in enumerate(dbl_muts):
+    if ('Q294K' not in m) & ('Q294R' not in m):
+        DNA_mut = m.split('-')[0]
+        IND_mut = m.split('-')[1]
+        if IND_mut != 'Q294K':
+            pred_ep_r = stats[stats['parameter']=='{}_eps_r'.format(DNA_mut)]['mode'].values[0]
+            pred_ka = np.exp(-stats[stats['parameter']=='{}_ka'.format(IND_mut)]['mode'].values[0])
+            pred_ki = np.exp(-stats[stats['parameter']=='{}_ki'.format(IND_mut)]['mode'].values[0])
+    # Compute the measured parameter
+    meas_ep_r = global_stats[global_stats['parameter']=='{}_eps'.format(m)]['mode'].values[0]
+    meas_ka = np.exp(-global_stats[global_stats['parameter']=='{}_ka'.format(m)]['mode'].values[0])
+    meas_ki = np.exp(-global_stats[global_stats['parameter']=='{}_ki'.format(m)]['mode'].values[0])
+
+    # Assemble the architectures and compute.  
+    predicted_bohr = mut.thermo.SimpleRepression(R=260, ep_r=pred_ep_r, ka=pred_ka/1E6, ki=pred_ki/1E6, ep_ai=4.5,
+                                              effector_conc=1E9).bohr_parameter()
+    measured_bohr = mut.thermo.SimpleRepression(R=260, ep_r=meas_ep_r, ka=meas_ka/1E6, ki=meas_ki/1E6, ep_ai=4.5,
+                                              effector_conc=1E9).bohr_parameter()
+    pred_delta[m] = wt_bohr - predicted_bohr
+    meas_delta[m] = wt_bohr - measured_bohr
 # %%
 # Define a function to compute the fold-change using rkdn
 def fc_rkdna(rkdna, pact):
     return (1 + pact * rkdna)**-1
-
 
 # Set up the MWC architecture and compute the extrema
 mwc = mut.thermo.MWC(effector_conc=0, ka=ka, ki=ki, ep_ai=4.5)
@@ -119,7 +165,7 @@ for i, m in enumerate(mutants):
     # Plot the fits and credible regions.
     _ = ax[1].plot(c_range, fc, color=colors[m.upper()], lw=1.5)
     _ = ax[1].fill_between(c_range, cred_region[0, : ], cred_region[1, :], color=colors[m.upper()],
-                            alpha=0.5)
+                            alpha=0.3)
 
 
 # Plot the fold-change data
@@ -161,7 +207,7 @@ for g, d in grouped:
 for r, m in marker_dict.items():
     ax[2].plot([], [], color='slategray', ms=4, marker=m, label=int(r), linestyle='none', alpha=0.5)
 ax[1].legend(fontsize=8, loc='upper left', labelspacing=0.3, handletextpad=0.2)
-ax[1].text(0.8, 0.15, '$R$ = 260', fontsize=8, transform=ax[1].transAxes)
+ax[1].text(0.75, 0.15, '$R$ = 260', fontsize=8, transform=ax[1].transAxes, backgroundcolor=pboc_colors['pale_yellow'])
 leg = ax[2].legend(title='rep. / cell', fontsize=8)
 leg.get_title().set_fontsize(8)
 

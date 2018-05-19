@@ -42,6 +42,7 @@ c_range = np.logspace(-8, -2, 500)
 ka_wt = 139E-6
 ki_wt = 0.53E-6
 ep_R_wt = -13.9
+
 #%%  Compute the Delta F.
 dbl_muts = data[data['class']=='DBL']['mutant'].unique()
 # Load the chains.
@@ -58,15 +59,16 @@ global_stats = pd.concat([global_stats, DBL_stats], ignore_index=True)
 
 # %%
 # Compute the WT bohr parameter.
+bohr_c = np.logspace(-9, 9, 1000)
 wt_eps_r = -13.9
 wt_ka = 139E-6
 wt_ki = 0.53E-6
 wt_bohr = mut.thermo.SimpleRepression(R=260, ep_r=wt_eps_r, ka=wt_ka, ki=wt_ki, ep_ai=4.5,
-                                       effector_conc=1E100).bohr_parameter()
+                                       effector_conc=bohr_c).bohr_parameter()
 pred_delta = {}
-pred_err = {}
+pred_c = {}
 meas_delta = {}
-meas_err = {}
+meas_c = {}
 # Loop through each mutant and calculated the predicted F.
 for i, m in enumerate(dbl_muts):
     if ('Q294K' not in m) & ('Q294R' not in m):
@@ -83,22 +85,30 @@ for i, m in enumerate(dbl_muts):
 
     # Assemble the architectures and compute.  
     predicted_bohr = mut.thermo.SimpleRepression(R=260, ep_r=pred_ep_r, ka=pred_ka/1E6, ki=pred_ki/1E6, ep_ai=4.5,
-                                              effector_conc=1E9).bohr_parameter()
+                                              effector_conc=bohr_c).bohr_parameter()
     measured_bohr = mut.thermo.SimpleRepression(R=260, ep_r=meas_ep_r, ka=meas_ka/1E6, ki=meas_ki/1E6, ep_ai=4.5,
-                                              effector_conc=1E9).bohr_parameter()
-    pred_delta[m] = wt_bohr - predicted_bohr
-    meas_delta[m] = wt_bohr - measured_bohr
+                                              effector_conc=bohr_c).bohr_parameter()
+    pred_delta_c = wt_bohr - predicted_bohr
+    pred_c[m] = pred_delta_c
+    meas_delta_c = wt_bohr - measured_bohr
+    meas_c[m] = meas_delta_c
+    pred_ind = np.argmax(pred_delta_c)
+    meas_ind = np.argmax(meas_delta_c)
+    print('prediction', m,  bohr_c[pred_ind])
+    print('measured', m, bohr_c[pred_ind])
+    pred_delta[m] = pred_delta_c.sum()
+    meas_delta[m] = meas_delta_c.sum()
 
 # %% Set up the somewhat complicated figure.
 colors = mut.viz.color_selector('mut')
-fig = plt.figure(figsize=(6.5, 8))
+fig = plt.figure(figsize=(3.5, 9))
 
 # Set up the axes.
-gs = gridspec.GridSpec(8, 8)
+gs = gridspec.GridSpec(19, 3)
 axes = [[], [], []]
 for i in range(3):
-    for j in range(3):
-        _ax = fig.add_subplot(gs[i, j])
+    for j in range(0, 6, 2):
+        _ax = fig.add_subplot(gs[j:j+2, i])
         _ax.tick_params(labelsize=6)
         _ax.set_xscale('log')
         _ax.set_xlim([1E-8, 1E-2])
@@ -107,28 +117,28 @@ for i in range(3):
         _ax.xaxis.set_tick_params()
         _ax.yaxis.set_ticks([0, 0.5, 1])
         axes[i].append(_ax)
-ax_bohr = fig.add_subplot(gs[:3, 4:])
-ax_deltaF = fig.add_subplot(gs[5:, :])
+ax_bohr = fig.add_subplot(gs[7:12, :])
+ax_deltaF = fig.add_subplot(gs[16:, :])
 
 # Properly label and format the axes.
 dna_muts = ['Y20I', 'Q21A', 'Q21M']
 for i in range(3):
-    axes[0][i].set_title(
+    axes[i][0].set_title(
         dna_muts[i], backgroundcolor=pboc_colors['pale_yellow'], fontsize=8, y=1.04)
-    axes[0][i].set_xticklabels([])
-    axes[1][i].set_xticklabels([])
+    axes[i][0].set_xticklabels([])
+    axes[i][1].set_xticklabels([])
     if i > 0:
-        axes[0][i].set_yticklabels([])
-        axes[1][i].set_xticklabels([])
-        axes[1][i].set_yticklabels([])
-        axes[2][i].set_yticklabels([])
+        axes[i][0].set_yticklabels([])
+        axes[i][1].set_xticklabels([])
+        axes[i][1].set_yticklabels([])
+        axes[i][2].set_yticklabels([])
 
 ind_muts = ['F164T', 'Q294K', 'Q294V']
 for i in range(3):
-    axes[i][0].text(-1.1, 0.65, ind_muts[i], fontsize=8, backgroundcolor=pboc_colors['pale_yellow'],
-                    transform=axes[i][0].transAxes, rotation='vertical')
+    axes[0][i].text(-0.75, 0.65, ind_muts[i], fontsize=8, backgroundcolor=pboc_colors['pale_yellow'],
+                    transform=axes[0][i].transAxes, rotation='vertical')
     if i == 1:
-        axes[i][0].set_ylabel('fold-change', fontsize=8)
+        axes[0][i].set_ylabel('fold-change', fontsize=8)
         axes[-1][i].set_xlabel('IPTG (M)', fontsize=8)
 ax_bohr.tick_params(labelsize=8)
 ax_bohr.set_xlabel('Bohr parameter ($k_BT$)', fontsize=8)
@@ -138,18 +148,18 @@ ax_deltaF.tick_params(labelsize=8)
 ax_deltaF.set_ylabel('$\Delta F$ $(k_BT)$', fontsize=8)
 
 # Add panel labels.
-fig.text(0.03, 0.9, '(A)', fontsize=8)
-fig.text(0.455, 0.9, '(B)', fontsize=8)
-fig.text(0.03, 0.55, '(C)', fontsize=8)
+fig.text(-0.05, 0.9, '(A)', fontsize=8)
+fig.text(-0.05, 0.6, '(B)', fontsize=8)
+fig.text(-0.05, 0.35, '(C)', fontsize=8)
 
 # plot the double mutant data and predictions.
 # Set up the axes locator.
 mut_axes = {}
 for i, dna in enumerate(dna_muts):
     for j, ind in enumerate(ind_muts):
-        mut_axes['{}-{}'.format(dna, ind)] = axes[j][i]
+        mut_axes['{}-{}'.format(dna, ind)] = axes[i][j]
 
-# Loop through the axes and plot the data theoretical predictions.
+#e Loop through the axes and plot the data theoretical predictions.
 grouped = fc_df.groupby(['mutant'])
 for g, d in grouped:
     axis = mut_axes[g]
@@ -230,40 +240,56 @@ for g, d in grouped:
             label = '__nolegend__'
         _ = ax_bohr.errorbar(bohr_param, mean_fc, sem_fc, fmt='.', color=colors[g[0].upper(
         )], lw=1, linestyle='none', alpha=0.8, markerfacecolor=face, markeredgecolor=edge, markeredgewidth=1, markersize=7, label=label)
-ax_bohr.legend(loc='lower right', handletextpad=1, fontsize=7.5, handlelength=0.75)
+ax_bohr.legend(loc='upper left', handletextpad=0.1, fontsize=7.5, handlelength=0.75)
 
 # Plot the delta F.
 order = ['Y20I-F164T', 'Y20I-Q294V', 'Q21A-F164T', 'Q21A-Q294V', 'Q21M-F164T', 
         'Q21M-Q294V']
 index = {o:i for i, o in enumerate(order)}
-
+labels = ['Y20I\nF164T', 'Y20I\nQ294V', 'Q21A\nF164T', 'Q21A\nQ294V', 'Q21M\nF164T', 
+        'Q21M\nQ294V']
 # Define the colors 
 ax = ax_deltaF
 for i, delta in enumerate(pred_delta):
     mlabel = '__nolegend__'
     plabel = '__nolegend__'
-
     if ('Q294K' not in delta) & ('Q294R' not in delta):
-
         # Define the colors.
-        if delta in ['Y20I', 'Q21A', 'Q21M']:
-            color = pboc_colors['blue']
-        elif delta in ['F164T', 'Q294V']:
-            color = pboc_colors['red']
-        else:
-            color = pboc_colors['purple']
-        _ = ax.plot(index[delta] + 0.2, pred_delta[delta],'o', markeredgecolor=color, label=plabel, markerfacecolor='w', markersize=6, markeredgewidth=1.5)
-        _ = ax.plot(index[delta] - 0.2, meas_delta[delta], 'D', markeredgecolor=color, label=mlabel, markerfacecolor='w', markersize=6, markeredgewidth=1.5)
+        color = colors[delta]
+        _ = ax.plot(index[delta] + 0.2, pred_delta[delta], 'o', markeredgecolor=color, label=plabel, markerfacecolor='w', markersize=4, markeredgewidth=1.5)
+        _ = ax.plot(index[delta] - 0.2, meas_delta[delta],  'D', markeredgecolor=color, label=mlabel, markerfacecolor='w', markersize=4, markeredgewidth=1.5)
+
+# Format the axes further. 
+ax.set_ylabel('$\int_{0}^\infty\Delta F$ dc', fontsize=8)
 ax.set_xticks(np.arange(0, len(order), 1))
-ax.set_xticklabels(order)
-ax.xaxis.grid(False)
+ax.set_xticklabels(labels)
+ax.yaxis.grid(False)
 for i in range(len(order)):
     if i%2 == 0:
-        ax.vlines(i, -6, 30, color='w', lw=60, zorder=-1, alpha=0.5)
-ax.set_ylim([-5, 5])
+        ax.vlines(i, -4500, 4500, color='w', lw=35, zorder=-1, alpha=0.75)
+ax.set_ylim([-4500, 4500])
 ax.set_xlim([-0.4, len(order) - 0.5])
 _ = ax.plot([], [], 'o', color='slategray', label='predicted', alpha=0.5)
 _ = ax.plot([], [], 'D', color='slategray', label='measured', alpha=0.5)
-_ = ax.legend(loc='upper right', fontsize=8, handletextpad=0.05)
+_ = ax.legend(loc='upper left', fontsize=8, handletextpad=0.03)
 ax.hlines(0, -1, len(order)+1, color='k', linestyle=':')
-plt.savefig('../../figures/doubles_data_collapse.svg', bbox_inches='tight')
+plt.savefig('../../figures/doubles_data_collapse_vertical.svg', bbox_inches='tight')
+
+
+
+#%%
+fig, ax = plt.subplots(1, 1)
+ax.set_xscale('log')
+ax.set_ylabel('ΔF')
+ax.set_xlabel('IPTG (M)')
+for i, m in enumerate(pred_c):
+    ax.plot(bohr_c, pred_c[m], color=colors[m], label=m)
+    ax.plot(bohr_c, meas_c[m], color=colors[m], label='__nolegend__', linestyle=':')
+ax.legend(loc='center right', fontsize=8)
+plt.savefig('delta_f.pdf')
+# plt.semilogx(bohr_c, wt_bohr, 'b')
+
+#%%
+DNA_stats
+global_stats[global_stats['parameter']=='Q21M_eps']
+global_stats[global_stats['parameter']=='Q21M-F164T_eps']
