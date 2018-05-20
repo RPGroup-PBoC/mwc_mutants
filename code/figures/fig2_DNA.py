@@ -25,6 +25,7 @@ ind = np.argmax(chains['lnprobability'])
 c_range = np.logspace(-8, -2, 500)
 
 # Set up a function to compute the saturation and leakiness with rkdna.
+# %%
 
 
 def leak_rkdna(rkdna, ep_ai=4.5, n_ns=4.6E6):
@@ -43,7 +44,6 @@ leak = leak_rkdna(rkdna_range)
 sat = sat_rkdna(rkdna_range, wt_ka/wt_ki)
 dyn_rng = sat - leak
 
-# %%
 # Set up the figure canvas.
 fig, ax = plt.subplots(2, 2, figsize=(4.5, 4))
 ax = ax.ravel()
@@ -54,6 +54,7 @@ for a in ax:
 # Add appropriate labels. ax[1].set_ylabel('fold-change', fontsize=8) ax[2].set_ylabel('leakiness', fontsize=8)
 ax[0].axis('off')
 ax[3].set_ylabel('dynamic range', fontsize=8)
+ax[2].set_ylabel('leakiness', fontsize=8)
 ax[1].set_xlabel('IPTG (M)', fontsize=8)
 ax[2].set_xlabel(r'$\frac{R}{N_{NS}}e^{-\beta\Delta\varepsilon_{RA}}$')
 ax[3].set_xlabel(r'$\frac{R}{N_{NS}}e^{-\beta\Delta\varepsilon_{RA}}$')
@@ -82,16 +83,16 @@ for i, m in enumerate(muts):
                                           effector_conc=c_range).fold_change()
 
     # Compute the credible region.
-    # cred_region = np.zeros((2, len(c_range)))
-    # for j, c in enumerate(c_range):
-    #     arch = mut.thermo.SimpleRepression(R=260, ep_r=epr_chains, ka=wt_ka, ki=wt_ki, ep_ai=4.5,
-    #                                        effector_conc=c).fold_change()
-    #     cred_region[:, j] = mut.stats.compute_hpd(arch, 0.95)
+    cred_region = np.zeros((2, len(c_range)))
+    for j, c in enumerate(c_range):
+        arch = mut.thermo.SimpleRepression(R=260, ep_r=epr_chains, ka=wt_ka, ki=wt_ki, ep_ai=4.5,
+                                           effector_conc=c).fold_change()
+        cred_region[:, j] = mut.stats.compute_hpd(arch, 0.95)
 
     # Plot the theoretical curves.
     _ = ax[1].plot(c_range, fc_theo, color=colors[m.upper()],
                    lw=1.5, label='__nolegend__')
-    # _ = ax[1].fill_between(c_range, cred_region[0, :], cred_region[1, :], color=colors[m.upper()], alpha=0.5)
+    _ = ax[1].fill_between(c_range, cred_region[0, :], cred_region[1, :], color=colors[m.upper()], alpha=0.5)
 
 
 # Plot the titration data.
@@ -114,7 +115,7 @@ for g, d in grouped:
 
 
 # Plot the saturation and dynamic range.
-markers = ['.', 's', 'D', '^']
+markers = ['o', 's', 'D', '^']
 reps = np.sort(data['repressors'].unique())
 marker_dict = {i: j for i, j in zip(reps, markers)}
 grouped = data.groupby(['mutant', 'repressors'])
@@ -123,25 +124,42 @@ for g, d in grouped:
         face = 'w'
     else:
         face = colors[g[0]]
+    edge = colors[g[0].upper()]
     marker = marker_dict[g[1]]
 
     # Compute rkDNA.
     epr_mode = chains.iloc[ind]['{}_eps_r'.format(g[0])]
     epr_hpd = mut.stats.compute_hpd(chains['{}_eps_r'.format(g[0])], 0.95)
 
-    rkdna_mode = (260/4.6E6) * np.exp(-epr_mode)
-    rkdna_min = (260/4.6E6) * np.exp(-epr_hpd[0])
-    rkdna_max = (260/4.6E6) * np.exp(-epr_hpd[1])
+    rkdna_mode = (g[1]/4.6E6) * np.exp(-epr_mode)
+    rkdna_min = (g[1]/4.6E6) * np.exp(-epr_hpd[0])
+    rkdna_max = (g[1]/4.6E6) * np.exp(-epr_hpd[1])
 
     # Find the leakiness and saturation
-    leak = d[d['IPTGuM'] == 0]
-    sat = d[d['IPTGuM'] == 5000]
+    leak = d[d['IPTGuM'] == 0]['fold_change'].values
+    sat = d[d['IPTGuM'] == 5000]['fold_change'].values
     min_len = np.min([len(leak), len(sat)])
     dyn_rng = sat[:min_len-1] - leak[:min_len-1]
 
-    ax[2].errorbar(rkdna_mode, dyn_rng.mean(), dyn_rng.std() / np.sqrt(min_len), color=edge,
-                   markerefacecolor=face, markeredgecolor=edge, markeredgewith=1.5, markersize=6, fmt='.',
+    _ = ax[2].errorbar(rkdna_mode, leak.mean(), yerr=leak.std() / np.sqrt(min_len), color=edge,
+                   markerfacecolor=face, markeredgecolor=edge, markeredgewidth=1.5, markersize=4, fmt=marker,
                    label='__nolegend__')
-    ax[2].hlines(dyn_rng.mean(), rkdna_min, rkdna_max, color=edge, lw=1, label='__nolegend__')
+    _ = ax[2].hlines(leak.mean(), rkdna_min, rkdna_max, color=edge, lw=1, label='__nolegend__')
 
+
+    _ = ax[3].errorbar(rkdna_mode, dyn_rng.mean(), yerr=dyn_rng.std() / np.sqrt(min_len), color=edge,
+                   markerfacecolor=face, markeredgecolor=edge, markeredgewidth=1.5, markersize=4, fmt=marker,
+                   label='__nolegend__')
+    _ = ax[3].hlines(dyn_rng.mean(), rkdna_min, rkdna_max, color=edge, lw=1, label='__nolegend__')
+
+# Add the apprpriate legends.
+for m in marker_dict:
+    _ = ax[2].plot([], [], color='slategray', linestyle='none', marker=marker_dict[m], markersize=4, alpha=0.5, label=int(m))
+leg = ax[2].legend(loc='upper right', fontsize=8, title='rep. / cell', handletextpad=0.01)
+
+ax[1].legend(loc='upper left', handletextpad=0.005, fontsize=8, labelspacing=0.07, borderpad=0.02)
+leg.get_title().set_fontsize(8)
 plt.tight_layout()
+plt.savefig('../../figures/fig2_DNA.svg', bbox_inches='tight')
+# %%
+dyn_rng

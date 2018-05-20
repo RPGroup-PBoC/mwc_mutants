@@ -98,7 +98,7 @@ _ = ax[3].contourf(ka_range, ki_range, dyn_rng, cmap='Blues_r', levels=[0, 0.1, 
 contours = ax[3].contour(ka_range, ki_range, dyn_rng, colors='w', linewidths=0.75, levels=[0, 0.1, 0.25, 0.5, 0.75, 0.9, 0.98, 1])
 label_pos = [(1E-4, 8E-6), (1E-4, 2E-6), (5E-5, 8E-7), (3.7E-5, 2.3E-7), (5E-4, 1E-6), (5E-4, 5E-7)]
 _ = ax[3].clabel(contours, fontsize=8, colors=palette, fmt='%0.2f', manual=label_pos)
-
+ax[3].set_title('dynamic range', fontsize=8, backgroundcolor=pboc_colors['pale_yellow'], y=1.02)
 # Plot the data.
 grouped = data.groupby(['mutant', 'IPTGuM'])
 for g, d in grouped:

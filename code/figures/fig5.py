@@ -61,52 +61,7 @@ for g, d in grouped:
                  'dyn_rng_mean': dyn_rng_mean, 'dyn_rng_sem': dyn_rng_sem, 'rkdna': rkda}
     prop_df = prop_df.append(prop_dict, ignore_index=True)
 
-#%%  Compute the Delta F.
-dbl_muts = data[data['class']=='DBL']['mutant'].unique()
-# Load the chains.
-DNA_chains = pd.read_csv('../../data/mcmc/NB_emcee_mutants_DNA_strict.csv')
-IND_chains = pd.read_csv('../../data/mcmc/NB_emcee_mutants_IND_strict.csv')
-DBL_chains = pd.read_csv('../../data/mcmc/NB_emcee_mutants_DBL_strict.csv')
-global_chains = pd.read_csv('../../data/mcmc/NB_emcee_mutants_global_strict.csv')
 
-#%% Compute the statistics
-DBL_stats = mut.stats.compute_statistics(DBL_chains, logprob_name='lnprobability')
-global_stats = mut.stats.compute_statistics(global_chains, logprob_name='lnprobability')
-stats = pd.concat([DNA_stats, IND_stats], ignore_index=True)
-global_stats = pd.concat([global_stats, DBL_stats], ignore_index=True)
-
-# %%
-# Compute the WT bohr parameter.
-wt_eps_r = -13.9
-wt_ka = 139E-6
-wt_ki = 0.53E-6
-wt_bohr = mut.thermo.SimpleRepression(R=260, ep_r=wt_eps_r, ka=wt_ka, ki=wt_ki, ep_ai=4.5,
-                                       effector_conc=1E100).bohr_parameter()
-pred_delta = {}
-pred_err = {}
-meas_delta = {}
-meas_err = {}
-# Loop through each mutant and calculated the predicted F.
-for i, m in enumerate(dbl_muts):
-    if ('Q294K' not in m) & ('Q294R' not in m):
-        DNA_mut = m.split('-')[0]
-        IND_mut = m.split('-')[1]
-        if IND_mut != 'Q294K':
-            pred_ep_r = stats[stats['parameter']=='{}_eps_r'.format(DNA_mut)]['mode'].values[0]
-            pred_ka = np.exp(-stats[stats['parameter']=='{}_ka'.format(IND_mut)]['mode'].values[0])
-            pred_ki = np.exp(-stats[stats['parameter']=='{}_ki'.format(IND_mut)]['mode'].values[0])
-    # Compute the measured parameter
-    meas_ep_r = global_stats[global_stats['parameter']=='{}_eps'.format(m)]['mode'].values[0]
-    meas_ka = np.exp(-global_stats[global_stats['parameter']=='{}_ka'.format(m)]['mode'].values[0])
-    meas_ki = np.exp(-global_stats[global_stats['parameter']=='{}_ki'.format(m)]['mode'].values[0])
-
-    # Assemble the architectures and compute.  
-    predicted_bohr = mut.thermo.SimpleRepression(R=260, ep_r=pred_ep_r, ka=pred_ka/1E6, ki=pred_ki/1E6, ep_ai=4.5,
-                                              effector_conc=1E9).bohr_parameter()
-    measured_bohr = mut.thermo.SimpleRepression(R=260, ep_r=meas_ep_r, ka=meas_ka/1E6, ki=meas_ki/1E6, ep_ai=4.5,
-                                              effector_conc=1E9).bohr_parameter()
-    pred_delta[m] = wt_bohr - predicted_bohr
-    meas_delta[m] = wt_bohr - measured_bohr
 # %%
 # Define a function to compute the fold-change using rkdn
 def fc_rkdna(rkdna, pact):
