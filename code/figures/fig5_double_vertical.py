@@ -54,7 +54,8 @@ ax[0].set_xlim([-10, 10])
 ax[0].set_xlabel('Bohr parameter ($k_BT$)', fontsize=8)
 ax[0].set_ylabel('fold-change', fontsize=8)
 ax[1].set_ylabel(r'$\Delta F_{c \rightarrow \infty}$', fontsize=8)
-
+fig.text(0, 1.0, '(A)', fontsize=8)
+fig.text(0, 0.5, '(B)', fontsize=8)
 # Plot the theoretical collapse curve.
 _ = ax[0].plot(bohr_param, theo_fc, 'k-', lw=1.5, label='prediction')
 

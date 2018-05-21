@@ -12,6 +12,7 @@ import matplotlib
 from scipy.signal import gaussian, convolve
 
 
+
 def plotting_style():
     """
     Sets the style to the publication style

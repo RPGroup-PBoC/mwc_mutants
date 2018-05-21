@@ -53,6 +53,7 @@ for a in ax:
     a.set_ylim([-0.15, 1.15])
 # Add appropriate labels. ax[1].set_ylabel('fold-change', fontsize=8) ax[2].set_ylabel('leakiness', fontsize=8)
 ax[0].axis('off')
+ax[1].set_ylabel('fold-change', fontsize=8)
 ax[3].set_ylabel('dynamic range', fontsize=8)
 ax[2].set_ylabel('leakiness', fontsize=8)
 ax[1].set_xlabel('IPTG (M)', fontsize=8)
