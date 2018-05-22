@@ -1,0 +1,5 @@
+# Date : 2018-05-21
+# Equipment : MACSQuant (Bjorkman lab)
+# User : gchure 
+# Description :
+# A titration run of six colonies from a Q294K transduction from O1 and O3 operators into an O2 host strain. 
