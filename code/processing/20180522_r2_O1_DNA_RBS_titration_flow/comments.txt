@@ -1,0 +1,5 @@
+# Date : 2018-05-22
+# Equipment : MACSQuant (Bjorkman lab)
+# User : gchure 
+# Description :
+# A run of 12 replicates of Y20I O1 at four repressor copy numbers and no IPTG
