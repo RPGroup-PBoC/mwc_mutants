@@ -15,7 +15,11 @@ import scipy.special
 # Library to perform MCMC sampling
 import emcee
 
-# Useful plotting libraries
+# import tools for computing mwc stuff
+sys.path.insert(0,'../../')
+import mwc_mutants_utils as mwc
+
+# useful plotting libraries
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import seaborn as sns

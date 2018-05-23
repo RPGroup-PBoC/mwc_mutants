@@ -15,6 +15,10 @@ import scipy.special
 # Library to perform MCMC sampling
 import emcee
 
+# import tools for computing mwc stuff
+sys.path.insert(0,'../../')
+import mwc_mutants_utils as mwc
+
 # Useful plotting libraries
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -108,11 +112,6 @@ def log_prior(param, param_idx, unique_var, data, epsilon=4.5):
         In the first 3 positions of the param argument for the MCMC we find
         epsilon_A, epsilon_I and sigma the error associated with the Gaussian
         likelihood.
-        After that we have all the repressor copy numbers for each of the RBS
-        mutants. Followed by all the unique binding energies in the DataFrame.
-        This variable indicates the position of each of these variables such
-        that  the function is robust and it works for a DataFrame with 1 RBS
-        mutant and 1 energy as well as for multiple mutants and multiple enrgies.
     unique_var : : list.
         A list whose first element is the list of the unique mean repressor
         copy number found in the DataFrame.
@@ -123,15 +122,11 @@ def log_prior(param, param_idx, unique_var, data, epsilon=4.5):
     data : array-like.
         Numpy array pre-arranged in the order that the log-posterior function
         expects it with the following columns:
-        data[:, 0] : fold_change_A
+        data[:, 0] : fold_change
         data[:, 1] : IPTG_uM
         data[:, 2] : repressors
-        data[:, 3] : delta_repressors
-        data[:, 4] : binding_energy
-        data[:, 5] : delta_energy
-    epsilon : float.
-        Energetic difference between the active and inactive state.
-    Returns
+        data[:, 3] : mutant
+        Returns
     -------
     log prior probability
     '''
@@ -191,11 +186,6 @@ def log_post(param, param_idx, unique_var, data, epsilon=4.5):
         In the first 3 positions of the param argument for the MCMC we find
         epsilon_A, epsilon_I and sigma the error associated with the Gaussian
         likelihood.
-        After that we have all the repressor copy numbers for each of the RBS
-        mutants. Followed by all the unique binding energies in the DataFrame.
-        This variable indicates the position of each of these variables such
-        that  the function is robust and it works for a DataFrame with 1 RBS
-        mutant and 1 energy as well as for multiple mutants and multiple enrgies.
     unique_var : : list.
         A list whose first element is the list of the unique mean repressor
         copy number found in the DataFrame.
