@@ -16,12 +16,17 @@ data {
     int<lower=1> n_sites; // Number of allosteric sites
 
     // Measurement parameters
-    real<lower=-0.2, upper=1.3> fc[N]; // Experimentall observed fold-change
+    real fc[N]; // Experimentall observed fold-change
  }
 
 parameters {
     real ep_R[J]; // Repressor-DNA binding energy in kBT
     real<lower=1E-9> sigma[J]; // Homoscedastic error. Assumed constant for all.
+}
+
+transformed parameters {
+    real log_fc[N];
+    log_fc = log(fc);
 }
 
 model {
@@ -36,8 +41,7 @@ model {
         mu[i] = fold_change(R[i], n_ns, ep_R[trial[i]], c[i], 
                             ka, ki, ep_AI, n_sites);
         // Define the likelihood.
-         fc[i] ~ normal(mu[i], sigma[trial[i]]);
-
+         log_fc[i] ~ normal(log(mu[i]), sigma[trial[i]]);
     }
 
  }
