@@ -7,10 +7,10 @@ sys.path.insert(0, '../../../')
 import mut.flow
 
 # Define the experiment parameters
-DATE = 20180529
+DATE = 20180530
 RUN_NO = 1
 USERNAME = 'gchure'
-CLASS = 'DBL'
+CLASS = 'IND'
 gating_fraction = 0.4
 
 # Load all files.
@@ -23,7 +23,7 @@ df = pd.DataFrame([], columns=colnames)
 
 for f in files:
 
-    # Get the identifying information.
+    # Get the identifying finformation.
     date, run_no, operator, strain, mutant, conc = f.split('/')[-1].split('_')
     conc = float(conc.split('uM')[0])
     rep = int(strain.split('R')[-1])
