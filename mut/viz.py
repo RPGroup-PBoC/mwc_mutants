@@ -9,9 +9,8 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import matplotlib
+import altair as alt
 from scipy.signal import gaussian, convolve
-
-
 
 def plotting_style():
     """
@@ -32,6 +31,18 @@ def plotting_style():
     plt.rc('text.latex', preamble=r'\usepackage{sfmath}')
     plt.rc('mathtext', fontset='stixsans', sf='sans')
     sns.set_style('darkgrid', rc=rc)
+
+def altair_config():
+    """Sets the style of Altair plots to the PBoC style"""
+    pboc = alt.Config(view={'fill':'#E3DCD1'}, 
+                  axis={'gridColor':'#ffffff', 'gridWidth':1, 'gridOpacity':0.75,
+                       'domain':False, 'tickColor': '#ffffff', 
+                        'labelFont':'Lucida Sans Unicode', 'titleFont':'Lucida Sans Unicode',
+                       'titleFontWeight': 'normal'},
+                 text={'font':'Lucida Sans Unicode', 'fontWeight': 'normal'},
+                 legend={'titleFont': 'Lucida Sans Unicode',
+                        'labelFont':'Lucida Sans Unicode', 'titleFontWeight': 'normal'})
+    return pboc
 
 def color_selector(style):
     """
@@ -63,13 +74,7 @@ def color_selector(style):
                   'Y20I-Q294V': '#8854d0', 'Q21A-F164T': '#4b6584', 'Q21A-Q294K': '#EE5A24',
                   'Q21A-Q294V': '#009432', 'Q21M-F164T': '#1289A7', 'Q21M-Q294K': '#6F1E51',
                   'Q21M-Q294V': '#006266', 'WT': '#3C3C3C'} 
-    #     colors = {'Y20I': '#738FC1', 'Q21A': '#7AA974', 'Q21M': '#AB85AC',
-    #               'F164T': '#A97C50', 'Q294K': '#EAC264', 'Q294V': '#D56C55',
-    #               'Q294R': '#919796', 'Y20I-F164T': '#5D737E', 'Y20I-Q294K': '#63AFCC',
-    #               'Y20I-Q294V': '#9CC7EA', 'Q21A-F164T': '#3C8468', 'Q21A-Q294K': '#63B6AD',
-    #               'Q21A-Q294V': '#91D0B1', 'Q21M-F164T': '#987D7C', 'Q21M-Q294K': '#A09CB0',
-    #               'Q21M-Q294V': '#DDBDD4', 'WT': '#3C3C3C'} 
-    # e
+
     elif style.lower() == 'pboc':
         colors = {'green': '#7AA974', 'light_green': '#BFD598',
               'pale_green': '#DCECCB', 'yellow': '#EAC264',

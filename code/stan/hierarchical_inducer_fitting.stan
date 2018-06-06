@@ -62,50 +62,65 @@ functions {
         }
       }
 
-data { 
+data {
+    // Dimensional parameters.
+    int<lower=1> J; // Number of unique mutants
+    int<lower=0> N_leak; // Number of leakiness points
+    int<lower=0> N; // Total number of points
+    int<lower=0, upper=J> idx_leak[N_leak]; // Identification vector for leakiness
+    int<lower=0, upper=J> idx[N]; // Identification vector for titration curve
 
-  // Dimensional parameters
-  int N; // Total number of data points.
+    // Architectural parameters
+    real<lower=0> R; // Number of repressors
+    real<lower=0> Nns; // Number of nonspecific binding sites
+    real epR; 
 
-  // Architectural parameters
-  vector<lower=0>[N] R; // Number of repressors
-  real<lower=0> Nns; // Number of nonspecific binding sites
-
-  // Allosteric parameters 
-  vector<lower=0>[N] c; // Effector concentration.
-  real epR; // Binding energy in kBT. 
-  real ep_ai; // Allosteric energy difference 
-  int<lower=1> n_sites; // Number of allosteric sites.  
-
-  // Observed parameters.
-  vector<lower=-0.1, upper=1.2>[N] fc;
-  }
+    // Allosteric parameters
+    int n_sites; // Number of allosteric binding sites
+    vector<lower=0>[N] c; 
+    // Measured parameters. 
+    vector<lower=-0.1, upper=1.2>[N_leak] fc_leak; // Leakiness fold-change measurements.
+    vector<lower=-0.1, upper=1.2>[N] fc; // All fold-change measurements
+}
 
 parameters {
-  real<lower=0> ka; // Active repressor inducer dissociation constant
-  real<lower=0> ki; // Inactive repressor inducer dissociation constant
-  real<lower=0> sigma; //  Homoscedastic error
+    vector[J] ep_ai;
+    vector<lower=0>[J] ka;
+    vector<lower=0>[J] ki;
+    vector<lower=0>[J] sigma;
 }
 
 transformed parameters {
-  real ep_a; 
-  real ep_i;
-  ep_a = log(ka);
-  ep_i = log(ki);
+    // Peform log transformation of ka, ki, and fc for leakiness
+    vector[J] ep_a;
+    vector[J] ep_i;
+    ep_a = log(ka);
+    ep_i = log(ki);
+
 }
 
 model {
-  vector[N] mu;
+    // Set up vectorws
+    vector[N_leak] mu_leak;
+    vector[N] mu;
 
-  // Define the priors. 
-  sigma ~ normal(0, 1);
-  ep_a ~ normal(0, 10);
-  ep_i ~ normal(0, 10);
+    // Set the priors
+    ep_ai ~ normal(0, 1);
+    ep_a ~ normal(0, 1);
+    ep_i ~ normal(0, 1);
+    sigma ~ normal(0, 1);
 
-  for (i in 1:N) {
-    mu[i] = fold_change(R[i], Nns, epR, c[i], ep_a, ep_i, ep_ai, n_sites);
-  }
+    // Compute the likelihood for ep_ai.
+    for (i in 1:N_leak) {
+        mu_leak[i] = fold_change(R, Nns, epR, 0, ep_a[idx_leak[i]], ep_i[idx_leak[i]], 
+                                ep_ai[idx_leak[i]], n_sites);
+        fc_leak[i] ~ normal(mu_leak[i], sigma);
+    }
 
-  // Define the likelihood
-  fc ~ normal(mu, sigma);
+    // Compute the likelihood for ka, ki
+    for (i in 1:N) {
+        mu[i] = fold_change(R, Nns, epR, c[i], ep_a[idx[i]], ep_i[idx[i]], ep_ai[idx[i]], n_sites);
+        fc[i] ~ normal(mu[i], sigma[idx[i]]);
+    }
+
 }
