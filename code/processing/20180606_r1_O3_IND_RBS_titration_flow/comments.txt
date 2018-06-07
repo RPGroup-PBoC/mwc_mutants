@@ -1,0 +1,5 @@
+# Date : 2018-06-06
+# Equipment : MACSQuant (Bjorkman lab)
+# User : sbarnes
+# Description :
+# A titration run of six replicates of Q294R in O3 
