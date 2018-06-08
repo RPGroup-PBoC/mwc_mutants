@@ -96,7 +96,6 @@ transformed parameters {
     vector[J] ep_i;
     ep_a = log(ka);
     ep_i = log(ki);
-
 }
 
 model {

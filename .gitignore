@@ -61,3 +61,6 @@ data/images/
 /data/plate_reader/*
 doc/induction_paper/graphicspath.tex
 /code/figures/dropbox_path.txt
+
+# Plot garbage. 
+*.json

@@ -43,15 +43,6 @@ def chains_to_dataframe(fit, varnames=None):
     
         else:
             samples[key] = data[key]
-            
-    # # compute the log_post. 
-    # new_keys = samples.keys()
-    # logp = []
-    # for j in range(dim[0]):
-    #     _samples = [samples[k][j] for k in fit.unconstrained_param_names()]
-    #     if (np.nan not in _samples) & (np.inf not in samples):
-    #         logp.append(fit.log_prob(_samples))
-
     samples['logp'] = data['lp__']
     return pd.DataFrame(samples)
     
@@ -83,3 +74,31 @@ def assemble_StanModelCode(model_file, function_file):
         model_code += line + '\n'
     return model_code
 
+
+def longform_mcmc_df(dataframe, split_pattern='.', root='logp',
+                    idx_name='mutant', param_name='parameter'):
+    """
+    Convert a dataframe of MCMC samples to longform tidy format.
+    
+    Parameters
+    ----------
+    dataframe: pandas DataFrame object.
+        The data frame of MCMC samples 
+    
+    """
+    
+    # Perform initial melting
+    melt = dataframe.melt([root])
+    
+    # Split the variables given identifier
+    idx = [v.split(split_pattern)[1] for v in melt['variable']]
+    param = [v.split(split_pattern)[0] for v in melt['variable']]
+    
+    # Assign the splits
+    melt[idx_name] = idx
+    melt[param_name] = param
+    
+    # Drop unnecessary column and perform final melting operation
+    melt.drop('variable', axis=1, inplace=True)
+    longform = melt.melt([root, idx_name, param_name])
+    return longform 
