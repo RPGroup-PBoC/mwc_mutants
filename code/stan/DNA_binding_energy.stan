@@ -1,6 +1,4 @@
 functions {
-
-
     /**
     * Compute the level of repression in a simple repression architecture.
     *
