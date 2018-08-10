@@ -1,3 +1,8 @@
+/* 
+* 
+*
+*/
+
 functions {
     /**
     * Compute the probability of a repressor being active given an inducer
