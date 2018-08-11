@@ -42,10 +42,6 @@ parameters {
     vector<lower=0>[J] sigma; // Homoscedastic error in fold-change measurement
 }
 
-transformed parameters {
-    vector[N] foldchange_log;
-    foldchange_log = log(foldchange);
-}
 model {
     // Instantiate the vector for theoretical prediction
     vector[N] theo;
@@ -58,7 +54,7 @@ model {
     // Compute the likelihood
     for (i in 1:N) {
         theo[i] = fold_change(R[rep_idx[i]], Nns, ep_RA[idx[i]], 0, 1, 1, ep_AI, n_sites);
-        foldchange_log[i] ~ normal(log(theo[i]), sigma[idx[i]]);
+        foldchange[i] ~ normal(theo[i], sigma[idx[i]]);
     }
 }
 
