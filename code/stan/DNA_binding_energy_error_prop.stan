@@ -20,11 +20,11 @@ data {
     int<lower=1> J_rep; // Total number of unique repressor copy numbers
     int<lower=1> N; // Total number of fold-change measurements
     int<lower=1, upper=J> idx[N]; // ID vector for mutants
-    int<lower=1, upper=J_REP> rep_idx[N]; // ID vector for repressor copy number
+    int<lower=1, upper=J_rep> rep_idx[N]; // ID vector for repressor copy number
     
     // Architectural parameters
-    vector<lower=0>[J_rep]  R_mu; // Mean repressor copy number
-    vector<lower=0>[J_rep] R_sig; // Uncertainty in repressor copy number
+    real<lower=0> R_mu[J_rep]; // Mean repressor copy number
+    real<lower=0> R_sig[J_rep]; // Uncertainty in repressor copy number
     vector[J] ep_RA_mu; // Mean DNA binding energy
     vector[J] ep_RA_sig; // Uncertainty in DNA binding energy
     real Nns; // Number of nonspecific binding sties
@@ -44,9 +44,9 @@ data {
 
 parameters {
     vector[J] ep_RA; 
-    real Ka; 
-    real Ki;
-    real R;
+    real<lower=0> Ka; 
+    real<lower=0> Ki;
+    vector<lower=0>[J_rep] R;
     vector<lower=0>[J] sigma; // Homoscedastic error
 }
 
@@ -68,6 +68,7 @@ model {
     R ~ normal(R_mu, R_sig);
     Ka ~ normal(Ka_mu, Ka_sig);
     Ki ~ normal(Ki_mu, Ki_sig);
+    sigma ~ normal(0, 1);
     
     // Iterate through the data and compute the likelihood. 
     for (i in 1:N) {
