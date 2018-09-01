@@ -68,7 +68,7 @@ model {
     R ~ normal(R_mu, R_sig);
     Ka ~ normal(Ka_mu, Ka_sig);
     Ki ~ normal(Ki_mu, Ki_sig);
-    sigma ~ normal(0, 1);
+    sigma ~ normal(0, 10);
     
     // Iterate through the data and compute the likelihood. 
     for (i in 1:N) {
