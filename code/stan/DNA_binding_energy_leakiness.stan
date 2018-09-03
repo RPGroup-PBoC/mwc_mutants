@@ -47,13 +47,14 @@ model {
     vector[N] theo;
 
     // Assign priors    
-    R ~ normal(R_mu, R_sig);
     ep_RA ~ normal(0, 10);
     sigma ~ normal(0, 1);
-
+    for (j in 1:J_rep) {
+    R[j] ~ uniform(R_mu[j] - R_sig[j], R_mu[j] + R_sig[j]);
+    }
     // Compute the likelihood
     for (i in 1:N) {
-        theo[i] = fold_change(R[rep_idx[i]], Nns, ep_RA[idx[i]], 0, 1, 1, ep_AI, n_sites);
+                theo[i] = fold_change(R[rep_idx[i]], Nns, ep_RA[idx[i]], 0, 0, 0, ep_AI, n_sites);
         foldchange[i] ~ normal(theo[i], sigma[idx[i]]);
     }
 }

@@ -38,8 +38,8 @@ data {
 
 
 parameters {
-    vector<lower=0>[J] Ka;
-    vector<lower=0>[J] Ki;
+    vector<lower=0, upper=5000>[J] Ka;
+    vector<lower=0, upper=5000>[J] Ki;
     real<lower=0> R;
     real ep_RA;
     vector<lower=0>[J] sigma;
@@ -47,10 +47,10 @@ parameters {
 
 transformed parameters {
     // Perform log transformation of Ka and Ki for better sampling
-    vector<lower=-50, upper=50>[J] ep_a; // Inducer binding energy to active repressor in kBT
-    vector<lower=-50, upper=50>[J] ep_i; // Inducer binding energy to inactive repreessor in kBT
-    ep_a = log(Ka);
-    ep_i = log(Ki);
+    vector[J] ep_a; // Inducer binding energy to active repressor in kBT
+    vector[J] ep_i; // Inducer binding energy to inactive repreessor in kBT
+    ep_a = -log(Ka);
+    ep_i = -log(Ki);
 }
 
 model {
@@ -58,10 +58,8 @@ model {
     vector[N] theo;
 
     // Assign priors
-    R ~ normal(R_mu, R_sig);
+    R ~ normal(R_mu, 1);
     ep_RA ~ normal(ep_RA_mu, ep_RA_sig);
-    ep_a ~ uniform(-10, 10);
-    ep_i ~ uniform(-10, 10);
     sigma ~ normal(0, 1);
 
 
