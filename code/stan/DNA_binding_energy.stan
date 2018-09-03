@@ -1,3 +1,18 @@
+/*
+* DNA Binding Energy Estimation
+* -----------------------------------------------------
+* Author: Griffin Chure
+* License: CC-BY 4.0
+*
+* Description
+* -----------
+* This model saamples the posterior distribution of the DNA binding 
+* energy for a set of J unique DNA binding domain mutants of an 
+* inducible repressor. All other parameter values (i.e. allosteric energy
+* difference, repressor copy number) are taken as delta functions at 
+* their literature values. 
+*/
+
 data { 
   // Dimensional parameters
   int J; // Number of unique mutants
@@ -22,6 +37,7 @@ parameters {
 }
 
 transformed parameters {
+  // Compute the log transform of the fold-chnage for equal weighting across data.
   vector[N] log_fc;
   log_fc = log(fc);
 }
@@ -33,6 +49,7 @@ model {
   sigma ~ normal(0, 1);
   ep_RA ~ normal(0, 10);
 
+  // Evaluate the likelihood.
   for (i in 1:N) {
     mu[i] = fold_change(R[i], Nns, ep_RA[idx[i]], 0,  0, 0,  ep_ai, n_sites);
     log_fc ~ normal(log(mu[i]), sigma[idx[i]]);
