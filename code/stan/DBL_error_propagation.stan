@@ -2,7 +2,7 @@
 * Double Mutant Error Propagation
 * -----------------------------------------------------
 * Author: Griffin Chure
-* License: CC-BY 4.0
+* License: MIT
 *
 * Description
 * -----------
@@ -33,7 +33,7 @@ data {
 
     // Allosteric parameters
     int<lower=0> n_sites; // Number of allosteric binding sites.
-    real<lower=0> c; // Inducer concentration in µM.
+    real<lower=0> c[N]; // Inducer concentration in µM.
     real ep_AI; // Allosteric energy difference in kBT.
 
     // Informative prior bounds
@@ -46,7 +46,7 @@ data {
 
 
     // Observed data
-    vector<lower=0, upper=1.2> fc[N]; // Observed fold-change in gene expression
+    vector<lower=0, upper=1.2>[N] fc; // Observed fold-change in gene expression
 }
 
 parameters {
@@ -66,7 +66,7 @@ transformed parameters {
 
 model {
     // Instantiate a vectof or the theoretical value. 
-    vector<lower=0, upper=1> mu[N];
+    vector[N] mu;
 
     // Define the priors as informative uniform. 
     for (i in 1:J_DNA) {
@@ -83,8 +83,8 @@ model {
 
     // Evaluate the likelihood. 
     for (i in 1:N) {
-        mu[i] = foldchange(R, Nns, ep_RA[DNA_idx[i]], c[i], ep_a[IND_idx[i]], ep_i[IND_idx[i]],
+        mu[i] = fold_change(R, Nns, ep_RA[DNA_idx[i]], c[i], ep_a[IND_idx[i]], ep_i[IND_idx[i]],
                            ep_AI,n_sites);
-        fc[i] ~ normal(mu[i], sigma[idx[i]])
+        fc[i] ~ normal(mu[i], sigma[idx[i]]);
     }
 }

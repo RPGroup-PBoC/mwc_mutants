@@ -34,8 +34,8 @@ data {
   }
 
 parameters {
-  real<lower=0> Ka[J]; // Active repressor inducer dissociation constant
-  real<lower=0> Ki[J]; // Inactive repressor inducer dissociation constant
+  real<lower=0, upper=5000> Ka[J]; // Active repressor inducer dissociation constant
+  real<lower=0, upper=5000> Ki[J]; // Inactive repressor inducer dissociation constant
   real<lower=0> sigma[J]; //  Homoscedastic error
 }
 

@@ -1,6 +1,13 @@
 /* 
-* 
+* Functions for "Mutants from a thermodynamic perspective"
+* -----------------------------------------------------------------
+* Author: Griffin Chure
+* License: CC-BY 4.0 & MIT
 *
+* Description 
+* -----------------------------------------------------------------
+* This file contains an array of functions used for the statistical
+* inference performed in "Mutants from a thermodynamic perspective."
 */
 
 functions {

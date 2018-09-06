@@ -21,7 +21,6 @@ for m, idx in DNA_idx.items():
     data.loc[data['mutant'] == m, 'idx'] = DNA_idx[m]
 data['idx'] = data['idx'].astype('int')
 
-data
 #%% Load and compile the inference model
 model_code = mut.bayes.assemble_StanModelCode('../stan/DNA_binding_energy.stan', '../stan/functions.stan')
 model = pystan.StanModel(model_code=model_code)
@@ -37,4 +36,5 @@ print('finished!')
 samples_df = mut.bayes.chains_to_dataframe(samples)
 new_names = {'ep_RA.{}':'ep_RA.{}'.format(i+1, m) for i, m in enumerate(DNA_idx.items())}
 samples_df.rename(columns=new_names, inplace=True)
-print(samples_df)
+samples_df.to_csv('../../data/csv/20180902_DNA_binding_energy_samples.csv', index=False)
+print('finished!')
