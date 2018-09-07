@@ -1,11 +1,11 @@
 /*
 * Double Mutant Error Propagation
-* -----------------------------------------------------
+* --------------------------------------------------------------------
 * Author: Griffin Chure
 * License: MIT
 *
 * Description
-* -----------
+* --------------------------------------------------------------------
 * This model samples the posterior distribution of DNA binding
 * energy as well as the inducer dissociation constants for 
 * double mutants of an inducible repressor. This model applies
@@ -28,7 +28,7 @@ data {
     int<lower=1, upper=J> idx[N]; // Vector of double mutant identifiers
 
     // Architectural parameters. 
-    real<lower=0> Nns; // Njumber of nonspecific binding sites. 
+    real<lower=0> Nns; // Number of nonspecific binding sites. 
     real<lower=0> R; // Average number of repressors per cell.
 
     // Allosteric parameters
@@ -44,8 +44,7 @@ data {
     real<lower=0> Ki_upper[J_IND]; // Upper bound of the inactive repressor inducer dissociation constant in µM
     real<lower=0> Ki_lower[J_IND]; // Lower bound of the inactive repressor inducer dissociation constant in µM 
 
-
-    // Observed data
+   // Observed data
     vector<lower=0, upper=1.2>[N] fc; // Observed fold-change in gene expression
 }
 
@@ -56,13 +55,15 @@ parameters {
     real<lower=0> sigma[J]; // Homoscedastic error
 }
 
-transformed parameters {
-    // Log transform of inducer dissociatoin constants for more efficient sampling. 
-    real ep_a[J_IND];
-    real ep_i[J_IND];
-    ep_a = log(Ka);
-    ep_i = log(Ki);
-}
+// transformed parameters {
+//     // Log transform of inducer dissociatoin constants for more efficient sampling. 
+//     real ep_a[J_IND];
+//     real ep_i[J_IND];
+//     for (i in 1:J_IND) {
+//         ep_a[i] = -log(Ka);
+//         ep_i[i] = -log(Ki);
+//     }
+// }
 
 model {
     // Instantiate a vectof or the theoretical value. 
@@ -83,7 +84,7 @@ model {
 
     // Evaluate the likelihood. 
     for (i in 1:N) {
-        mu[i] = fold_change(R, Nns, ep_RA[DNA_idx[i]], c[i], ep_a[IND_idx[i]], ep_i[IND_idx[i]],
+        mu[i] = fold_change(R, Nns, ep_RA[DNA_idx[i]], c[i], log(Ka[IND_idx[i]]), log(Ki[IND_idx[i]]),
                            ep_AI,n_sites);
         fc[i] ~ normal(mu[i], sigma[idx[i]]);
     }
