@@ -22,8 +22,10 @@ data['idx'] = data['idx'].astype('int')
 
 #%% Load and compile the inference model
 model_code = mut.bayes.assemble_StanModelCode('../stan/DNA_binding_energy.stan', '../stan/functions.stan')
+print(model_code)
 model = pystan.StanModel(model_code=model_code)
 print('Compilation finished!')
+
 # %% Assemble the data dictionary and perform inference.
 data_dict = dict(J=len(DNA_idx), N=len(data), idx=data['idx'], R=data['repressors'], Nns=4.6E6,
                  ep_ai=4.5, n_sites=2, fc=data['fold_change'])
@@ -35,8 +37,5 @@ print('finished!')
 samples_df = mut.bayes.chains_to_dataframe(samples)
 new_names = {'ep_RA.{}'.format(i):'ep_RA.{}'.format(m) for m, i in DNA_idx.items()}
 samples_df.rename(columns=new_names, inplace=True)
-samples_df.to_csv('../../data/csv/20180902_DNA_binding_energy_samples.csv', index=False)
-print('finished!')
+samples_df.to_csv('../../data/csv/DNA_binding_energy_samples.csv', index=False)
 
-
-new_names

@@ -2,7 +2,7 @@
 * Functions for "Mutants from a thermodynamic perspective"
 * -----------------------------------------------------------------
 * Author: Griffin Chure
-* License: CC-BY 4.0 & MIT
+* License: MIT
 *
 * Description 
 * -----------------------------------------------------------------

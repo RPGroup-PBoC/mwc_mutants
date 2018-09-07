@@ -20,9 +20,9 @@ data['idx'] = data['idx'].astype(int)
 # %%  Load and compile the stan model. 
 model_code = mut.bayes.assemble_StanModelCode('../stan/KaKi_fitting.stan',
                                                '../stan/functions.stan')
-print('compiling model...')
 model = pystan.StanModel(model_code=model_code)
-print('compiled!')
+print(model_code)
+
 
 # %% Assemble the data dictionary and sample.
 data_dict = dict(J=len(IND_idx), N=len(data), idx=data['idx'], R=data['repressors'],
