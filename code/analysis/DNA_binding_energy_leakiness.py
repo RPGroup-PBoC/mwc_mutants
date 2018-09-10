@@ -11,8 +11,8 @@ import mut.stats
 
 # %% Data loading & cleaning
 data = pd.read_csv('../../data/csv/compiled_data.csv')
-data = data[(data['class'] == 'DNA') & (data['fold_change'] >= 0) &\
-            (data['operator'] == 'O2') & (data['IPTGuM'] == 0)]
+data = data[(data['class'] == 'DNA') & (data['operator'] == 'O2') &
+            (data['IPTGuM'] == 0)]
 
 # Assign identifiers to unique mutants.
 DNA_idx = {m: i+1 for i, m in enumerate(data['mutant'].unique())}
@@ -32,6 +32,7 @@ data_dict = dict(J=len(DNA_idx), N=len(data), idx=data['idx'], R=data['repressor
 print('beginning sampling...')
 samples = model.sampling(data_dict, iter=10000, chains=4, pars=['ep_RA', 'sigma'])
 print('finished!')
+
 
 # %% Clean sampling traces and format data frame
 samples_df = mut.bayes.chains_to_dataframe(samples)

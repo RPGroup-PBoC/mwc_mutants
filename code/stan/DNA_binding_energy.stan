@@ -28,18 +28,12 @@ data {
   int n_sites; // Number of allosteric binding sites
 
   // Observed parameters.
-  vector<lower=-0, upper=1.25>[N] fc;
+  vector[N] fc;
 }
 
 parameters {
   real ep_RA[J]; // DNA binding energy in units of kBT
   real<lower=0> sigma[J]; //  Homoscedastic error
-}
-
-transformed parameters {
-  // Compute the log transform of the fold-chnage for equal weighting across data.
-  vector[N] log_fc;
-  log_fc = log(fc);
 }
 
 model {
@@ -52,6 +46,6 @@ model {
   // Evaluate the likelihood.
   for (i in 1:N) {
     mu[i] = fold_change(R[i], Nns, ep_RA[idx[i]], 0,  0, 0,  ep_ai, n_sites);
-    log_fc ~ normal(log(mu[i]), sigma[idx[i]]);
+    fc[i] ~ normal(mu[i], sigma[idx[i]]);
   }
 }
