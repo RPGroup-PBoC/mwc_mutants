@@ -34,14 +34,31 @@ def plotting_style():
 
 def altair_config():
     """Sets the style of Altair plots to the PBoC style"""
-    pboc = alt.Config(view={'fill':'#E3DCD1'}, 
-                  axis={'gridColor':'#ffffff', 'gridWidth':1, 'gridOpacity':0.75,
-                       'domain':False, 'tickColor': '#ffffff', 
-                        'labelFont':'Lucida Sans Unicode', 'titleFont':'Lucida Sans Unicode',
-                       'titleFontWeight': 'normal'},
-                 text={'font':'Lucida Sans Unicode', 'fontWeight': 'normal'},
-                 legend={'titleFont': 'Lucida Sans Unicode',
-                        'labelFont':'Lucida Sans Unicode', 'titleFontWeight': 'normal'})
+    pboc = {'config': {
+                'view': {
+                     'fill':'#E3DCD1'
+                       }, 
+                 'axis': {
+                     'gridColor':'#ffffff', 
+                     'gridWidth':1, 
+                     'gridOpacity':0.75,
+                     'domain':False, 
+                     'tickColor': '#ffffff', 
+                     'labelFont':'Lucida Sans Unicode', 
+                     'titleFont':'Lucida Sans Unicode',
+                     'titleFontWeight': 'normal'
+                        },
+                 'text':{
+                     'font':'Lucida Sans Unicode', 
+                     'fontWeight': 'normal'
+                         },
+                 'legend': {
+                     'titleFont': 'Lucida Sans Unicode',
+                     'labelFont':'Lucida Sans Unicode', 
+                     'titleFontWeight': 'normal'
+                       }
+                    }
+           }
     return pboc
 
 def color_selector(style):

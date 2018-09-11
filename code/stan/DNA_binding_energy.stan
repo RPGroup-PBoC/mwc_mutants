@@ -36,6 +36,7 @@ parameters {
   real<lower=0> sigma[J]; //  Homoscedastic error
 }
 
+
 model {
   vector[N] mu;
 
@@ -45,7 +46,7 @@ model {
 
   // Evaluate the likelihood.
   for (i in 1:N) {
-    mu[i] = fold_change(R[i], Nns, ep_RA[idx[i]], 0,  0, 0,  ep_ai, n_sites);
-    fc[i] ~ normal(mu[i], sigma[idx[i]]);
+    mu[i] = fold_change(R[i], Nns, ep_RA[idx[i]], 0, 0, 0,  ep_ai, n_sites);
+    log(fc[i]) ~ normal(log(mu[i]), log(sigma[idx[i]]));
   }
 }
