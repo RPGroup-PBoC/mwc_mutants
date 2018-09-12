@@ -1,14 +1,17 @@
 /*
-* Ka/Ki Fitting Model
+* Ka/Ki Fitting Model with informative ep_AI
 * -----------------------------------------------------
 * Author: Griffin Chure
 * License: CC-BY 4.0
 *
 * Description
-* -----------
+* ------------------------------------------------------------------------
 * This model saamples the posterior distribution of the inducer binding 
 * constants to the active and inactive repressor for a set of J unique
-* inducer binding domain mutants. All other parameter values (i.e. DNA
+* inducer binding domain mutants. This model assumes that each mutant
+* has a unique value for the allosteric energy difference (ep_AI),
+* inferred from another model in which the value is determined considering
+* only the leakiness. All other parameter values (i.e. DNA
 * binding energy, allosteric energy difference) are taken as delta
 * functions at the literature value. 
 */
@@ -26,7 +29,7 @@ data {
   // Allosteric parameters 
   vector<lower=0>[N] c; // Effector concentration.
   real ep_RA; // Binding energy in kBT. 
-  real ep_AI; // Allosteric energy difference 
+  real ep_AI[J]; // Allosteric energy difference 
   int<lower=1> n_sites; // Number of allosteric sites.  
 
   // Observed parameters.
@@ -55,7 +58,7 @@ model {
   ep_i ~ normal(0, 10);
 
   for (i in 1:N) {
-    mu[i] = fold_change(R[i], Nns, ep_RA, c[i], ep_a[idx[i]], ep_i[idx[i]], ep_AI, n_sites);
+    mu[i] = fold_change(R[i], Nns, ep_RA, c[i], ep_a[idx[i]], ep_i[idx[i]], ep_AI[idx[i]], n_sites);
     fc[i] ~ normal(mu[i], sigma[idx[i]]);
   }
 }
