@@ -34,36 +34,38 @@ data {
     // Allosteric parameters
     int<lower=0> n_sites; // Number of allosteric binding sites.
     real<lower=0> c[N]; // Inducer concentration in µM.
-    real ep_AI; // Allosteric energy difference in kBT.
+    real ep_AI_mu[J_IND]; // Center of informative prior for allosteric energy difference in kBT.
+    real ep_AI_sig[J_IND]; // Variance of informative for allosteric energy difference in kBT.
 
     // Informative prior bounds
-    real<upper=0> ep_RA_lower[J_DNA]; // Lower bound of the DNA binding energy in kBT.
-    real<upper=0> ep_RA_upper[J_DNA]; // Upper bound of the DNA binding energy in kBT.
-    real<lower=0> Ka_upper[J_IND]; // Upper bound of the active repressor inducer dissociation constant in µM
-    real<lower=0> Ka_lower[J_IND]; // Lower bound of the active repressor inducer dissociation constant in µM 
-    real<lower=0> Ki_upper[J_IND]; // Upper bound of the inactive repressor inducer dissociation constant in µM
-    real<lower=0> Ki_lower[J_IND]; // Lower bound of the inactive repressor inducer dissociation constant in µM 
+    real ep_RA_mu[J_DNA]; // Center of informative prior for ep_RA
+    real<lower=0> ep_RA_sig[J_DNA]; // Variance for informative prior
+    real<lower=0> Ka_mu[J_IND]; // in µM
+    real<lower=0> Ka_sig[J_IND]; //  in µM 
+    real<lower=0> Ki_mu[J_IND]; // in µM 
+    real<lower=0> Ki_sig[J_IND]; // in µM
 
-   // Observed data
-    vector<lower=0, upper=1.2>[N] fc; // Observed fold-change in gene expression
+    // Observed data
+    vector<lower=-0.2, upper=1.2>[N] fc; // Observed fold-change in gene expression
 }
 
 parameters {
     real<upper=0> ep_RA[J_DNA];
     real<lower=0> Ka[J_IND];
     real<lower=0> Ki[J_IND];
+    real<lower=0> ep_AI[J_IND];
     real<lower=0> sigma[J]; // Homoscedastic error
 }
 
-// transformed parameters {
-//     // Log transform of inducer dissociatoin constants for more efficient sampling. 
-//     real ep_a[J_IND];
-//     real ep_i[J_IND];
-//     for (i in 1:J_IND) {
-//         ep_a[i] = -log(Ka);
-//         ep_i[i] = -log(Ki);
-//     }
-// }
+transformed parameters {
+     // Log transform of inducer dissociatoin constants for more efficient sampling. 
+     real ep_a[J_IND];
+     real ep_i[J_IND];
+     for (i in 1:J_IND) {
+         ep_a[i] = log(Ka[i]);
+         ep_i[i] = log(Ki[i]);
+     }
+ }
 
 model {
     // Instantiate a vectof or the theoretical value. 
@@ -71,12 +73,13 @@ model {
 
     // Define the priors as informative uniform. 
     for (i in 1:J_DNA) {
-        ep_RA[i] ~ uniform(ep_RA_lower[i],  ep_RA_upper[i]);
+        ep_RA[i] ~ normal(ep_RA[i],  ep_RA_sig[i]);
     }
 
     for (i in 1:J_IND) {
-        Ka[i] ~ uniform(Ka_lower[i], Ka_upper[i]);
-        Ki[i] ~ uniform(Ki_lower[i], Ki_upper[i]);
+        Ka[i] ~ normal(Ka_mu[i], Ka_sig[i]);
+        Ki[i] ~ normal(Ki_mu[i], Ki_sig[i]);
+        ep_AI[i] ~ normal(ep_AI_mu[i], ep_AI_sig[i]);
     }
 
     // Define prior for homoscedastic errors. 
@@ -84,8 +87,8 @@ model {
 
     // Evaluate the likelihood. 
     for (i in 1:N) {
-        mu[i] = fold_change(R, Nns, ep_RA[DNA_idx[i]], c[i], log(Ka[IND_idx[i]]), log(Ki[IND_idx[i]]),
-                           ep_AI,n_sites);
+        mu[i] = fold_change(R, Nns, ep_RA[DNA_idx[i]], c[i], ep_a[IND_idx[i]], ep_i[IND_idx[i]],
+                           ep_AI[IND_idx[i]],n_sites);
         fc[i] ~ normal(mu[i], sigma[idx[i]]);
     }
 }
