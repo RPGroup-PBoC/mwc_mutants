@@ -68,7 +68,7 @@ transformed parameters {
  }
 
 model {
-    // Instantiate a vectof or the theoretical value. 
+    // Instantiate a vector of the theoretical value. 
     vector[N] mu;
 
     // Define the priors as informative uniform. 
