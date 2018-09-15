@@ -58,7 +58,7 @@ parameters {
 }
 
 transformed parameters {
-     // Log transform of inducer dissociatoin constants for more efficient sampling. 
+     // Log transform of inducer dissociation constants for more efficient sampling. 
      real ep_a[J_IND];
      real ep_i[J_IND];
      for (i in 1:J_IND) {
@@ -78,8 +78,8 @@ model {
 
     for (i in 1:J_IND) {
         Ka[i] ~ normal(Ka_mu[i], Ka_sig[i]);
-        Ki[i] ~ normal(Ki_mu[i], Ki_sig[i]);
-        ep_AI[i] ~ normal(ep_AI_mu[i], ep_AI_sig[i]);
+        Ki[i] ~ normal(Ki_mu[i], Ki_sig[i]); 
+        ep_AI[i] ~ normal(ep_AI_mu[i], ep_AI_sig[i]); 
     }
 
     // Define prior for homoscedastic errors. 
