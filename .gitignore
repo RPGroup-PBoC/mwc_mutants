@@ -62,5 +62,8 @@ data/images/
 doc/induction_paper/graphicspath.tex
 /code/figures/dropbox_path.txt
 
+# Ignore notazble large files
+/data/csv/DBL_error_sampling.csv
+
 # Plot garbage. 
 *.json
