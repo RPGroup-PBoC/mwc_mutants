@@ -2,10 +2,8 @@
 A module for computing properties of various transcriptional
 regulatory architectures.
 """
-
 import numpy as np
 import scipy.optimize
-
 
 class MWC(object):
     R"""
@@ -361,3 +359,12 @@ class SimpleRepression(object):
         # Compute and return the Bohr.
         bohr = self.ep_r - np.log(pact) - np.log(self.R / self.n_ns)
         return bohr
+
+
+    
+def load_constants():
+    """Returns a dictionary of various constants incuding binding energies and copy numbers"""
+    return dict(O1=-15.3, O2=-13.9, O3=-9.7, 
+                RBS1147=60, RBS446=124, RBS1027=260, RBS1=1220,
+               Nns=4.6E6, n_sites=2, ep_AI=4.5,
+               Ka=139, Ki=0.53)

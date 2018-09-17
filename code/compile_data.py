@@ -1,7 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import glob
+import sys
 import pandas as pd
+sys.path.insert(0, '../')
+import mut.stats
+
 
 # Define the trimmed FC bounds
 fc_bounds = (-0.2, 1.3)
@@ -53,3 +57,8 @@ all_data = all_data[(all_data['mutant'] != 'Q21M') & (all_data['IPTGuM'] != 0)]
 
 # Save it to the data directory.
 filtered_data.to_csv('../data/csv/compiled_data.csv', index=False)
+
+# Compute the summarized statistics and save. 
+summarized = filtered_data.groupby(['IPTGuM', 'operator', 'repressors', 'mutant']).apply(mut.stats.compute_mean_sem)
+summarized = pd.DataFrame(summarized).reset_index()
+summarized.to_csv('../data/csv/summarized_data.csv', index=False)
