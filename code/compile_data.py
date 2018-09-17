@@ -59,6 +59,6 @@ all_data = all_data[(all_data['mutant'] != 'Q21M') & (all_data['IPTGuM'] != 0)]
 filtered_data.to_csv('../data/csv/compiled_data.csv', index=False)
 
 # Compute the summarized statistics and save. 
-summarized = filtered_data.groupby(['IPTGuM', 'operator', 'repressors', 'mutant']).apply(mut.stats.compute_mean_sem)
+summarized = filtered_data.groupby(['IPTGuM', 'class', 'operator', 'repressors', 'mutant']).apply(mut.stats.compute_mean_sem)
 summarized = pd.DataFrame(summarized).reset_index()
 summarized.to_csv('../data/csv/summarized_data.csv', index=False)
