@@ -7,10 +7,13 @@ import seaborn as sns
 sys.path.insert(0, '../../')
 import mut.thermo
 import mut.viz
+import imp
+imp.reload(mut.viz)
 pboc = mut.viz.color_selector('pboc')
 color = mut.viz.color_selector('mut')
 mut.viz.plotting_style()
 constants = mut.thermo.load_constants()
+
 
 # Load the summarized data and trim
 data = pd.read_csv('../../data/csv/summarized_data.csv')

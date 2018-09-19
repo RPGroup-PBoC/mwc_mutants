@@ -59,7 +59,7 @@ for g, d in data.groupby(['mutant']):
                 edge = color[g]
             _ = ax[i, j].errorbar(_d['IPTGuM'] / 1E6, _d['mean'], _d['sem'], markerfacecolor=face,
                                  markeredgecolor=edge, color=edge, lw=0.15, linestyle='none', fmt='o',
-                                 ms=2.5)
+                                 ms=2.5, label=g)
            
             # Plot the best-fit lines. 
             for k, m in enumerate(data['mutant'].unique()):
@@ -80,6 +80,6 @@ for g, d in data.groupby(['mutant']):
                 _ = ax[i, j].fill_between(c_range / 1E6, fc[:, 1], fc[:, 2], color=color[m], alpha=0.2) 
 
             
-
+_  = ax[0, 3].legend(fontsize=8, bbox_to_anchor=(1.04, 0.95))
 plt.subplots_adjust(wspace=0.05, hspace=0.05)
 plt.savefig('FigSX_pairwise_predictions.pdf', bbox_inches='tight')

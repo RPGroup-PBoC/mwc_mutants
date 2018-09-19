@@ -86,8 +86,8 @@ def color_selector(style):
     # Set the color styles and return.
     if  style.lower() == 'mut':
         colors = {'Y20I': '#738FC1', 'Q21A': '#7AA974', 'Q21M': '#AB85AC',
-                  'F164T': '#A97C50', 'Q294K': '#EAC264', 'Q294V': '#D56C55',
-                  'Q294R': '#919796', 'Y20I-F164T': '#2d98da', 'Y20I-Q294K': '#34495e',
+                  'F164T': '#A97C50', 'Q294K': '#5D737E', 'Q294V': '#D56C55',
+                  'Q294R': '#B2AF58', 'Y20I-F164T': '#2d98da', 'Y20I-Q294K': '#34495e',
                   'Y20I-Q294V': '#8854d0', 'Q21A-F164T': '#4b6584', 'Q21A-Q294K': '#EE5A24',
                   'Q21A-Q294V': '#009432', 'Q21M-F164T': '#1289A7', 'Q21M-Q294K': '#6F1E51',
                   'Q21M-Q294V': '#006266', 'WT': '#3C3C3C'} 
