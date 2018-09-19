@@ -66,7 +66,8 @@ for i, dna in enumerate(DNA_muts):
 bohr_df.to_csv('../../data/csv/Fig{}_{}_DBL_predicted_deltaBohr.csv'.format(FIG_NO, OPERATOR))
         
         
-        
+# Compute the measured (through fitting) deltaBohr        
+
         
         
         

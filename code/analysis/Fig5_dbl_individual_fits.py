@@ -9,7 +9,7 @@ import mut.stats
 constants = mut.thermo.load_constants()
 
 # Constants for file naming. 
-FIG_NO = 2
+FIG_NO = 5
 OPERATOR = 'O2'
 RBS = 'RBS1027'
 
@@ -43,3 +43,5 @@ samples_df.rename(columns=new_names, inplace=True)
 samples_stats = mut.stats.compute_statistics(samples_df)
 samples_df.to_csv('../../data/csv/Fig{}_{}_DBL_samples.csv'.format(FIG_NO, OPERATOR))
 samples_stats.to_csv('../../data/csv/Fig{}_{}_DBL_stats.csv'.format(FIG_NO, OPERATOR))
+
+

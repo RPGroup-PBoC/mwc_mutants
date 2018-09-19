@@ -40,7 +40,7 @@ samples_df = mut.bayes.chains_to_dataframe(samples)
 samples_df.rename(columns=new_names, inplace=True)
 samples_stats = mut.stats.compute_statistics(samples_df)
 samples_df.to_csv('../../data/csv/Fig{}_{}_KaKi_epAI_samples.csv'.format(FIG_NO, OPERATOR), index=False)
-samples_df.to_csv('../../data/csv/Fig{}_{}_KaKi_epAI_stats.csv'.format(FIG_NO, OPERATOR), index=False)
+samples_stats.to_csv('../../data/csv/Fig{}_{}_KaKi_epAI_stats.csv'.format(FIG_NO, OPERATOR), index=False)
 
 
 
