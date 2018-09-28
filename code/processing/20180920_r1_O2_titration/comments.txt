@@ -1,0 +1,6 @@
+# Date : 2018-09-20
+# Equipment : MACSQuant (Bjorkman lab)
+# User : gchure
+# Description :
+# A titration run of Q294K inducer mutants in O1 and O2 as well 
+# as Y20I-Q294K in O2.
