@@ -45,9 +45,9 @@ print('finished!')
 
 # %% Clean sampling traces and format data frame
 # Properly rename the parameters
-new_names = {'ep_RA.{}'.format(i+1):'ep_RA.{}.{}'.format(DNA_data[DNA_data['prof_idx']==i+1]['mutant'].unique()[0],
-                                                      int(DNA_data[DNA_data['prof_idx']==i+1]['repressors'].unique()[0])
-                                                        ) for i in range(len(DNA_data['prof_idx'].unique()))}
+new_names = {'ep_RA.{}'.format(i+1):'ep_RA.{}.{}'.format(data[data['prof_idx']==i+1]['mutant'].unique()[0],
+                                                      int(data[data['prof_idx']==i+1]['repressors'].unique()[0])
+                                                        ) for i in range(len(data['prof_idx'].unique()))}
 
 # Format the dataframe. 
 samples_df = mut.bayes.chains_to_dataframe(samples)

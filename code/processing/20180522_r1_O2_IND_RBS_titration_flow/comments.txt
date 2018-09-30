@@ -1,5 +1,0 @@
-# Date : 2018-05-21
-# Equipment : MACSQuant (Bjorkman lab)
-# User : gchure 
-# Description :
-# A titration run of six replicates of Q294K O2 R=260 strain.

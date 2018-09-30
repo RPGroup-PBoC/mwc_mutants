@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
-import pymc3 as pm
 import scipy.special
 import scipy.optimize
 import statsmodels.tools.numdiff as smnd
-import theano.tensor as tt
 
 def chains_to_dataframe(fit, varnames=None):
     """
