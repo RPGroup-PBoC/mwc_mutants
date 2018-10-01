@@ -23,7 +23,7 @@ cols = {d:i for i, d in enumerate(predictions['IND_mutant'].unique())}
 
 
 # Set up the plot. 
-fig, ax = plt.subplots(3, 3, figsize=(6, 6), sharex=True, sharey=True)
+fig, ax = plt.subplots(3, 3, figsize=(3.5, 3.5), sharex=True, sharey=True)
 for a in ax.ravel():
     a.set_xscale('log')
     a.set_xlim([1E-8, 1E-2])
@@ -57,4 +57,4 @@ for d, i in rows.items():
  
 
 plt.tight_layout()
-plt.savefig('Fig4_epAI_correction.pdf', bbox_inches='tight')
+# plt.savefig('Fig4_epAI_correction.pdf', bbox_inches='tight')
