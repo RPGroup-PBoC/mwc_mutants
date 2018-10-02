@@ -29,13 +29,14 @@ for a in ax.ravel():
     a.set_xlim([1E-8, 1E-2])
     a.xaxis.set_tick_params(labelsize=8)
     a.yaxis.set_tick_params(labelsize=8)
+    a.set_xticks([1E-7, 1E-5, 1E-3])
     
 # Add the appropriate labels.
 for i in range(3):
     ax[-1, i].set_xlabel('IPTG [M]', fontsize=8)
     ax[i, 0].set_ylabel('fold-change', fontsize=8) 
 for d, i in rows.items():
-    ax[i, 0].text(-0.5, 0.5, '{}'.format(d), fontsize=8, rotation='vertical', backgroundcolor=pboc['pale_yellow'],
+    ax[i, 0].text(-0.75, 0.55, '{}'.format(d), fontsize=8, rotation='vertical', backgroundcolor=pboc['pale_yellow'],
                  transform=ax[i,0].transAxes)
 for d, i in cols.items():
     ax[0, i].set_title('{}'.format(d), fontsize=8, y=1.08, backgroundcolor=pboc['pale_yellow'])
@@ -56,5 +57,6 @@ for d, i in rows.items():
                                            linestyle='none')
  
 
-plt.tight_layout()
-# plt.savefig('Fig4_epAI_correction.pdf', bbox_inches='tight')
+# plt.tight_layout()
+plt.subplots_adjust(hspace=0.05, wspace=0.05)
+plt.savefig('Fig4_epAI_correction.svg', bbox_inches='tight')
