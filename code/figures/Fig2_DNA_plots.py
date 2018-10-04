@@ -28,7 +28,7 @@ glyphs = {i:j for i, j in zip(data['repressors'].unique(), _glyphs)}
 
 # Define functions for computing the dynamic range as a function of R / kdna
 def dynamic_range(r_kdna, constants):
-    allo = mut.thermo.MWC(ep_ai=constants['ep_AI'], ka=ka, ki=ki, n_sites=constants['n_sites'], effector_conc=0)
+    allo = mut.thermo.MWC(ep_ai=constants['ep_AI'], ka=constants['Ka'], ki=constants['Ki'], n_sites=constants['n_sites'], effector_conc=0)
     sat = (1 + allo.saturation() * r_kdna)**-1
     leak = (1 + allo.leakiness() * r_kdna)**-1
     return sat - leak
@@ -84,7 +84,13 @@ for g, d in data.groupby(['mutant', 'repressors']):
     # Compute the observed dynamic range and plot. 
     dyn_rng = d[d['IPTGuM']==5000]['mean'].values - d[d['IPTGuM']==0]['mean'].values  
     r_kdna = (g[1] / constants['Nns']) * np.exp(-epRA)
-    ax[1, 0].plot(r_kdna[0], dyn_rng, marker=glyphs[g[1]], ms=3, color=colors[g[0].upper()])
+    if g[1] == 260:
+        markerfacecolor='w' 
+    else:
+        markerfacecolor=colors[g[0].upper()]
+        
+    ax[1, 0].plot(r_kdna[0], dyn_rng, marker=glyphs[g[1]], ms=3, 
+                  markerfacecolor=markerfacecolor, markeredgecolor=colors[g[0].upper()])
     ax[1, 0].hlines(dyn_rng, r_kdna[1], r_kdna[2], lw=1, color=colors[g[0].upper()])
     
     # Compute the bohr parameter.
