@@ -33,7 +33,7 @@ wt_bohr = mut.thermo.SimpleRepression(R=constants['RBS1027'], ep_r=constants['O2
                                      n_ns=constants['Nns'], effector_conc=data['IPTGuM'].unique()).bohr_parameter()
 
 # Instantiate the figure, 
-fig = plt.figure(figsize=(4, 7))
+fig = plt.figure(figsize=(3.42, 6.5))
 gs = gridspec.GridSpec(6, 1)
 ax0 = fig.add_subplot(gs[:3, 0])
 ax1 = fig.add_subplot(gs[5:, 0])
@@ -53,6 +53,7 @@ ax0.set_xlim([-8, 12])
 ax0.set_xlabel('Bohr parameter [$k_BT$]', fontsize=8)
 ax0.set_ylabel('fold-change', fontsize=8)
 ax1.set_ylabel(r'$\chi^2_{\Delta F}$', fontsize=8)
+
 # Plot the collapse curve. 
 ax0.plot(bohr_range, collapse, 'k-', label='__nolegend__')
 
@@ -63,7 +64,7 @@ for g, d in DBL_pred.groupby('mutant'):
     d = d.sort_values('IPTGuM')
     fc = data[data['mutant']==g].sort_values('IPTGuM')
     ax0.errorbar(d['mode'], fc['mean'], fc['sem'], linestyle='none',
-                lw=1, fmt='o', color=colors[g], label=g)
+                lw=1, fmt='o', color=colors[g], label=g, ms=3)
     ax0.hlines(fc['mean'], d['hpd_min'], d['hpd_max'], lw=1, color=colors[g], label='__nolegend__')
 
 
