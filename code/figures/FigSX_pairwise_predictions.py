@@ -34,9 +34,9 @@ for a in ax.ravel():
 for i in range(len(reps)):
     ax[i, 0].set_ylabel('fold-change', fontsize=8)
     ax[-1, i].set_xlabel('IPTG [M]', fontsize=8)
-    ax[i, 0].text(-0.7, 0.5, int(reps[i]), fontsize=8, backgroundcolor=pboc['pale_yellow'],
+    ax[i, 0].text(-0.7, 0.5, '$R = $' + str(int(reps[i])), fontsize=8, backgroundcolor=pboc['pale_yellow'],
                  transform=ax[i,0].transAxes, rotation='vertical')
-    ax[0, i].set_title(int(reps[i]), fontsize=8, backgroundcolor=pboc['pale_yellow'], y=1.08)
+    ax[0, i].set_title('$R = $' + str(int(reps[i])), fontsize=8, backgroundcolor=pboc['pale_yellow'], y=1.08)
     ax[i, i].set_facecolor('#e4e7ec')
 for i in range(4):
     ax[-1, i].set_xticks([1E-6, 1E-3])
@@ -82,4 +82,4 @@ for g, d in data.groupby(['mutant']):
             
 _  = ax[0, 3].legend(fontsize=8, bbox_to_anchor=(1.04, 0.95))
 plt.subplots_adjust(wspace=0.05, hspace=0.05)
-plt.savefig('FigSX_pairwise_predictions.pdf', bbox_inches='tight')
+plt.savefig('FigS2_pairwise_predictions.pdf', bbox_inches='tight')

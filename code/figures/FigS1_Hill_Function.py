@@ -99,7 +99,7 @@ for g, d in grouped:
 
 # Hardcode the bounds for  K
 mut_subax['Y20I'][2].set_ylim([0,  25])
-mut_subax['Q21A'][2].set_ylim([0,  25])
+mut_subax['Q21A'][2].set_ylim([0,  50])
 mut_subax['Q21M'][2].set_ylim([50, 190])
 
 # Adjust the bounds for a and b
@@ -113,6 +113,6 @@ for m in data['mutant'].unique():
 _leg = mut_ax['Q21M'].legend(loc='upper left', fontsize=7, handletextpad=0.15, title='rep. / cell')
 _leg.get_title().set_fontsize(7)
 plt.subplots_adjust(wspace=0.4, hspace=0.4)
-plt.savefig('/Users/gchure/Desktop/hill_fits.svg')
+plt.savefig('hill_fits.svg')
 
 
