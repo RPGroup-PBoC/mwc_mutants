@@ -16,7 +16,8 @@ RBS = 'RBS1027'
 # Load the data
 data = pd.read_csv('../../data/csv/compiled_data.csv')
 data = data[(data['class']=='DBL') & (data['fold_change'] >=-0.2) & 
-           (data['fold_change'] <= 1.2)]
+           (data['fold_change'] <= 1.2) & (data['operator']=='O2') &
+           (data['repressors']==260)]
 
 # Assign identifiers. 
 idx = {m:i+1 for i, m in enumerate(data['mutant'].unique())}
@@ -32,13 +33,13 @@ model =  pystan.StanModel(model_code = model_code)
 # Assemble the data dictionary and sample. 
 data_dict = dict(J=len(idx), N=len(data), idx=data['idx'], R=data['repressors'],
                 Nns=constants['Nns'], n_sites=constants['n_sites'], 
-                ep_AI=constants['ep_AI'], c=data['IPTGuM'],
+                c=data['IPTGuM'],
                 fc=data['fold_change'])
-samples = model.sampling(data_dict, iter=7000, chains=4, pars=['Ka', 'Ki', 'ep_RA', 'sigma'])
+samples = model.sampling(data_dict, iter=10000, chains=4, pars=['Ka', 'Ki', 'ep_RA', 'ep_AI', 'sigma'])
 
 # Convert to dataframe and clean up
 samples_df = mut.bayes.chains_to_dataframe(samples)
-new_names = {'{}.{}'.format(n, i):'{}.{}'.format(n, m) for m, i in idx.items() for n in ['ep_RA', 'Ka', 'Ki', 'sigma']}
+new_names = {'{}.{}'.format(n, i):'{}.{}'.format(n, m) for m, i in idx.items() for n in ['ep_RA', 'Ka', 'Ki', 'ep_AI', 'sigma']}
 samples_df.rename(columns=new_names, inplace=True)
 samples_stats = mut.stats.compute_statistics(samples_df)
 samples_df.to_csv('../../data/csv/Fig{}_{}_DBL_samples.csv'.format(FIG_NO, OPERATOR))

@@ -25,7 +25,7 @@ data {
     real<lower=0> Nns; // Number of non-specific binding sites
     
     // Allosteric parameters
-    real ep_AI; // Allosteric energy difference between active and inactive repressor in kBT
+//    real ep_AI; // Allosteric energy difference between active and inactive repressor in kBT
     int n_sites; // Number of allosteric inducer binding sites
     real<lower=0> c[N]; // Inducer concentration in µM
     
@@ -38,6 +38,7 @@ parameters {
     real<lower=0, upper=1E4> Ka[J]; // Inducer dissociation constant to active repressor
     real<lower=0, upper=1E4> Ki[J]; // Inducer dissociation constant to inactive repressor
     real<lower=0> sigma[J]; // Homoscedastic error
+    real ep_AI[J];
 }
 
 transformed parameters {
@@ -57,12 +58,13 @@ model {
     ep_RA ~ normal(0, 10);
     ep_a ~ normal(0, 10);
     ep_i ~ normal(0, 10);
+    ep_AI ~ normal(0, 10);
     sigma ~ normal(0, 1);
     
     // Evaluate the likelihood
     for (i in 1:N) {
         mu[i] = fold_change(R[i], Nns, ep_RA[idx[i]], c[i], ep_a[idx[i]], ep_i[idx[i]],
-                          ep_AI, n_sites);
+                          ep_AI[idx[i]], n_sites);
         fc[i] ~ normal(mu[i], sigma[idx[i]]);
     } 
 }
