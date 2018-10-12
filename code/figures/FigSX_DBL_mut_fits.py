@@ -47,5 +47,4 @@ for i, dna in enumerate(rows):
         # Plot the fits. 
         _ = ax[i, j].plot(c_range / 1E6, arch, lw=1, color=colors[m])
         
-
 plt.subplots_adjust(hspace=0.1, wspace=0.1)
