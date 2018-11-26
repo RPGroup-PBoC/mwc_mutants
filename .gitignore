@@ -23,6 +23,10 @@ graphicspath.tex
 *.tif*
 *.eps
 *.ai
+*.aitt 
+
+
+
 *.svg
 *.bmp
 *.hdr
