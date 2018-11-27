@@ -17,10 +17,11 @@ colors = {c:i for c, i in colors.items() if ('light' not in c) & ('pale' not in 
 # Load the data.
 old_gods = pd.read_csv('../../data/csv/Garcia2011_Brewster2014_data.csv')
 new_gods = pd.read_csv('../../data/csv/RazoMejia2018_data.csv')
-new_gods = new_gods[new_gods['repressors'] > 0]
+new_gods = new_gods[(new_gods['repressors'] > 0) & (new_gods['repressors'] <= 130) & (new_gods['repressors'] >11)]
 
 # Prune non-physical fold-change. 
 old_gods = old_gods[(old_gods['fold_change'] >= -0.1) & (old_gods['fold_change'] <= 1.2)]
+new_gods = new_gods[(new_gods['fold_change_A'] >= -0.1) & (new_gods['fold_change_A'] <= 1.2)]
 # Summarize the induction data. 
 new_gods.loc[:, 'fold_change'] = new_gods['fold_change_A']
 new_gods = pd.DataFrame(new_gods.groupby(
