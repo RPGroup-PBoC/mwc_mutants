@@ -26,7 +26,7 @@ kaki_allo_stats = pd.read_csv('../../data/csv/Fig3_O2_KaKi_epAI_stats.csv')
 c_range = np.logspace(-2, 4, 200)
 
 # Instantiate the figure. 
-fig, ax = plt.subplots(2, 3, figsize=(7,  4))
+fig, ax = plt.subplots(2, 4, figsize=(7,  4))
 
 # Format the axes 
 ax[0, 0].axis('off')
