@@ -15,7 +15,7 @@
 * binding energy, allosteric energy difference) are taken as delta
 * functions at the literature value. 
 */
-
+#include functions.stan
 data { 
   // Dimensional parameters
   int<lower=1> J; // Number of unique mutants.

@@ -13,6 +13,7 @@
 * delta functions at their literature value. 
 */
 
+#include functions.stan
 data {
     // Dimensional parameters
     int<lower=1> J; // Number of uniqueinduction profiles.
@@ -36,11 +37,11 @@ data {
 parameters {
     real ep_RA[J];  // DNA binding energy in units of kBT.
     real<lower=0> sigma[J]; // Homoscedastic error
+
 }
 
-model {
-    vector[N] mu; // Storage vector for theoretical value.
-    
+model {    
+    vector[N] mu;
     // Define the priors
     ep_RA ~ normal(0, 10);
     sigma ~ normal(0, 1); 

@@ -101,3 +101,61 @@ def color_selector(style):
               'pale_red': '#F1D4C9', 'purple': '#AB85AC',
               'light_purple': '#D4C2D9', 'dark_green':'#7E9D90'}
     return colors
+
+
+
+def bokeh_traceplot(samples, varnames=None):
+    """
+    Generate a Bokey traceplot of a series of parameters and their sampling 
+    history. As of now, the only shown distribution is 'ecdf'. 
+
+    Parameters
+    ----------
+    samples: StanFit4Model object
+        Sampling output from Stan.
+    varnames: list
+        List of variable names to include in the plot.
+    """
+    params = samples.model_pars
+    sample_values = samples.extract()
+    palette = bokeh.palettes.Category10_10
+    
+    # Define the standard plot sizes.   
+    pairs = []
+    if varnames != None:
+        iterator = varnames
+    else:
+        iterator = params
+    for p in iterator:
+        colors = itertools.cycle(palette)
+        if len(np.shape(sample_values[p])) == 1:
+            _samples = np.array([sample_values[p]]).T
+        else:
+            _samples = sample_values[p]
+      
+        dfs = []
+        trace = bokeh.plotting.figure(plot_width=400, plot_height=200, 
+                                      x_axis_label='sample number', y_axis_label=f'{p}',
+                                     title=f'sampling history for {p}', background_fill_color='#ecedef') 
+
+        dist = bokeh.plotting.figure(plot_width=400, plot_height=200, 
+                                     x_axis_label=f'{p}', y_axis_label='ECDF',
+                                    title=f'posterior distribution for {p}', background_fill_color='#ecedef')   
+        
+        # Add visual formatting
+        trace.xgrid.grid_line_color = '#FFFFFF'
+        trace.ygrid.grid_line_color = '#FFFFFF'
+        dist.xgrid.grid_line_color = '#FFFFFF'
+        dist.ygrid.grid_line_color = '#FFFFFF'    
+        
+        for i, color in zip(range(np.shape(_samples)[1]), colors): 
+            # Extract the specific values. 
+            _values = _samples[:, i]
+            x, y = np.sort(_values), np.arange(0, len(_values), 1) / len(_values)
+            _df = pd.DataFrame(np.array([x, y, 
+                                         _values, np.arange(0, len(_values), 1)]).T, 
+                               columns=['x', 'ecdf', 'samples', 'step_no'])            
+            dist.line(_df['x'], _df['ecdf'], line_width=2, color=color)
+            trace.line(_df['step_no'], _df['samples'], line_width=1, color=color) 
+        pairs.append([dist, trace])  
+    return bokeh.io.show(bokeh.layouts.gridplot(pairs))

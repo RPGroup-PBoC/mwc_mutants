@@ -32,7 +32,7 @@ model = pystan.StanModel(model_code=model_code)
 data_dict = dict(J=len(IND_idx), N=len(data), idx=data['idx'], R=data['repressors'],
                 Nns=constants['Nns'], c=data['IPTGuM'], ep_RA=constants[OPERATOR],
                 n_sites=constants['n_sites'],fc=data['fold_change'])
-samples = model.sampling(data_dict, iter=5000, chains=4)
+samples = model.sampling(data_dict, iter=5000, chains=4, control=dict(adapt_delta=0.95))
 
 # Clean the dataframe and rename variables. 
 new_names = {'{}.{}'.format(n, i): '{}.{}'.format(n, m) for m, i in IND_idx.items() for n in ['Ka', 'Ki', 'ep_AI', 'sigma']}
