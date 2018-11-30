@@ -20,8 +20,8 @@ data = pd.read_csv('../../data/csv/summarized_data.csv')
 data = data[(data['mutant']=='Q294R') | (data['mutant']=='Q294K')]
 
 # Load the samples. 
-KaKi_R_samples = pd.read_csv('../../data/csv/KaKi_R_samples.csv')
-KaKi_R_stats = pd.read_csv('../../data/csv/KaKi_R_summary.csv')
+KaKi_epAI_samples = pd.read_csv('../../data/csv/KaKi_epAI_samples.csv')
+KaKi_epAI_stats = pd.read_csv('../../data/csv/KaKi_epAI_summary.csv')
 
 # Define the ranges for plotting of values
 c_range = np.logspace(-2, 4, 200)
@@ -87,28 +87,30 @@ for g, d in data.groupby(['mutant', 'operator']):
 for i, m in enumerate(['Q294R', 'Q294K']):
     for j, op_pred in enumerate(op_ax.keys()):
         # Isolate the statistics. 
-        stats = KaKi_R_stats[(KaKi_R_stats['mutant']==m) & 
-                            (KaKi_R_stats['operator']==op_pred)]
-        samps = KaKi_R_samples[(KaKi_R_samples['mutant']==m) &
-                              (KaKi_R_samples['operator']==op_pred)]
+        stats = KaKi_epAI_stats[(KaKi_epAI_stats['mutant']==m) & 
+                            (KaKi_epAI_stats['operator']==op_pred)]
+        samps = KaKi_epAI_samples[(KaKi_epAI_samples['mutant']==m) &
+                              (KaKi_epAI_samples['operator']==op_pred)]
         Ka = stats[stats['parameter']=='Ka']['mode'].values[0]
         Ka_samps = samps['Ka']
         Ki = stats[stats['parameter']=='Ki']['mode'].values[0]
         Ki_samps = samps['Ki']
-        R = stats[stats['parameter']=='R']['mode'].values[0]
-        R_samps = samps['R']
+        epAI = stats[stats['parameter']=='ep_AI']['mode'].values[0]
+        epAI_samps = samps['ep_AI']
         for k, op_fit in enumerate(op_ax.keys()):  
             # Compute the best-fit curve
-            arch = mut.thermo.SimpleRepression(R=R, ep_r=constants[op_fit], effector_conc=c_range,
-                                       ka=Ka, ki=Ki, ep_ai=constants['ep_AI'], n_ns=constants['Nns'],
-                                      n_sites=constants['n_sites']).fold_change()
+            arch = mut.thermo.SimpleRepression(R=d['repressors'].unique()[0], ep_r=constants[op_fit], 
+                                               effector_conc=c_range, ka=Ka, ki=Ki, 
+                                               ep_ai=epAI, n_ns=constants['Nns'],
+                                                n_sites=constants['n_sites']).fold_change()
             
             # Compute the credible region
             cred_region = np.zeros((2, len(c_range)))
             for z, c in enumerate(c_range):
-                _arch = mut.thermo.SimpleRepression(R=R_samps, ep_r=constants[op_fit], effector_conc=c,
-                                       ka=Ka_samps, ki=Ki_samps, ep_ai=constants['ep_AI'], n_ns=constants['Nns'],
-                                      n_sites=constants['n_sites']).fold_change()
+                _arch = mut.thermo.SimpleRepression(R=d['repressors'].unique()[0], ep_r=constants[op_fit], 
+                                                    effector_conc=c, ka=Ka_samps, ki=Ki_samps, 
+                                                    ep_ai=epAI_samps, n_ns=constants['Nns'],
+                                                     n_sites=constants['n_sites']).fold_change()
                 cred_region[:, z] = mut.stats.compute_hpd(_arch, 0.95)
                 
             # Plot the line of best fit and the credible regions
@@ -121,26 +123,26 @@ for i, m in enumerate(['Q294R', 'Q294K']):
 # #############################
 for g, d in data.groupby(['mutant', 'operator']):
     # Isolate the statistics. 
-    stats = KaKi_R_stats[(KaKi_R_stats['mutant']==g[0]) & 
-                        (KaKi_R_stats['operator']=='O2')]
-    samps = KaKi_R_samples[(KaKi_R_samples['mutant']==g[0]) & 
-                        (KaKi_R_samples['operator']=='O2')]
+    stats = KaKi_epAI_stats[(KaKi_epAI_stats['mutant']==g[0]) & 
+                        (KaKi_epAI_stats['operator']=='O2')]
+    samps = KaKi_epAI_samples[(KaKi_epAI_samples['mutant']==g[0]) & 
+                        (KaKi_epAI_samples['operator']=='O2')]
     Ka = stats[stats['parameter']=='Ka']['mode'].values[0]
     Ka_samp = samps['Ka']
     Ki = stats[stats['parameter']=='Ki']['mode'].values[0]
     Ki_samps = samps['Ki'] 
-    R = stats[stats['parameter']=='R']['mode'].values[0]
-    R_samps = samps['R']
+    epAI = stats[stats['parameter']=='ep_AI']['mode'].values[0]
+    epAI_samps = samps['ep_AI']
     
     # Compute the architecture. 
-    arch = mut.thermo.SimpleRepression(R=R, ep_r=constants[g[1]], effector_conc=d['IPTGuM'],
-                                       ka=Ka, ki=Ki, ep_ai=constants['ep_AI'], n_ns=constants['Nns'],
-                                      n_sites=constants['n_sites']).bohr_parameter()
+    arch = mut.thermo.SimpleRepression(R=d['repressors'].unique()[0], ep_r=constants[g[1]], 
+                                       effector_conc=d['IPTGuM'], ka=Ka, ki=Ki, ep_ai=epAI, 
+                                       n_ns=constants['Nns'],n_sites=constants['n_sites']).bohr_parameter()
     # Compute the credible region
     cred_region = np.zeros((2, len(d['IPTGuM'])))
     for i, c in enumerate(d['IPTGuM']):
-        _arch = mut.thermo.SimpleRepression(R=R_samps, ep_r=constants[g[1]], effector_conc=c,
-                                           ka=Ka_samps, ki=Ki_samps, ep_ai=constants['ep_AI'],
+        _arch = mut.thermo.SimpleRepression(R=d['repressors'].unique()[0], ep_r=constants[g[1]], effector_conc=c,
+                                           ka=Ka_samps, ki=Ki_samps, ep_ai=epAI_samps,
                                            n_ns=constants['Nns'], n_sites=constants['n_sites']).bohr_parameter()
         cred_region[:, i] = mut.stats.compute_hpd(_arch, 0.95)
         
@@ -186,4 +188,4 @@ collapse_ax.set_xlabel('Bohr parameter [$k_BT$]', fontsize=6.5)
 collapse_ax.set_ylabel('fold-change', fontsize=6.5)
 
 # Saving
-plt.savefig('FigSX_R_fitting.svg', bbox_inches='tight')
+plt.savefig('FigSX_epAI_fitting.svg', bbox_inches='tight')
