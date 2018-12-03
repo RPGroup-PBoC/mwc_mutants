@@ -1,5 +1,0 @@
-# Date : 2018-05-29
-# Equipment : MACSQuant (Bjorkman lab)
-# User : gchure 
-# Description :
-# A titration run of three replicates each of Y20I-Q294K and Q21A-Q294K O2 R260.

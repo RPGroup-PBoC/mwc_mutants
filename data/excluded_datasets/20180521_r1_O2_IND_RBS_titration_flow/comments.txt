@@ -1,5 +1,0 @@
-# Date : 2018-05-21
-# Equipment : MACSQuant (Bjorkman lab)
-# User : gchure 
-# Description :
-# A titration run of six replicates of a full Q294K induction series. 

@@ -1,7 +1,0 @@
-# Date : 2017-11-07
-# Equipment : MACSQuant (Bjorkman lab)
-# User : gchure
-# Description :
-# A test run of an IPTG titration of the antiLac mutant. All three DNA binding
-# operators were tested and expression of the antilac gene was driven by a
-# RBS1027 promoter, which produces and assumed 260 repressors per cell.
