@@ -4,11 +4,8 @@ import glob
 import sys
 import pandas as pd
 sys.path.insert(0, '../')
+import mut.io
 import mut.stats
-
-
-# Define the trimmed FC bounds
-fc_bounds = (-0.2, 1.3)
 
 # Assemble the idenfier dictionary.
 mutants = ['Y20I', 'Q21A', 'Q21M', 'Q294K', 'Q294V', 'Q294R', 'F164T']
@@ -25,9 +22,16 @@ for k in mutants:
 col_names = ['date', 'username', 'class', 'IPTGuM',
              'operator', 'repressors', 'mutant', 'fold_change']
 
+# Generate list of "Accepted" experiments.
+accepted = []
+files = glob.glob('processing/2018*')
+for _, d in enumerate(files):
+    info = mut.io.scrape_frontmatter(f'{d}')
+    if info['status'].lower() == 'accepted':
+        accepted.append(glob.glob(f'{d}/output/*.csv')[0])
+
 # Get all valid files in processing folder.
-files = glob.glob('processing/2018*/output/*.csv')
-all_data = pd.concat([pd.read_csv(f, comment="#") for f in files])
+all_data = pd.concat([pd.read_csv(f, comment="#", sort=False) for f in accepted])
 
 # Drop unnecessary columns.
 dropped_cols = [c for c in all_data.keys() if c not in col_names]
@@ -47,9 +51,7 @@ for d in microscopy_dates:
     all_data.loc[(all_data['date'] == int(d)), 'operator'] = 'O2'
 
 # Filter the fold change.
-filtered_data = all_data[(all_data['fold_change'] >= fc_bounds[0]) &\
-                         (all_data['fold_change'] <= fc_bounds[1]) &\
-                         (all_data['repressors'] > 0) & (all_data['mutant'] != 'auto') &
+filtered_data = all_data[(all_data['repressors'] > 0) & (all_data['mutant'] != 'auto') &
                          (all_data['mutant'] != 'delta')]
                          
 # Save it to the data directory.
