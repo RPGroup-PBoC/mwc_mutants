@@ -13,7 +13,7 @@
 * parameters (R, Nns, etc) are taken as delta functions at
 * their literature values. 
 */
-
+#include functions.stan
 data {
     // Dimensional parameters
     int<lower=1> J; // Number of unique mutants
@@ -24,20 +24,20 @@ data {
     real<lower=0> Nns; // Number of non-specific binding sites
     
     // Allosteric parameters
+    real<lower=0> R;
     int n_sites; // Number of allosteric inducer binding sites
     real<lower=0> c[N]; // Inducer concentration in µM
     
     // Observed parameters
-    real<lower=-0.2, upper=1.2> fc[N]; // Fold-change in gene expression
+    real fc[N]; // Fold-change in gene expression
 }
 
 parameters { 
     real ep_RA[J]; // DNA binding energy in kBT
+    real ep_AI[J];
     real<lower=0, upper=1E4> Ka[J]; // Inducer dissociation constant to active repressor
     real<lower=0, upper=1E4> Ki[J]; // Inducer dissociation constant to inactive repressor
     real<lower=0> sigma[J]; // Homoscedastic error
-    real<lower=0> R;
-    real ep_AI[J];
 }
 
 transformed parameters {
@@ -55,10 +55,9 @@ model {
     
     // Define the priors
     ep_RA ~ normal(0, 10);
+    ep_AI ~ normal(0, 10);
     ep_a ~ normal(0, 10);
     ep_i ~ normal(0, 10);
-    ep_AI ~ normal(0, 10);
-    R ~ normal(0, 100);
     sigma ~ normal(0, 1);
     
     // Evaluate the likelihood
