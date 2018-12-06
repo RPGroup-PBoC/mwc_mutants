@@ -31,7 +31,7 @@ for _, d in enumerate(files):
         accepted.append(glob.glob(f'{d}/output/*.csv')[0])
 
 # Get all valid files in processing folder.
-all_data = pd.concat([pd.read_csv(f, comment="#", sort=False) for f in accepted])
+all_data = pd.concat([pd.read_csv(f, comment="#") for f in accepted],sort=False)
 
 # Drop unnecessary columns.
 dropped_cols = [c for c in all_data.keys() if c not in col_names]
@@ -42,13 +42,13 @@ for k in class_dict.keys():
     all_data.loc[all_data['mutant'] == k, 'class'] = class_dict[k]
 
 # Include the method information.
-microscopy_files = glob.glob('processing/*microscopy*')
-microscopy_dates = [f.split('/')[-1].split('_')[0] for f in microscopy_files]
-all_data.loc[:, 'method'] = 'flow cytometry'
-for d in microscopy_dates:
-    all_data.loc[(all_data['date'] == int(d)), 'method'] = 'microscopy'
-    all_data.loc[(all_data['date'] == int(d)), 'IPTGuM'] = 0
-    all_data.loc[(all_data['date'] == int(d)), 'operator'] = 'O2'
+# microscopy_files = glob.glob('processing/*microscopy*')
+# microscopy_dates = [f.split('/')[-1].split('_')[0] for f in microscopy_files]
+# all_data.loc[:, 'method'] = 'flow cytometry'
+# for d in microscopy_dates:
+#     all_data.loc[(all_data['date'] == int(d)), 'method'] = 'microscopy'
+# #     all_data.loc[(all_data['date'] == int(d)), 'IPTGuM'] = 0
+#     all_data.loc[(all_data['date'] == int(d)), 'operator'] = 'O2'
 
 # Filter the fold change.
 filtered_data = all_data[(all_data['repressors'] > 0) & (all_data['mutant'] != 'auto') &

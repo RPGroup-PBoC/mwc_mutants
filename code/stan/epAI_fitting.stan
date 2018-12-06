@@ -26,13 +26,14 @@ data {
     // Allosteric parameters
     real<lower=0> R;  
     real ep_RA[J];
+    real ep_AI[J];
     
     // Observed parameters
     real fc[N]; // Fold-change in gene expression
 }
 
 parameters { 
-    real ep_AI[J]; // DNA binding energy in kBT
+    real ep_int[J]; // DNA binding energy in kBT
     real<lower=0> sigma[J]; // Homoscedastic error
 }
 
@@ -40,13 +41,13 @@ model {
     vector[N] mu;
     
     // Define the priors
-    ep_AI ~ normal(0, 10);
+    ep_int ~ normal(0, 10);
     sigma ~ normal(0, 1);
     
     // Evaluate the likelihood
     for (i in 1:N) {
         mu[i] = fold_change(R, Nns, ep_RA[idx[i]], 0, 1, 1,
-                          ep_AI[idx[i]], 2);
+                          ep_AI[idx[i]] + ep_int[idx[i]], 2);
         fc[i] ~ normal(mu[i], sigma[idx[i]]);
     } 
 }

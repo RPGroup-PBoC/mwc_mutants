@@ -36,8 +36,9 @@ parameters {
     real<lower=0> K[J];
     real<lower=0> n[J]; 
     real<lower=0> sigma[J];
+ 
 }
-
+ 
 model {
     // Define a vector for the theoretical fold-change
     vector[N] mu;
