@@ -31,8 +31,9 @@ data {
   int<lower=1> n_sites; // Number of allosteric sites.  
 
   // Observed parameters.
-  vector<lower=-0.2, upper=1.2>[N] fc;
+  vector[N] fc;
   }
+  
 
 parameters {
   real<lower=0, upper=5000> Ka[J]; // Active repressor inducer dissociation constant
