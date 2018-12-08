@@ -7,7 +7,7 @@ sys.path.insert(0, '../../../')
 import mut.flow
 
 # Define the experiment parameters
-DATE = 20181130
+DATE = 20181206
 RUN_NO = 1
 USERNAME = 'gchure'
 CLASS = 'IND'

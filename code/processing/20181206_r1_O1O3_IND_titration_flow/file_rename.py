@@ -6,9 +6,9 @@ import glob
 
 # Define the details fo the expriment.
 USERNAME = 'gchure'
-DATE = 20181130
+DATE = 20181206
 R = [0, 0, 260, 260, 260, 260, 260, 260]
-FCS_PATTERN = 'RP2018-11-30'
+FCS_PATTERN = 'RP2018-12-06'
 
 savedir = '../../../data/flow/csv/'
 

@@ -19,10 +19,9 @@ kaki_samples = pd.read_csv('../../data/csv/KaKi_only_samples.csv')
 kaki_epAI_samples = pd.read_csv('../../data/csv/KaKi_epAI_samples.csv')
 epRA_samples = pd.read_csv('../../data/csv/DNA_binding_energy_samples.csv')
 
-# Load the hill-fit characterization samples
-hill_samples = pd.read_csv('../../data/csv/DBL_Hill_samples.csv')
-
-
+# Load the predictions for the double mutants
+DBL_pred = pd.read_csv('../../data/csv/DBL_mutant_predictions.csv')
+DBL_epAI_summary = pd.read_csv('../../data/csv/DBL_epAI_summary.csv')
 
 # Define the mutants of interest
 DNA_muts = ['Y20I', 'Q21M', 'Q21A']
@@ -30,7 +29,7 @@ IND_muts = ['Q294K', 'F164T', 'Q294V']
 
 # Instantiate the figure.
 fig, ax = plt.subplots(8, 3, figsize=(3.42, 8.5))
-
+n_draws = int(1E5)
 # ###################################
 # DATA
 # ###################################
@@ -38,6 +37,7 @@ for i, dna in enumerate(DNA_muts):
     # Load the DNA binding energy for the given DNA mutant
     epRA_samps = epRA_samples[(epRA_samples['mutant']==dna) & (epRA_samples['operator']=='O2') &\
                              (epRA_samples['repressors']==260)] 
+    epRA_draws = epRA_samples['ep_RA'].sample(n_draws, replace=True)                       
     epRA_mode = epRA_samps.iloc[np.argmax(epRA_samps['lp__'].values)]['ep_RA']
     for j, ind in enumerate(IND_muts):
         
@@ -48,82 +48,90 @@ for i, dna in enumerate(DNA_muts):
         # Define the IPTG concentration range. 
         c_range = mut_data['IPTGuM']
         
-        if mutant != 'Y20I-Q294K':   
-            # Determine which samples should be used based on inducer mutant
-            if ind == 'Q294K':
-                _kaki_samples = kaki_epAI_samples[kaki_epAI_samples['mutant']==ind]
-            else:
-                _kaki_samples = kaki_samples[kaki_samples['mutant']==ind]
-                _kaki_samples['ep_AI'] = constants['ep_AI']
-            
-            # Isolate modes and samples for each parameter. 
-            _kaki_mode = _kaki_samples.iloc[np.argmax(_kaki_samples['lp__'].values)]
-            Ka_mode = _kaki_mode['Ka']
-            Ki_mode = _kaki_mode['Ki']
-            epAI_mode = _kaki_mode['ep_AI']
-            
-            
-            # Compute the predicted Bohr parameter. 
-            bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_mode, 
-                                                    ka=Ka_mode, ki=Ki_mode, ep_ai=epAI_mode,
-                                                   n_sites=constants['n_sites'], n_ns=constants['Nns'],
-                                                   effector_conc=c_range).bohr_parameter()
-            
-            # Compute the measured Bohr Parameter.  
-            bohr_meas = -np.log(-1  + (1 / mut_data['fold_change']))            
+        # Determine which samples should be used based on inducer mutant
+        if ind == 'Q294K':
+            _kaki_samples = kaki_epAI_samples[(kaki_epAI_samples['mutant']==ind) & 
+                                              (kaki_epAI_samples['operator']=='O2')]
+            _kaki_draws = _kaki_samples.sample(n_draws, replace=True)
+        else:
+            _kaki_samples = kaki_samples[(kaki_samples['mutant']==ind) & (kaki_samples['operator']=='O2')]
+            _kaki_samples['ep_AI'] = constants['ep_AI']
+            _kaki_draws = _kaki_samples.sample(n_draws, replace=True)
+        
+        # Isolate modes and samples for each parameter. 
+        _kaki_mode = _kaki_samples.iloc[np.argmax(_kaki_samples['lp__'].values)]
+        Ka_mode = _kaki_mode['Ka']
+        Ki_mode = _kaki_mode['Ki']
+        epAI_mode = _kaki_mode['ep_AI']
+        dbl_epAI_mode = DBL_epAI_summary[(DBL_epAI_summary['mutant']==mutant) & 
+                                        (DBL_epAI_summary['parameter']=='ep_AI')]['mode'].values[0]
+         
+        # Compute the predicted Bohr parameter. 
+        bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_mode, 
+                                                ka=Ka_mode, ki=Ki_mode, ep_ai=epAI_mode,
+                                               n_sites=constants['n_sites'], n_ns=constants['Nns'],
+                                               effector_conc=c_range).bohr_parameter()
+        
+        bohr_pred_corr = mut.thermo.SimpleRepression(R=260, ep_r=epRA_mode, 
+                                                ka=Ka_mode, ki=Ki_mode, ep_ai=dbl_epAI_mode,
+                                               n_sites=constants['n_sites'], n_ns=constants['Nns'],
+                                               effector_conc=c_range).bohr_parameter()
+        
+        # Compute the measured Bohr Parameter.  
+        bohr_meas = -np.log(-1  + (1 / mut_data['fold_change']))            
 
-            # Compute the wt bohr parameter
-            bohr_wt = mut.thermo.SimpleRepression(R=260, ep_r=constants['O2'],
-                                    ka=constants['Ka'], ki=constants['Ki'], 
-                                    ep_ai=constants['ep_AI'], n_sites=constants['n_sites'], 
-                                    n_ns=constants['Nns'], effector_conc=c_range).bohr_parameter()
-            
-            # Compute the delta Bohr paramter. 
-            delta_bohr_meas = bohr_meas - bohr_wt
-            delta_bohr_pred = bohr_pred - bohr_wt
-            
-            # Define the hpd for predicted Bohr. 
-            n_draws = int(1E6)
-            epRA_shuff =np.random.choice(epRA_samps['ep_RA'], size=n_draws, replace=True)
-            _kaki_shuff = _kaki_samples.sample(n_draws, replace=True)
-            bohr_cred_region = np.zeros((2, len(c_range))) 
-            for k, c in enumerate(c_range):
-                _bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_shuff, 
-                                                    ka=_kaki_shuff['Ka'], ki=_kaki_shuff['Ki'], 
-                                                    ep_ai=_kaki_shuff['ep_AI'], n_sites=constants['n_sites'], 
-                                                    n_ns=constants['Nns'], 
-                                                    effector_conc=c).bohr_parameter()
-                bohr_cred_region[:, k] = mut.stats.compute_hpd(_bohr_pred, 0.95)
-                
-                
-            # Generate a dataframe for easier plotting. 
-            _df = pd.DataFrame([])
-            _df['dbohr_meas'] = delta_bohr_meas
-            _df['dbohr_pred'] = delta_bohr_pred
-            _df['dbohr_pred_min'] = bohr_cred_region[0, :] - bohr_wt
-            _df['dbohr_pred_max'] = bohr_cred_region[1, :] - bohr_wt
-            _df['IPTGuM'] = c_range
-            _df['bohr_pred'] = bohr_pred
-            _df['bohr_pred_min'] = bohr_cred_region[0, :]
-            _df['bohr_pred_max'] = bohr_cred_region[1, :]
-            _df['fold_change'] = mut_data['fold_change']
-           
-            # Generate summary points. 
-            for g, d in _df.groupby('IPTGuM'):
-                # Plot the collapse curve and data. 
-                ax[i, j].errorbar(d['bohr_pred'].mean(), d['fold_change'].mean(), 
-                                  np.std(d['fold_change'])**2 / np.sqrt(len(d)),
-                                  fmt='.', lw=0.75, ms=2, color=colors[mutant])
-                ax[i, j].hlines(d['fold_change'].mean(), d['bohr_pred_min'].mean(), d['bohr_pred_max'].mean(),
-                                color=colors[mutant], lw=0.75)
-                
-                # Plot the predicted and measured delta borh. 
-                ax[i+5, j].errorbar(d['dbohr_pred'].mean(), d['dbohr_meas'].mean(), 
-                                    np.std(d['dbohr_meas'])**2/np.sqrt(len(d)), 
-                                    lw=0.5, fmt='.', color=colors[mutant], ms=2)
-                ax[i+5, j].hlines(d['dbohr_meas'].mean(), d['dbohr_pred_min'].mean(), d['dbohr_pred_max'].mean(),
-                                color=colors[mutant], lw=0.75)
-                
+        # Compute the wt bohr parameter
+        bohr_wt = mut.thermo.SimpleRepression(R=260, ep_r=constants['O2'],
+                                ka=constants['Ka'], ki=constants['Ki'], 
+                                ep_ai=constants['ep_AI'], n_sites=constants['n_sites'], 
+                                n_ns=constants['Nns'], effector_conc=c_range).bohr_parameter()
+        
+        # Compute the delta Bohr paramter. 
+        delta_bohr_meas = bohr_meas - bohr_wt
+        delta_bohr_pred = bohr_pred - bohr_wt
+        delta_bohr_corr = bohr_pred_corr - bohr_wt 
+        
+        # Compute the HPD for the predicted bohr. 
+        bohr_cred_region = np.zeros((2, len(c_range)))
+        for k, c in enumerate(c_range):
+            _bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_draws,
+                                            ka=_kaki_draws['Ka'], ki=_kaki_draws['Ki'], 
+                                            ep_ai=_kaki_draws['ep_AI'], n_sites=constants['n_sites'], 
+                                            n_ns=constants['Nns'], effector_conc=c).bohr_parameter()
+            bohr_cred_region[:, k] = mut.stats.compute_hpd(_bohr_pred, 0.95)
+             
+        # Generate a dataframe for easier plotting. 
+        _df = pd.DataFrame([])
+        _df['dbohr_meas'] = delta_bohr_meas
+        _df['dbohr_pred'] = delta_bohr_pred
+        _df['dbohr_corr'] = delta_bohr_corr
+        _df['dbohr_pred_min'] = bohr_cred_region[0, :] - bohr_wt
+        _df['dbohr_pred_max'] = bohr_cred_region[1, :] - bohr_wt
+        _df['IPTGuM'] = c_range
+        _df['bohr_pred'] = bohr_pred
+        _df['bohr_corr'] = bohr_pred_corr
+        _df['bohr_pred_min'] = bohr_cred_region[0, :]
+        _df['bohr_pred_max'] = bohr_cred_region[1, :]
+        _df['fold_change'] = mut_data['fold_change']
+        
+        # Generate summary points. 
+        for g, d in _df.groupby('IPTGuM'):
+            # Plot the collapse curve and data. 
+            ax[i, j].errorbar(d['bohr_pred'].mean(), d['fold_change'].mean(), 
+                              np.std(d['fold_change'])**2 / np.sqrt(len(d)),
+                              fmt='.', lw=0.75, ms=2, color=colors[mutant]) 
+            ax[i, j].plot(d['bohr_corr'].mean(), d['fold_change'].mean(), 'o',
+                         color=colors[mutant], markerfacecolor='w')
+            ax[i, j].hlines(d['fold_change'].mean(), d['bohr_pred_min'], d['bohr_pred_max'],
+                            color=colors[mutant], lw=0.75)
+            # Plot the predicted and measured delta borh. 
+            ax[i+5, j].errorbar(d['dbohr_pred'].mean(), d['dbohr_meas'].mean(), 
+                                np.std(d['dbohr_meas'])**2/np.sqrt(len(d)), 
+                                lw=0.5, fmt='.', color=colors[mutant], ms=2)
+            ax[i+5, j].plot(d['dbohr_corr'].mean(), d['dbohr_meas'].mean(), 'o',
+                         color=colors[mutant], markerfacecolor='w')
+            ax[i+5, j].hlines(d['dbohr_meas'].mean(), d['dbohr_pred_min'], d['dbohr_pred_max'],
+                            color=colors[mutant], lw=0.75)    
             
 # ###################################
 # MASTER CURVES
@@ -162,8 +170,11 @@ for i in range(3):
     # Set limits and turn off unnecessary labels. 
     for j in range(3):
         ax[i, j].set_xlim([-10, 10])
+        ax[i, j].set_xticks([-8, 0, 8])
         ax[i, j].set_ylim([-0.05, 1.2])
-        ax[i+5, j].set_xlim([-10, 10])
+        ax[i+5, j].set_xlim([-10, 10]) 
+        ax[i+5, j].set_xticks([-8, 0, 8])
+        ax[i+5, j].set_yticks([-8, 0, 8])
         ax[i+5, j].set_ylim([-10, 10])
         if (i<2):
             ax[i, j].xaxis.set_ticklabels([])
@@ -184,4 +195,4 @@ for i in range(3):
             
             
 plt.subplots_adjust(hspace=0.08, wspace=0.08)            
-plt.savefig('/Users/gchure/Desktop/collapse_2.pdf')             
+plt.savefig('Fig5_doubles.svg')             
