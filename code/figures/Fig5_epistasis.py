@@ -21,7 +21,6 @@ epRA_samples = pd.read_csv('../../data/csv/DNA_binding_energy_samples.csv')
 
 # Load the predictions for the double mutants
 DBL_pred = pd.read_csv('../../data/csv/DBL_mutant_predictions.csv')
-DBL_epAI_summary = pd.read_csv('../../data/csv/DBL_epAI_summary.csv')
 
 # Define the mutants of interest
 DNA_muts = ['Y20I', 'Q21M', 'Q21A']
@@ -62,20 +61,13 @@ for i, dna in enumerate(DNA_muts):
         _kaki_mode = _kaki_samples.iloc[np.argmax(_kaki_samples['lp__'].values)]
         Ka_mode = _kaki_mode['Ka']
         Ki_mode = _kaki_mode['Ki']
-        epAI_mode = _kaki_mode['ep_AI']
-        dbl_epAI_mode = DBL_epAI_summary[(DBL_epAI_summary['mutant']==mutant) & 
-                                        (DBL_epAI_summary['parameter']=='ep_AI')]['mode'].values[0]
+        epAI_mode = _kaki_mode['ep_AI'] 
          
         # Compute the predicted Bohr parameter. 
         bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_mode, 
                                                 ka=Ka_mode, ki=Ki_mode, ep_ai=epAI_mode,
                                                n_sites=constants['n_sites'], n_ns=constants['Nns'],
-                                               effector_conc=c_range).bohr_parameter()
-        
-        bohr_pred_corr = mut.thermo.SimpleRepression(R=260, ep_r=epRA_mode, 
-                                                ka=Ka_mode, ki=Ki_mode, ep_ai=dbl_epAI_mode,
-                                               n_sites=constants['n_sites'], n_ns=constants['Nns'],
-                                               effector_conc=c_range).bohr_parameter()
+                                               effector_conc=c_range).bohr_parameter() 
         
         # Compute the measured Bohr Parameter.  
         bohr_meas = -np.log(-1  + (1 / mut_data['fold_change']))            
@@ -86,17 +78,16 @@ for i, dna in enumerate(DNA_muts):
                                 ep_ai=constants['ep_AI'], n_sites=constants['n_sites'], 
                                 n_ns=constants['Nns'], effector_conc=c_range).bohr_parameter()
         
-        # Compute the delta Bohr paramter. 
+        # Compute the delta Bohr paramter.  
         delta_bohr_meas = bohr_meas - bohr_wt
         delta_bohr_pred = bohr_pred - bohr_wt
-        delta_bohr_corr = bohr_pred_corr - bohr_wt 
         
         # Compute the HPD for the predicted bohr. 
         bohr_cred_region = np.zeros((2, len(c_range)))
         for k, c in enumerate(c_range):
-            _bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_draws,
-                                            ka=_kaki_draws['Ka'], ki=_kaki_draws['Ki'], 
-                                            ep_ai=_kaki_draws['ep_AI'], n_sites=constants['n_sites'], 
+            _bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_draws.values,
+                                            ka=_kaki_draws['Ka'].values, ki=_kaki_draws['Ki'].values, 
+                                            ep_ai=_kaki_draws['ep_AI'].values, n_sites=constants['n_sites'], 
                                             n_ns=constants['Nns'], effector_conc=c).bohr_parameter()
             bohr_cred_region[:, k] = mut.stats.compute_hpd(_bohr_pred, 0.95)
              
@@ -104,12 +95,10 @@ for i, dna in enumerate(DNA_muts):
         _df = pd.DataFrame([])
         _df['dbohr_meas'] = delta_bohr_meas
         _df['dbohr_pred'] = delta_bohr_pred
-        _df['dbohr_corr'] = delta_bohr_corr
-        _df['dbohr_pred_min'] = bohr_cred_region[0, :] - bohr_wt
-        _df['dbohr_pred_max'] = bohr_cred_region[1, :] - bohr_wt
+        _df['dbohr_pred_min'] = bohr_wt -  bohr_cred_region[0, :]
+        _df['dbohr_pred_max'] = bohr_wt - bohr_cred_region[1, :]
         _df['IPTGuM'] = c_range
-        _df['bohr_pred'] = bohr_pred
-        _df['bohr_corr'] = bohr_pred_corr
+        _df['bohr_pred'] = bohr_pred 
         _df['bohr_pred_min'] = bohr_cred_region[0, :]
         _df['bohr_pred_max'] = bohr_cred_region[1, :]
         _df['fold_change'] = mut_data['fold_change']
@@ -120,16 +109,13 @@ for i, dna in enumerate(DNA_muts):
             ax[i, j].errorbar(d['bohr_pred'].mean(), d['fold_change'].mean(), 
                               np.std(d['fold_change'])**2 / np.sqrt(len(d)),
                               fmt='.', lw=0.75, ms=2, color=colors[mutant]) 
-            ax[i, j].plot(d['bohr_corr'].mean(), d['fold_change'].mean(), 'o',
-                         color=colors[mutant], markerfacecolor='w')
             ax[i, j].hlines(d['fold_change'].mean(), d['bohr_pred_min'], d['bohr_pred_max'],
                             color=colors[mutant], lw=0.75)
+            
             # Plot the predicted and measured delta borh. 
             ax[i+5, j].errorbar(d['dbohr_pred'].mean(), d['dbohr_meas'].mean(), 
                                 np.std(d['dbohr_meas'])**2/np.sqrt(len(d)), 
                                 lw=0.5, fmt='.', color=colors[mutant], ms=2)
-            ax[i+5, j].plot(d['dbohr_corr'].mean(), d['dbohr_meas'].mean(), 'o',
-                         color=colors[mutant], markerfacecolor='w')
             ax[i+5, j].hlines(d['dbohr_meas'].mean(), d['dbohr_pred_min'], d['dbohr_pred_max'],
                             color=colors[mutant], lw=0.75)    
             
@@ -155,8 +141,7 @@ for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=6.5)
     a.yaxis.set_tick_params(labelsize=6.5)
 
-for i in range(3):
-    
+for i in range(3):    
     # Clear a row in the middle for modification in illustrator
     ax[3, i].axis('off')
     ax[4, i].axis('off')
