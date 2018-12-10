@@ -36,7 +36,7 @@ for i, dna in enumerate(DNA_muts):
     # Load the DNA binding energy for the given DNA mutant
     epRA_samps = epRA_samples[(epRA_samples['mutant']==dna) & (epRA_samples['operator']=='O2') &\
                              (epRA_samples['repressors']==260)] 
-    epRA_draws = epRA_samples['ep_RA'].sample(n_draws, replace=True)                       
+    epRA_draws = epRA_samps['ep_RA'].sample(n_draws, replace=True)                       
     epRA_mode = epRA_samps.iloc[np.argmax(epRA_samps['lp__'].values)]['ep_RA']
     for j, ind in enumerate(IND_muts):
         
@@ -84,19 +84,25 @@ for i, dna in enumerate(DNA_muts):
         
         # Compute the HPD for the predicted bohr. 
         bohr_cred_region = np.zeros((2, len(c_range)))
+        dbohr_cred_region = np.zeros((2, len(c_range)))
         for k, c in enumerate(c_range):
             _bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_draws.values,
                                             ka=_kaki_draws['Ka'].values, ki=_kaki_draws['Ki'].values, 
                                             ep_ai=_kaki_draws['ep_AI'].values, n_sites=constants['n_sites'], 
                                             n_ns=constants['Nns'], effector_conc=c).bohr_parameter()
             bohr_cred_region[:, k] = mut.stats.compute_hpd(_bohr_pred, 0.95)
+            
+            # Compute the delta bohr credible region. Values could be negative so this is tricky.   
+            for z in range(2):
+                dbohr_cred_region[z, k] = np.diff([bohr_wt.iloc[k], bohr_cred_region[z, k]])
+                     
              
         # Generate a dataframe for easier plotting. 
         _df = pd.DataFrame([])
         _df['dbohr_meas'] = delta_bohr_meas
         _df['dbohr_pred'] = delta_bohr_pred
-        _df['dbohr_pred_min'] = bohr_wt -  bohr_cred_region[0, :]
-        _df['dbohr_pred_max'] = bohr_wt - bohr_cred_region[1, :]
+        _df['dbohr_pred_min'] = dbohr_cred_region[0, :]
+        _df['dbohr_pred_max'] = dbohr_cred_region[1, :]
         _df['IPTGuM'] = c_range
         _df['bohr_pred'] = bohr_pred 
         _df['bohr_pred_min'] = bohr_cred_region[0, :]
@@ -175,9 +181,8 @@ for i in range(3):
     ax[i+5, 0].text(-0.8, 0.5, DNA_muts[i], fontsize=6.5, rotation='vertical', backgroundcolor='#FFEDC0', transform=ax[i+5, 0].transAxes)   
 
 
-            
-            
-            
-            
+# ########################################
+# SAVING AND POSITIONING
+# ########################################
 plt.subplots_adjust(hspace=0.08, wspace=0.08)            
 plt.savefig('Fig5_doubles.svg')             
