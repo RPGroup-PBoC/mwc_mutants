@@ -1,6 +1,6 @@
 ---
 status: Accepted
-notes: Nothing suspect
+notes: Nothing suspect 
 ---
 
 # 2018-12-06 IND IPTG titration

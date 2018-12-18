@@ -9,7 +9,7 @@ import mut.flow
 # Define the experiment parameters
 DATE = 20181206
 RUN_NO = 2 # Note that this is the incorrect labeling
-USERNAME = 'gchure'
+USERNAME = 'gchure']
 CLASS = 'IND'
 gating_fraction = 0.4
 
