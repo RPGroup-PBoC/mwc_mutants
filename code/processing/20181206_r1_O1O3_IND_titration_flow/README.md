@@ -1,6 +1,6 @@
 ---
-status: Rejected
-notes: This dataset shows that the O3 titration strains of inducer binding mutants F164T and Q294V are not in O3 (pending sequencing). 
+status: Accepted
+notes: Nothing suspec
 ---
 
 # 2018-12-06 IND IPTG titration
