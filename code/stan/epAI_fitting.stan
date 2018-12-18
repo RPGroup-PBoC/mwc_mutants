@@ -26,9 +26,17 @@ data {
     // Allosteric parameters
     real<lower=0> R;  
     real ep_RA[J];
+    real<lower=0> Ka[J];
+    real<lower=0> Ki[J];
+    real<lower=0> c[N];
     
     // Observed parameters
     real fc[N]; // Fold-change in gene expression
+}
+
+transformed data {
+    real ep_a[J] = log(Ka);
+    real ep_i[J] = log(Ki);
 }
 
 parameters { 
@@ -45,8 +53,7 @@ model {
     
     // Evaluate the likelihood
     for (i in 1:N) {
-        mu[i] = fold_change(R, Nns, ep_RA[idx[i]], 0, 1, 1,
-                          ep_AI[idx[i]], 2);
+        mu[i] = fold_change(R, Nns, ep_RA[idx[i]], c[i], ep_a[idx[i]], ep_a[idx[i]], ep_AI[idx[i]], 2);
         fc[i] ~ normal(mu[i], sigma[idx[i]]);
     } 
 }

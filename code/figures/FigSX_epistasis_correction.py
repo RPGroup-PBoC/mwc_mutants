@@ -18,6 +18,7 @@ data = data[data['class']=='DBL']
 kaki_samples = pd.read_csv('../../data/csv/KaKi_only_samples.csv')
 kaki_epAI_samples = pd.read_csv('../../data/csv/KaKi_epAI_samples.csv')
 epRA_samples = pd.read_csv('../../data/csv/DNA_binding_energy_samples.csv')
+epAI_samples = pd.read_csv('../../data/csv/DBL_epAI_samples.csv')
 
 # Load the predictions for the double mutants
 DBL_pred = pd.read_csv('../../data/csv/DBL_mutant_predictions.csv')
@@ -36,7 +37,9 @@ for i, dna in enumerate(DNA_muts):
     # Load the DNA binding energy for the given DNA mutant
     epRA_samps = epRA_samples[(epRA_samples['mutant']==dna) & (epRA_samples['operator']=='O2') &\
                              (epRA_samples['repressors']==260)] 
+
     epRA_draws = epRA_samps['ep_RA'].sample(n_draws, replace=True)                       
+
     epRA_mode = epRA_samps.iloc[np.argmax(epRA_samps['lp__'].values)]['ep_RA']
     for j, ind in enumerate(IND_muts):
         
@@ -47,6 +50,11 @@ for i, dna in enumerate(DNA_muts):
         # Define the IPTG concentration range. 
         c_range = mut_data['IPTGuM']
         
+        # Load the fitted epAI samples
+        epAI_samps = epAI_samples[(epAI_samples['mutant']==mutant)]
+        epAI_draws = epAI_samps['ep_AI'].sample(n_draws, replace=True)       
+        epAI_mode = epAI_samps.iloc[np.argmax(epAI_samps['lp__'].values)]['ep_AI']
+        
         # Determine which samples should be used based on inducer mutant
         if ind == 'Q294K':
             _kaki_samples = kaki_epAI_samples[(kaki_epAI_samples['mutant']==ind) & 
@@ -54,14 +62,12 @@ for i, dna in enumerate(DNA_muts):
             _kaki_draws = _kaki_samples.sample(n_draws, replace=True)
         else:
             _kaki_samples = kaki_samples[(kaki_samples['mutant']==ind) & (kaki_samples['operator']=='O2')]
-            _kaki_samples['ep_AI'] = constants['ep_AI']
             _kaki_draws = _kaki_samples.sample(n_draws, replace=True)
-        
+       
         # Isolate modes and samples for each parameter. 
         _kaki_mode = _kaki_samples.iloc[np.argmax(_kaki_samples['lp__'].values)]
         Ka_mode = _kaki_mode['Ka']
         Ki_mode = _kaki_mode['Ki']
-        epAI_mode = _kaki_mode['ep_AI'] 
          
         # Compute the predicted Bohr parameter. 
         bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_mode, 
@@ -88,7 +94,7 @@ for i, dna in enumerate(DNA_muts):
         for k, c in enumerate(c_range):
             _bohr_pred = mut.thermo.SimpleRepression(R=260, ep_r=epRA_draws.values,
                                             ka=_kaki_draws['Ka'].values, ki=_kaki_draws['Ki'].values, 
-                                            ep_ai=_kaki_draws['ep_AI'].values, n_sites=constants['n_sites'], 
+                                            ep_ai=epAI_draws, n_sites=constants['n_sites'], 
                                             n_ns=constants['Nns'], effector_conc=c).bohr_parameter()
             bohr_cred_region[:, k] = mut.stats.compute_hpd(_bohr_pred, 0.95)
             
@@ -185,4 +191,4 @@ for i in range(3):
 # SAVING AND POSITIONING
 # ########################################
 plt.subplots_adjust(hspace=0.08, wspace=0.08)            
-plt.savefig('Fig5_doubles.svg')             
+plt.savefig('Fig5_epAI_correction.svg')             
