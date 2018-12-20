@@ -25,7 +25,7 @@ This experiment measured the fold-change of inducer binding mutants F164T and Q2
 ## Analysis Files
 
 **Induction Profile**
-![](output/20181219_r1_IND_fold_change_curve.png)
+![](output/20181219_r3_IND_fold_change_curve.png)
 
 
 ## Experimental Protocol
