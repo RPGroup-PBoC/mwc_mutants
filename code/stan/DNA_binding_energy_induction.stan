@@ -53,4 +53,17 @@ model {
         fc[i] ~ normal(mu[i], sigma[idx[i]]);
     }
 }
+<<<<<<< HEAD
+
+generated quantities {
+    vector[N] mu;
+    vector[N] y_rep;
+    for (i in 1:N) {
+         mu[i] = fold_change(R[i], Nns, ep_RA[idx[i]], c[i], log(Ka), log(Ki),
+                            ep_ai, n_sites);
+        y_rep[i] = normal_rng(mu[i], sigma[idx[i]]);
+    }
+}
+=======
+>>>>>>> ac5ced290ef1c5b3dec1f816cd976984bcfc8756
     
