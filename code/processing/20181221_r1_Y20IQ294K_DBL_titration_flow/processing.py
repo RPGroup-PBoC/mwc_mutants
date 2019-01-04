@@ -10,7 +10,7 @@ import mut.flow
 DATE = 20181221
 RUN_NO = 1
 USERNAME = 'gchure'
-CLASS = 'IND'
+CLASS = 'DBL'
 gating_fraction = 0.4
 
 # Load all files.

@@ -12,7 +12,7 @@ colors =list(mut.viz.color_selector('pboc').values())[::1]
 # Set the experiment constants.
 DATE = 20190103
 RUN_NO = 1
-MUTANT = 'IND'
+MUTANT = 'DBL'
 
 # Load the data set.
 fc_file = glob.glob('output/*fold_change.csv')[0]

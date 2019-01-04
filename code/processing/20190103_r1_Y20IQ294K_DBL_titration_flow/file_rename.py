@@ -17,7 +17,7 @@ savedir = '../../../data/flow/csv/'
 ROWS = ('auto', 'delta', 'Y20I-Q294K')
 OPS = ('NA', 'O2', 'O2')
 COLS = (0, 0.1, 5, 10, 25, 50, 75, 100, 250, 500, 1000, 5000)
-CLASS = ('IND','IND','IND')
+
 
 # Get the names of the files
 files = glob.glob('../../../data/flow/fcs/{0}*r{1}*.fcs'.format(FCS_PATTERN, RUN_NO))

@@ -7,10 +7,10 @@ sys.path.insert(0, '../../../')
 import mut.flow
 
 # Define the experiment parameters
-DATE = 20181221
-RUN_NO = 1
+DATE = 20190103
+RUN_NO = 2
 USERNAME = 'gchure'
-CLASS = 'IND'
+CLASS = 'DBL'
 gating_fraction = 0.4
 
 # Load all files.

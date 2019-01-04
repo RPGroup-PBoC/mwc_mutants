@@ -10,7 +10,7 @@ mut.viz.plotting_style()
 colors =list(mut.viz.color_selector('pboc').values())[::1]
 
 # Set the experiment constants.
-DATE = 20181222
+DATE = 20190103
 RUN_NO = 3
 MUTANT = 'DBL'
 
