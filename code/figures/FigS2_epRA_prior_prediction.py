@@ -37,7 +37,7 @@ for g, d in grouped:
 # Compute the PDFs
 epRA_range = np.linspace(-38, 10, 500)
 sigma_range = np.linspace(0, 1.2, 500)
-epRA_pdf = scipy.stats.norm.pdf(epRA_range, loc=-12, scale=6)
+epRA_pdf = scipy.stats.norm.pdf(epRA_range, loc=-10, scale=5)
 sigma_pdf = scipy.stats.norm.pdf(sigma_range, loc=0, scale=0.1)
 
 # Determine the number of simulations performed and generate range values for drawn samples

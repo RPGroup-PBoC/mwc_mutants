@@ -47,7 +47,7 @@ for g, d in tqdm.tqdm(prior_data.groupby('sim_idx')):
     samples.rename(columns={'ep_RA[1]': 'ep_RA', 'sigma[1]':'sigma'},
                   inplace=True)
     samples['sim_idx'] = g
-    samples_dfs.append(_df)
+    samples_dfs.append(samples)
     
     # Compute the properties for each parameter. 
     _sbc_dfs = []
@@ -59,6 +59,10 @@ for g, d in tqdm.tqdm(prior_data.groupby('sim_idx')):
         _df['shrinkage'] = shrinkage
         _df['param'] = p 
         _df['rank'] = np.sum(samples[p].values[::thin] < gt[p])
+        _df['rank_ndraws'] = len(samples[p].values[::thin])
+        _df['post_median'] = np.mean(samples[p])
+        _df['post_mean'] = np.median(samples[p])
+        _df['post_mode'] = samples.iloc[np.argmax(samples['lp__'].values)][p]
         _df['ground_truth'] = gt[p]
         _sbc_dfs.append(_df)
         
@@ -68,3 +72,5 @@ for g, d in tqdm.tqdm(prior_data.groupby('sim_idx')):
 sbc_df = pd.concat(sbc_dfs) 
     
 sbc_df.to_csv('../../data/csv/epRA_sbc.csv', index=False)
+samples_df = pd.concat(samples_dfs)
+samples_df.to_csv('../../data/csv/epRA_sbc_samples.csv', index=False)
