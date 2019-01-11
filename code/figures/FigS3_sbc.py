@@ -30,7 +30,7 @@ perc_high = scipy.stats.binom.ppf(0.095, 800, n_bins / 400)
 
 
 # Instantiate the figure canvas
-fig, ax = plt.subplots(2, 2, figsize=(7, 5))
+fig, ax = plt.subplots(2, 3, figsize=(7, 5))
 
 # Apply special formatting. 
 for a in ax.ravel():
@@ -47,8 +47,8 @@ for i in range(2):
     ax[i, 1].set_ylabel('cumulative distribution', fontsize=6.5)
 
 # # Plot the analytical prior distributions. 
-ax[0, 0].plot(epRA_range, epRA_range, 'k-', lw=1.5, label=r'$\mathcal{N}(-12, 6)$')
-ax[1, 0].plot(sigma_range, sigma_range, 'k-', lw=1.5, label=r'$\mathcal{N}(-12, 6)$')
+ax[0, 0].plot(epRA_range, epRA_pdf, 'k-', lw=1.5, label=r'$\mathcal{N}(-12, 6)$')
+ax[1, 0].plot(sigma_range, sigma_pdf, 'k-', lw=1.5, label=r'$\mathcal{N}(-12, 6)$')
 # ax[0, 1].plot(epRA_range, epRA_cdf, 'k-', lw=1.5, label=r'$\mathcal{N}(-12, 6)$')
 # ax[1, 0].plot(sigma_range, sigma_pdf, 'k-', lw=1.5, label=r'$\mathcal{HN}(0, 0.1)$')
 # ax[1, 1].plot(sigma_range, sigma_cdf, 'k-', lw=1.5, label=r'$\mathcal{HN}(0, 0.1)$')
@@ -58,13 +58,9 @@ ax_ind = {'ep_RA': 0, 'sigma': 1}
 n_bins = np.linspace(-40, 10, 80)
 for g, d in data.groupby('param'):
     # Compute the histograms 
-    ax[ax_ind[g], 0].plot(d['post_mean'], d['ground_truth'], '.', color=colors['red'], markersize=1)
-    ax[ax_ind[g], 0].plot(d['post_mean'], d['ground_truth'], '.', color=colors['red'], markersize=1)
-    # Compute the CDF
-    x, y = np.sort(d['post_mean']), np.arange(0, len(d), 1) / len(d)
-    _ = ax[ax_ind[g], 1].step(x, y, color=colors['blue'], lw=2)
-    x, y = np.sort(d['ground_truth']), np.arange(0, len(d), 1) / len(d)
-    _ = ax[ax_ind[g], 1].step(x, y, color=colors['red'], lw=2)    
+    ax[ax_ind[g], 1].plot(d['post_mean'], d['ground_truth'], '.', color=colors['red'], markersize=1)
+    ax[ax_ind[g], 1].plot(d['post_mean'], d['ground_truth'], '.', color=colors['red'], markersize=1)
+    
     
 plt.tight_layout()
 plt.savefig('./test.pdf')
