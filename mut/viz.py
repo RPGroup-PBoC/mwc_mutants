@@ -32,6 +32,46 @@ def plotting_style():
     plt.rc('mathtext', fontset='stixsans', sf='sans')
     sns.set_style('darkgrid', rc=rc)
 
+def personal_style():
+    """
+    Sets the plotting style to my preference
+    """ 
+    rc = {'axes.facecolor': '#f1f2f6',  #'#EAECEE',
+          'font.family': 'sans-serif',
+          'font.style': 'italic',
+          'axes.grid': True,
+          'axes.edgecolor': 'slategray',
+          'axes.spines.right': False,
+          'axes.spines.top': False,
+          'axes.axisbelow': True,
+          'axes.linewidth': 1,
+          'axes.titlesize': 9,
+          'axes.grid': True,
+          'lines.linewidth': 2,
+          'lines.dash_capstyle': 'round',
+          'grid.linestyle': '-',
+          'grid.linewidth': 0.75,
+          'grid.alpha': 0.5,
+          'grid.color': '#B9BBBC',
+          'axes.labelsize': 9,
+          'xtick.labelsize': 8,
+          'ytick.labelsize': 8,
+          'legend.fontsize': 8,
+          'legend.frameon': False,
+          'xtick.color': '#4b4b4b',
+          'ytick.color': '#4b4b4b',
+          'axes.xmargin': 0.01,
+          'axes.ymargin': 0.01,
+          'figure.dpi': 100}
+
+    # plt.rc('mathtext', fontset='dejavuserif', sf='sans')
+    plt.rc('text.latex', preamble=r'\usepackage{mathpazo}')
+    matplotlib.style.use(rc)
+    flat = ['#699FCE', '#64767C', '#6B5E86', '#8389B4', '#95B7D8', '#A6DCE8', '#72A2B6',
+           '#484B3E', '#6D7960']
+    sns.set_palette(flat)
+    return flat      
+         
 def altair_config():
     """Sets the style of Altair plots to the PBoC style"""
     pboc = {'config': {
