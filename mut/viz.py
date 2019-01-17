@@ -57,7 +57,7 @@ def personal_style():
           'xtick.labelsize': 8,
           'ytick.labelsize': 8,
           'legend.fontsize': 8,
-          'legend.frameon': False,
+          'legend.frameon': True,
           'xtick.color': '#4b4b4b',
           'ytick.color': '#4b4b4b',
           'axes.xmargin': 0.01,
@@ -67,8 +67,8 @@ def personal_style():
     # plt.rc('mathtext', fontset='dejavuserif', sf='sans')
     plt.rc('text.latex', preamble=r'\usepackage{mathpazo}')
     matplotlib.style.use(rc)
-    flat = ['#699FCE', '#64767C', '#6B5E86', '#8389B4', '#95B7D8', '#A6DCE8', '#72A2B6',
-           '#484B3E', '#6D7960']
+    flat = ['#64767C', '#484B3E','#95B7D8', '#699FCE','#6B5E86','#8389B4',  '#A6DCE8', '#72A2B6',
+            '#6D7960']
     sns.set_palette(flat)
     return flat      
          

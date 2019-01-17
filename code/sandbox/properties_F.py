@@ -34,8 +34,8 @@ cl2 = plt.contour((1 + np.exp(sat))**-1 - (1 + np.exp(leak))**-1,
                  levels=[-0.1, 0.0, 0.01, 0.1, 0.5, 1], colors='w', linestyles='-')
 
 
-c2 = plt.matshow((1 + np.exp(sat))**-1 - (1 + np.exp(leak))**-1,
-                cmap='PuBu')
+c2 = plt.matshow(np.log(np.abs((1 + np.exp(sat))**-1 - (1 + np.exp(leak))**-1)),
+                cmap='viridis')
 cl1 = plt.contour(sat - leak, levels=[-10, -5, 0, 5, 10], colors='w',
                   linestyles='-')
 plt.clabel(cl1)

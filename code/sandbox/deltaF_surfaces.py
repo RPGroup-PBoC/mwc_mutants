@@ -81,19 +81,19 @@ for a in ax:
     a.grid(False)
    
 # Plot the heat maps
-ax[0].imshow(c0_r.T, vmin=-10, vmax=12, 
+ax[0].imshow(c0_r, vmin=-10, vmax=12, 
             interpolation='none', cmap='bone')
-ax[1].imshow(c0_ep.T, vmin=-10, vmax=12, 
+ax[1].imshow(c0_ep, vmin=-10, vmax=12, 
             interpolation='none', cmap='bone')
-ax[2].imshow(r_ep.T, vmin=-10, vmax=12, 
+ax[2].imshow(r_ep, vmin=-10, vmax=12, 
             interpolation='none', cmap='bone')
 
 # Plot the contours. 
-c1 = ax[0].contour(c0_r.T, levels=[-5, 0, 5], linestyles='-', colors='w',
+c1 = ax[0].contour(c0_r, levels=[-5, 0, 5], linestyles='-', colors='w',
                   linewidths=1)
-c2 = ax[1].contour(c0_ep.T, levels=[-5, 0, 5], linestyles='-', colors='w',
+c2 = ax[1].contour(c0_ep, levels=[-5, 0, 5], linestyles='-', colors='w',
                   linewidths=1)
-c3 = ax[2].contour(r_ep.T, levels=[-5, 0, 5], linestyles='-', colors='w', 
+c3 = ax[2].contour(r_ep, levels=[-5, 0, 5], linestyles='-', colors='w', 
                   linewidths=1)
 
 # Add contour labels. 
@@ -115,6 +115,7 @@ ax[0].set_xticks(np.arange(0, 200, 60))
 ax[0].set_xticklabels(['$10^{-2}$', '$10^{-1}$',
                       '$10^0$', '$10^1$'])
 ep_ticks = list(np.round(ep_ticks))
+ep_ticks.reverse()
 ep_ticks.insert(0, '')
 ax[0].set_yticklabels(ep_ticks)
 
@@ -127,8 +128,8 @@ ax[2].set_yticklabels(ep_ticks)
 
 # Add axis labels. 
 ax[0].set_ylabel(r'$\Delta\varepsilon_{RA}$ [$k_BT$]')
-ax[0].set_xlabel(r'$\log_{10}(c / c_0)$')
-ax[1].set_xlabel(r'$\log_{10}(c / c_0)$')
+ax[0].set_xlabel(r'$(c / c_0)$')
+ax[1].set_xlabel(r'$(c / c_0)$')
 ax[1].set_ylabel('repressors per cell')
 ax[2].set_xlabel('repressors per cell')
 ax[2].set_ylabel(r'$\Delta\varepsilon_{RA}$ [$k_BT$]')
