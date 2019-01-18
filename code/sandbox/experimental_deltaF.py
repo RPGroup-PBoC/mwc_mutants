@@ -11,7 +11,7 @@ import imp
 imp.reload(mut.viz)
 colors = mut.viz.personal_style()
 constants = mut.thermo.load_constants()
-
+constants['O3'] = -9.3
 
 # Load the MWC induction data. 
 data = pd.read_csv('../../data/csv/RazoMejia2018_data.csv')
