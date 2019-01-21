@@ -1,6 +1,6 @@
 ---
-status: Accepted
-notes: One concentration (250mM) is dropped from the csv file saved in this folder as it is spurious. 
+status: Rejected 
+notes: One concentration (250mM) is dropped from the csv file saved in this folder as it is spurious. Other measures of fold-change are exceedingly high. 
 ---
 
 # YEAR-MONTH-DAY CLASS OPERATOR RUN REPRESSORS

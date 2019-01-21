@@ -77,16 +77,12 @@ for g, d in grouped.groupby(['mutant', 'repressors']):
                        color=_colors[g[0]], ms=4, lw=1, capsize=1, label=g[0])
         
 # Plot the delta F
-for g, d in grouped[grouped['repressors'] == 260].groupby('mutant'):
+for g, d in grouped[grouped['repressors'] == 60].groupby('mutant'):
     ax[1].errorbar(d['IPTGuM'] / c_0, d['delta_delta_F']['mean'], 
                d['delta_delta_F']['sem'], marker='o', 
                color=_colors[g], ms=4, lw=1, linestyle='none', 
                 capsize=1, label=g.upper())
 
-# Bootstrap.
-for g, d in DNA[(DNA['class']=='DNA') & 
-                (DNA['operator']=='O2')
-               ].groupby()
 ax[0].legend()
 ax[0].set_ylim([-0.25, 1.25])
 ax[1].set_ylim([-8, 8])
@@ -94,4 +90,7 @@ ax[0].set_xscale('symlog', linthreshx=c_range[2])
 ax[1].set_xscale('symlog', linthreshx=c_range[2])
 
 
-                          
+for g, d in DNA[(DNA['mutant']=='Y20I') & (DNA['repressors']==260)].groupby(['date', 'username']):
+    plt.semilogx(d['IPTGuM'], d['fold_change'], label=g[0])
+plt.legend()
+                         
