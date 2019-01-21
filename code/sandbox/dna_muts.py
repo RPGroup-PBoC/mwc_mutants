@@ -11,7 +11,12 @@ colors = mut.viz.personal_style()
 
 # Load the data. 
 data = pd.read_csv('../../data/csv/compiled_data.csv')
-DNA = data[((data['class']=='DNA') | (data['class']=='WT')) & (data['fold_change'] > 0) & (data['fold_change'] <= 1)].copy()
+DNA = data[((data['class']=='DNA') | (data['class']=='WT'))].copy()
+
+# FOr empirical calculation of F, need to restrict to bounds of 0 and 1
+# DNA.loc[(DNA['fold_change']> 1), 'fold_change'] = 1
+# DNA.loc[(DNA['fold_change']< 0), 'fold_change'] = 0
+
 c_range = np.logspace(-2, 4, 500)
 c_range[0] = 0 
 
@@ -64,7 +69,7 @@ grouped = DNA[(DNA['class']=='DNA') &
 
 
 repressor_glyphs = {60:'D', 124:'X', 260:'o', 1220:'s'}
-_colors = {'Q21M':colors[2], 'Y20I':colors[3], 'Q21A':colors[4]}
+_colors = {'Q21M':colors[2], 'Y20I':colors[3], 'Q21A':colors[4], 'wt':colors[0]}
 
 for g, d in grouped.groupby(['mutant', 'repressors']):
     if g[1] == 260:
@@ -72,14 +77,21 @@ for g, d in grouped.groupby(['mutant', 'repressors']):
                        color=_colors[g[0]], ms=4, lw=1, capsize=1, label=g[0])
         
 # Plot the delta F
-for g, d in DNA[(DNA['mutant'] != 'wt')].groupby(['mutant', 'IPTGuM']):
-    ax[1].plot(d['IPTGuM'].mean() / c_0, d['delta_delta_F'].mean(), 'o',
-                      color=_colors[g[0]], ms=4, lw=0)
+for g, d in grouped[grouped['repressors'] == 260].groupby('mutant'):
+    ax[1].errorbar(d['IPTGuM'] / c_0, d['delta_delta_F']['mean'], 
+               d['delta_delta_F']['sem'], marker='o', 
+               color=_colors[g], ms=4, lw=1, linestyle='none', 
+                capsize=1, label=g.upper())
 
+# Bootstrap.
+for g, d in DNA[(DNA['class']=='DNA') & 
+                (DNA['operator']=='O2')
+               ].groupby()
 ax[0].legend()
 ax[0].set_ylim([-0.25, 1.25])
 ax[1].set_ylim([-8, 8])
 ax[0].set_xscale('symlog', linthreshx=c_range[2])
 ax[1].set_xscale('symlog', linthreshx=c_range[2])
+
 
                           
