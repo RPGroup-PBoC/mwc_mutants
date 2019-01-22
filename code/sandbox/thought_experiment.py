@@ -184,8 +184,6 @@ def plotting_fn(c, c_0, fc, emp_df,
 
 _ = plotting_fn(c_smooth, c_0, epRA_fc, epRA_emp_df, epRA_ddf, 
                                 savename='epRA_ddf.pdf')
-_ = plotting_fn(c_smooth, c_0, epAI_fc, epAI_emp_df, epAI_ddf, 
-                                savename='epAI_ddf.pdf')
 _ = plotting_fn(c_smooth, c_0, kaki_fc, kaki_emp_df, kaki_ddf, 
                                 savename='kaki_ddf.pdf')
 

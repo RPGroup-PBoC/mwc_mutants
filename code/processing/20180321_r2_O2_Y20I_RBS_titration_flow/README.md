@@ -1,5 +1,5 @@
 ---
-status: Accepted
+status: Rejected
 notes: Some noise around saturation of the wild-type induction profile. Probably OK.
 ---
 

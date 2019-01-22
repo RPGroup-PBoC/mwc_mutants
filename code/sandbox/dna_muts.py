@@ -11,11 +11,13 @@ colors = mut.viz.personal_style()
 
 # Load the data. 
 data = pd.read_csv('../../data/csv/compiled_data.csv')
-DNA = data[((data['class']=='DNA') | (data['class']=='WT'))].copy()
+DNA = data[((data['class']=='DNA') | (data['class']=='WT')) & (data['operator']=='O2')].copy()
 
-# FOr empirical calculation of F, need to restrict to bounds of 0 and 1
-# DNA.loc[(DNA['fold_change']> 1), 'fold_change'] = 1
-# DNA.loc[(DNA['fold_change']< 0), 'fold_change'] = 0
+# DNA = DNA[(DNA['fold_change'] > 0) & (DNA['fold_change'] < 1)]
+
+# For empirical calculation of F, need to restrict to bounds of 0 and 1
+# DNA.loc[(DNA['fold_change']> 1), 'fold_change'] = 1 - 1E-3 
+# DNA.loc[(DNA['fold_change']< 0), 'fold_change'] = 1E-3 
 
 c_range = np.logspace(-2, 4, 500)
 c_range[0] = 0 
@@ -89,8 +91,3 @@ ax[1].set_ylim([-8, 8])
 ax[0].set_xscale('symlog', linthreshx=c_range[2])
 ax[1].set_xscale('symlog', linthreshx=c_range[2])
 
-
-for g, d in DNA[(DNA['mutant']=='Y20I') & (DNA['repressors']==260)].groupby(['date', 'username']):
-    plt.semilogx(d['IPTGuM'], d['fold_change'], label=g[0])
-plt.legend()
-                         
