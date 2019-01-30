@@ -16,9 +16,11 @@ epRA_range = np.linspace(-20, -5, 200)
 
 # Define ec50 (approx)
 c_0 = 50 # in µM
-R_0 = 260
-epRA_0 = -13.9 # in kBT
-
+R_0 = 100
+epRA_0 = -14 # in kBT
+Ka = 200
+Ki = 0.5
+epAI = 5
 # Define the delta bohr function
 def dbohr(ref_params, per_params):
     # Compute the pact for reference and perturbed
@@ -45,27 +47,27 @@ cr_mesh, rc_mesh = np.meshgrid(c_range, R_range)
 cep_mesh, epc_mesh = np.meshgrid(c_range, epRA_range)
 epr_mesh, rep_mesh = np.meshgrid(epRA_range, R_range)
 ref_params = {'effector_conc': c_0,
-             'Ka':constants['Ka'],
-             'Ki':constants['Ki'],
-             'ep_AI': constants['ep_AI'],
+             'Ka':Ka,
+             'Ki':Ki,
+             'ep_AI': epAI,
              'n_sites': constants['n_sites'],
              'ep_RA': epRA_0, 'R':R_0}
 per_c_epRA_params = {'effector_conc': cep_mesh,
-                  'Ka':constants['Ka'],
-                  'Ki':constants['Ki'],
-                  'ep_AI':constants['ep_AI'],
+                  'Ka':Ka,
+                  'Ki':Ki,
+                  'ep_AI':epAI,
                   'n_sites':constants['n_sites'],
                   'ep_RA':epc_mesh, 'R':R_0}
 per_c_R_params = {'effector_conc': cr_mesh,
-                  'Ka':constants['Ka'],
-                  'Ki':constants['Ki'],
-                  'ep_AI':constants['ep_AI'],
+                  'Ka':Ka,
+                  'Ki':Ki,
+                  'ep_AI':epAI,
                   'n_sites':constants['n_sites'],
                   'ep_RA':epRA_0, 'R':rc_mesh}
 per_ep_R_params = {'effector_conc': c_0,
-                  'Ka':constants['Ka'],
-                  'Ki':constants['Ki'],
-                  'ep_AI':constants['ep_AI'],
+                  'Ka':Ka,
+                  'Ki':Ki,
+                  'ep_AI':epAI,
                   'n_sites':constants['n_sites'],
                   'ep_RA':epr_mesh, 'R':rep_mesh}
 c0_r = dbohr(ref_params, per_c_R_params)
@@ -110,29 +112,29 @@ for a in ax:
     a.spines['right'].set_visible(True)
     
 # Format the labeling
-ep_ticks = epRA_range[::40]
+ep_ticks = epRA_0 - epRA_range[::40]
 ax[0].set_xticks(np.arange(0, 200, 60))
-ax[0].set_xticklabels(['$10^{-2}$', '$10^{-1}$',
-                      '$10^0$', '$10^1$'])
+ax[0].set_xticklabels(['$10^{2}$', '$10^{1}$',
+                      '$10^0$', '$10^{-1}$'])
 ep_ticks = list(np.round(ep_ticks))
 ep_ticks.reverse()
 ep_ticks.insert(0, '')
 ax[0].set_yticklabels(ep_ticks)
 
 ax[1].set_xticks(np.arange(0, 200, 60))
-ax[1].set_xticklabels(['$10^{-2}$', '$10^{-1}$',
-                      '$10^0$', '$10^1$'])
-ax[1].set_yticklabels(['', '$10^4$', '$10^3$', '$10^2$', '$10^1$', '$10^0$']) 
-ax[2].set_xticklabels(['', '$10^0$', '$10^1$', '$10^2$', '$10^3$', '$10^4$']) 
+ax[1].set_xticklabels(['$10^2$', '$10^1$',
+                      '$10^0$', '$10^{-1}$'])
+ax[1].set_yticklabels(['', '$10^{-2}$', '$10^{-1}$', '$10^0$', '$10^{1}$', '$10^{2}$']) 
+ax[2].set_xticklabels(['', '$10^{-2}$', '$10^{-1}$', '$10^0$', '$10^1$', '$10^2$']) 
 ax[2].set_yticklabels(ep_ticks)
 
 # Add axis labels. 
-ax[0].set_ylabel(r'$\Delta\varepsilon_{RA}$ [$k_BT$]')
-ax[0].set_xlabel(r'$(c / c_0)$')
-ax[1].set_xlabel(r'$(c / c_0)$')
-ax[1].set_ylabel('repressors per cell')
-ax[2].set_xlabel('repressors per cell')
-ax[2].set_ylabel(r'$\Delta\varepsilon_{RA}$ [$k_BT$]')
+ax[0].set_ylabel(r'$\Delta\varepsilon_{RA_0} - \Delta\varepsilon_{RA}$ [$k_BT$]')
+ax[0].set_xlabel(r'$c_0 / c$')
+ax[1].set_xlabel(r'$c_0 / c$')
+ax[1].set_ylabel('$R_0 / R$')
+ax[2].set_xlabel('$R_0 / R$')
+ax[2].set_ylabel(r'$\Delta\varepsilon_{RA_0} - \Delta\varepsilon_{RA}$ [$k_BT$]')
 
 # Add panel labels. 
 fig.text(0, 0.8, '(a)', fontsize=8)
