@@ -119,7 +119,7 @@ cl4 = ax[1,  2].clabel(cs[2][1], cs[2][1].levels, inline=True, fmt='$\,$ %d $k_B
 cl5 = ax[2,  1].clabel(cs[1][2], cs[1][2].levels, inline=True, fmt='$\,$ %d $k_BT$',
         fontsize=8, inline_spacing=2, manual=[[150, 100], [150, 300], [300, 450]])
 cl6 = ax[2,  2].clabel(cs[2][2], cs[2][2].levels, inline=True, fmt='$\,$ %d $k_BT$',
-        fontsize=8, inline_spacing=2, manual=[[75, 300], [250, 300], [400, 300]])
+        fontsize=8, inline_spacing=2, manual=[[75, 300], [250, 300], [300, 200]])
 
 for l in cl1 + cl2 + cl3 + cl4 + cl5 + cl6:
     l.set_rotation(0)
@@ -145,7 +145,7 @@ for i in range(3):
     ax[2, i].set_yticklabels(['$10^{%s}$' %a for a in logs])
 
 ## Transforming dep_AI
-_diff = [np.diff([epAI_0, a])[0] for a in epAI_range]
+_diff = epAI_0 - epAI_range
 _diff = np.round(_diff, decimals=0)
 _diff = np.array(_diff).astype(int)
 _diff_target = _diff[::50]
