@@ -24,7 +24,7 @@ col_names = ['date', 'username', 'class', 'IPTGuM',
 
 # Generate list of "Accepted" experiments.
 accepted = []
-files = glob.glob('processing/2018*')
+files = glob.glob('processing/*flow*')
 for _, d in enumerate(files):
     info = mut.io.scrape_frontmatter(f'{d}')
     if info['status'].lower() == 'accepted':
@@ -40,15 +40,6 @@ all_data.drop(columns=dropped_cols, inplace=True)
 # Place the class.
 for k in class_dict.keys():
     all_data.loc[all_data['mutant'] == k, 'class'] = class_dict[k]
-
-# Include the method information.
-# microscopy_files = glob.glob('processing/*microscopy*')
-# microscopy_dates = [f.split('/')[-1].split('_')[0] for f in microscopy_files]
-# all_data.loc[:, 'method'] = 'flow cytometry'
-# for d in microscopy_dates:
-#     all_data.loc[(all_data['date'] == int(d)), 'method'] = 'microscopy'
-# #     all_data.loc[(all_data['date'] == int(d)), 'IPTGuM'] = 0
-#     all_data.loc[(all_data['date'] == int(d)), 'operator'] = 'O2'
 
 # Filter the fold change.
 filtered_data = all_data[(all_data['repressors'] > 0) & (all_data['mutant'] != 'auto') &
