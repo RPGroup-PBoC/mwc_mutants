@@ -63,7 +63,7 @@ for d in tqdm(DBL['mutant'].unique()):
     draw_dfs.append(_df)
 draw_df = pd.concat(draw_dfs)
 ind_draws['ep_AI']
-j
+
 # Instantiate the figure. 
 fig, ax = plt.subplots(3, 3, figsize=(6, 6), sharex=True, sharey=True)
 DNA_idx = {'Q21M':0, 'Q21A':1, 'Y20I':2}
