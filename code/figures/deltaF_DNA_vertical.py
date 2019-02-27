@@ -32,23 +32,22 @@ wt_bohr = -mut.thermo.SimpleRepression(R=DNA['repressors'], ep_r=constants['O2']
 
 # Compute the empirical F and find the maximum and minimum differences. 
 DNA['wt_bohr'] = wt_bohr
-DNA['delta_F'] = (wt_bohr - DNA['bohr_median']) / wt_bohr
-DNA['delta_F_max'] = (wt_bohr - DNA['bohr_max']) / wt_bohr
-DNA['delta_F_min'] = (wt_bohr - DNA['bohr_min']) / wt_bohr
+DNA['delta_F'] = wt_bohr - DNA['bohr_median']
+DNA['delta_F_max'] = wt_bohr - DNA['bohr_max'] 
+DNA['delta_F_min'] = wt_bohr - DNA['bohr_min']
 
 # Instantiate the figure canvas. 
 # ############################
 # PLOTTING
 # ############################
-fig, ax = plt.subplots(4, 3, figsize=(7, 5), sharex=True, sharey=True)
-mut_idx = {'Q21M': 0, 'Q21A':1, 'Y20I':2}
+fig, ax = plt.subplots(4, 1, figsize=(3.42, 5), sharex=True, sharey=True)
 rep_idx = {60:0, 124:1, 260:2, 1220:3}
 
 # ############################
 # DATA AND THEORY
 # ###########################
 for g, d in DNA.groupby(['mutant', 'repressors']):
-    _ax = ax[rep_idx[g[1]], mut_idx[g[0]]]
+    _ax = ax[rep_idx[g[1]]]
     if g[1] == 260:
         face = 'w' 
     else:
@@ -62,8 +61,8 @@ for g, d in DNA.groupby(['mutant', 'repressors']):
 
     median, hpd_min, hpd_max = -(constants['O2'] - 
     stats[stats['mutant']==g[0]][['median', 'hpd_min', 'hpd_max']].values[0])
-    _ = _ax.hlines(median, -1, 1E4, color=colors[g[0]], lw=0.75)
-    _ = _ax.fill_between([-1, 1E4], hpd_min, hpd_max, 
+    _ = _ax.hlines(median, 0, 1E4, color=colors[g[0]], lw=0.75)
+    _ = _ax.fill_between([0, 1E4], hpd_min, hpd_max, 
                         color=colors[g[0]], alpha=0.5)
 
 
@@ -74,29 +73,23 @@ for a in ax.ravel():
     a.set_xscale('symlog')
     a.xaxis.set_tick_params(labelsize=9)
     a.yaxis.set_tick_params(labelsize=9)
-    a.set_xlim([-1, 1E4])
-    a.set_ylim([-8, 8])
+    a.set_xlim([-0.1, 1E4])
+    a.set_ylim([-3, 8])
     a.hlines(0, -1, 1E4, lw=0.75, color='slategray', linestyle='--',
     zorder=1)
 
 # ##############################
 # LABELING
 # ###############################
-for i in range(3):
-    ax[3, i].set_xlabel('IPTG [µM]')
+ax[3].set_xlabel('IPTG [µM]')
 for i in range(4):
-    ax[i, 0].set_ylabel('$\Delta F$ [$k_BT$]')
-for m, ind in mut_idx.items():
-    ax[0, ind].set_title(m, backgroundcolor=pboc['pale_yellow'], y=1.03,
-    fontsize=9)
+    ax[i].set_ylabel('$\Delta F$ [$k_BT$]')
 for r, ind in rep_idx.items():
-    ax[ind, 0].text(-0.5, 0.52, str(int(r)), fontsize=9, rotation='vertical',
+    ax[ind].text(-0.3, 0.52, str(int(r)), fontsize=9, rotation='vertical',
                     backgroundcolor=pboc['pale_yellow'], 
-                    transform=ax[ind,0].transAxes)
+                    transform=ax[ind].transAxes)
 
 plt.subplots_adjust(wspace=0.03, hspace=0.07)
-fig.text(0.4, 0.98, 'DNA binding mutation', fontsize=10, backgroundcolor='#E3DBD0')
-fig.text(-0.07, 0.6, 'repressors per cell', fontsize=10, backgroundcolor='#E3DBD0',
+fig.text(-0.18, 0.6, 'repressors per cell', fontsize=10, backgroundcolor='#E3DBD0',
 rotation='vertical')
-# plt.tight_layout()
-plt.savefig('../../figures/Fig3_DNA_deltaF.pdf', bbox_inches='tight')
+plt.savefig('../../figures/Fig3_DNA_deltaF_vertical.pdf', bbox_inches='tight')
