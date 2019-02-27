@@ -13,28 +13,37 @@ pboc = mut.viz.color_selector('pboc')
 
 # Load the data and isolate to the DNA binding mutants. 
 data = pd.read_csv('../../data/csv/empirical_F_statistics.csv')
-DNA = data[data['class']=='DNA'].copy()
+DNA = data[(data['class']=='DNA') & (data['operator']=='O2')].copy()
+
 
 # Find the inference statsitics for the  DNA binding energy
 stats = pd.read_csv('../../data/csv/DNA_binding_energy_summary.csv')
 stats = stats[(stats['operator']=='O2') & 
               (stats['repressors']==260) & (stats['parameter']=='ep_RA')][
               ['mutant', 'median', 'hpd_min','hpd_max']].copy()
+ep_r = [constants[op] for op in DNA['operator']]
+wt_bohr = -mut.thermo.SimpleRepression(DNA['repressors'], ep_r, ka=constants['Ka'],
+                                    ki=constants['Ki'], ep_ai=constants['ep_AI'],
+                                    effector_conc=DNA['IPTGuM']).bohr_parameter()
+                                    
+def delta_F_lims(bohr_min, bohr_max, bohr_ref):
+    diff_min = [np.min([np.diff([ref, _min])[0],
+        np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, bohr_min, bohr_max)]
+    diff_max = [np.max([np.diff([ref, _min])[0],
+                np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, 
+                                                         bohr_min, bohr_max)]
+    return [diff_min, diff_max]
 
+_min, _max = delta_F_lims(DNA['bohr_min'].values, 
+            DNA['bohr_max'].values, wt_bohr)
+DNA['delta_F'] = wt_bohr - DNA['bohr_median']
+DNA['delta_F_min'] = _min
+DNA['delta_F_max'] = _max
+
+# Define the marker shapes for plotting
 rep_glyphs = {60:'s', 124:'d', 
               260:'o', 1220:'^'}
 
-# Compute the wild-type bohr parameter
-wt_bohr = -mut.thermo.SimpleRepression(R=DNA['repressors'], ep_r=constants['O2'],
-                                      ka=constants['Ka'], ki=constants['Ki'],
-                                      ep_ai=constants['ep_AI'], 
-                                  effector_conc=DNA['IPTGuM']).bohr_parameter()
-
-# Compute the empirical F and find the maximum and minimum differences. 
-DNA['wt_bohr'] = wt_bohr
-DNA['delta_F'] = (wt_bohr - DNA['bohr_median']) / wt_bohr
-DNA['delta_F_max'] = (wt_bohr - DNA['bohr_max']) / wt_bohr
-DNA['delta_F_min'] = (wt_bohr - DNA['bohr_min']) / wt_bohr
 
 # Instantiate the figure canvas. 
 # ############################
@@ -57,7 +66,12 @@ for g, d in DNA.groupby(['mutant', 'repressors']):
     _ = _ax.plot(d['IPTGuM'], d['delta_F'], marker=rep_glyphs[g[1]], 
                 color = colors[g[0]], linestyle='none', ms=4, 
                 markerfacecolor=face)
-    _ = _ax.vlines(d['IPTGuM'], d['delta_F_min'], d['delta_F_max'], 
+    _ = _ax.plot(d['IPTGuM'], d['delta_bohr_median'], marker=rep_glyphs[g[1]], 
+    
+                color = colors[g[0]], linestyle='none', ms=4, 
+                markerfacecolor=face)
+
+    _ = _ax.vlines(d['IPTGuM'], -d['delta_F_max'], -d['delta_F_min'], 
                    lw=0.75, color=colors[g[0]])
 
     median, hpd_min, hpd_max = -(constants['O2'] - 
@@ -65,7 +79,6 @@ for g, d in DNA.groupby(['mutant', 'repressors']):
     _ = _ax.hlines(median, -1, 1E4, color=colors[g[0]], lw=0.75)
     _ = _ax.fill_between([-1, 1E4], hpd_min, hpd_max, 
                         color=colors[g[0]], alpha=0.5)
-
 
  ################################
 # FORMATTING
