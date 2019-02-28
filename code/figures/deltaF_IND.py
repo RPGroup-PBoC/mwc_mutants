@@ -38,9 +38,20 @@ wt_pact = mut.thermo.MWC(ka=constants['Ka'], ki=constants['Ki'],
                          effector_conc=c_range).pact()
 
 # Compute the empirical F and find the maximum and minimum differences. 
+
+def delta_F_lims(bohr_min, bohr_max, bohr_ref):
+    diff_min = [np.min([np.diff([ref, _min])[0],
+        np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, bohr_min, bohr_max)]
+    diff_max = [np.max([np.diff([ref, _min])[0],
+                np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, 
+                                                         bohr_min, bohr_max)]
+    return [diff_min, diff_max]
+
+_min, _max = delta_F_lims(IND['bohr_min'].values, 
+            IND['bohr_max'].values, wt_bohr)
 IND['delta_F'] = wt_bohr - IND['bohr_median']
-IND['delta_F_max'] = wt_bohr - IND['bohr_max']
-IND['delta_F_min'] = wt_bohr - IND['bohr_min']
+IND['delta_F_max'] = _min
+IND['delta_F_min'] = _max
 
 # Instantiate the figure. 
 fig, ax = plt.subplots(3, 4, figsize=(7, 4.5), sharex=True, sharey=True)

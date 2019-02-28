@@ -25,20 +25,21 @@ data {
 }
 
 parameters {
-    vector<upper=0>[J] log_fc_mu;
+    vector[J] tan_mu;
     vector[J] log_fc_sigma;
 }
 
 transformed parameters {
-    vector<lower=0, upper=1>[J] fc_mu =exp(log_fc_mu);
-    vector<lower=0>[J] fc_sigma = exp(log_fc_sigma);
+   vector<lower=0>[J] fc_sigma = exp(log_fc_sigma);
+   vector[J] fc_mu = atan(tan_mu);
 }
+
 
 model {
     // Define the prior distributions
-    log_fc_mu ~ normal(0, 1); 
-    log_fc_sigma ~ normal(-1, 1);
-    
+    tan_mu ~ normal(0, 100);
+    log_fc_sigma ~ normal(-2, 1);
+
     // Evaluate the likelihood
     foldchange ~ normal(fc_mu[idx], fc_sigma[idx]);
 }
@@ -46,7 +47,7 @@ model {
 generated quantities {
     // Compute the empirical Bohr parameter
     vector[J] empirical_bohr;    
-    
+
     // Compute posterior predictive checks to ensure model assumptions are valid. 
     real y_rep[N] = normal_rng(fc_mu[idx], fc_sigma[idx]);
     

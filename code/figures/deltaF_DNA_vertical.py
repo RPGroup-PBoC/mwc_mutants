@@ -30,11 +30,21 @@ wt_bohr = -mut.thermo.SimpleRepression(R=DNA['repressors'], ep_r=constants['O2']
                                       ep_ai=constants['ep_AI'], 
                                   effector_conc=DNA['IPTGuM']).bohr_parameter()
 
+                        
+def delta_F_lims(bohr_min, bohr_max, bohr_ref):
+    diff_min = [np.min([np.diff([ref, _min])[0],
+        np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, bohr_min, bohr_max)]
+    diff_max = [np.max([np.diff([ref, _min])[0],
+                np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, 
+                                                         bohr_min, bohr_max)]
+    return [diff_min, diff_max]
+
 # Compute the empirical F and find the maximum and minimum differences. 
+_min, _max = delta_F_lims(DNA['bohr_min'], DNA['bohr_max'], wt_bohr)
 DNA['wt_bohr'] = wt_bohr
-DNA['delta_F'] = wt_bohr - DNA['bohr_median']
-DNA['delta_F_max'] = wt_bohr - DNA['bohr_max'] 
-DNA['delta_F_min'] = wt_bohr - DNA['bohr_min']
+DNA['delta_F'] = wt_bohr - DNA['bohr_mean']
+DNA['delta_F_max'] = _min
+DNA['delta_F_min'] = _max
 
 # Instantiate the figure canvas. 
 # ############################
@@ -56,7 +66,7 @@ for g, d in DNA.groupby(['mutant', 'repressors']):
     _ = _ax.plot(d['IPTGuM'], d['delta_F'], marker=rep_glyphs[g[1]], 
                 color = colors[g[0]], linestyle='none', ms=4, 
                 markerfacecolor=face)
-    _ = _ax.vlines(d['IPTGuM'], d['delta_F_min'], d['delta_F_max'], 
+    _ = _ax.vlines(d['IPTGuM'], -d['delta_F_min'], -d['delta_F_max'], 
                    lw=0.75, color=colors[g[0]])
 
     median, hpd_min, hpd_max = -(constants['O2'] - 

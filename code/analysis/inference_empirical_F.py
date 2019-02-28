@@ -19,14 +19,13 @@ wt_bohr = -mut.thermo.SimpleRepression(R=data['repressors'], ep_r=ops,
                                        ep_ai=constants['ep_AI'], 
                                        effector_conc=data['IPTGuM']).bohr_parameter()
 data['ref_bohr'] = wt_bohr
-
 # Load the stan model. 
 model = mut.bayes.StanModel('../stan/empirical_F.stan', force_compile=True)
 
 # Assign unique identifiers. 
 idx = data.groupby(['mutant', 'repressors', 'operator', 'IPTGuM']).ngroup() + 1 
 data['idx'] = idx
-
+data.sort_values('idx', inplace=True)
 # Assemble the data dictionary. 
 data_dict = {'N':len(data),
              'J':data['idx'].max(),
