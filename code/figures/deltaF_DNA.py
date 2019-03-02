@@ -19,21 +19,20 @@ wt_bohr = -mut.thermo.SimpleRepression(data['repressors'], ep_r, ka=constants['K
                                     effector_conc=data['IPTGuM']).bohr_parameter()
 
 
-def delta_F_lims(bohr_min, bohr_max, bohr_ref):
-    diff_min = [np.min([np.diff([ref, _min])[0],
-        np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, bohr_min, bohr_max)]
-    diff_max = [np.max([np.diff([ref, _min])[0],
-                np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, 
-                                                         bohr_min, bohr_max)]
-    return [diff_min, diff_max]
+# def delta_F_lims(bohr_min, bohr_max, bohr_ref):
+#     diff_min = [np.min([np.diff([ref, _min])[0],
+#         np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, bohr_min, bohr_max)]
+#     diff_max = [np.max([np.diff([ref, _min])[0],
+#                 np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, 
+#                                                          bohr_min, bohr_max)]
+#     return [diff_min, diff_max]
 
-_min, _max = delta_F_lims(data['bohr_min'].values, 
-            data['bohr_max'].values, wt_bohr)
-data['bohr_ref'] = wt_bohr
-data['delta_F'] = (wt_bohr -data['bohr_median']) 
-data['delta_fc'] = wt_fc - data['fold_change_median']
-data['delta_F_min'] = _min
-data['delta_F_max'] = _max
+# _min, _max = delta_F_lims(data['bohr_min'].values, 
+#             data['bohr_max'].values, wt_bohr)
+# data['bohr_ref'] = wt_bohr
+# data['delta_F'] = (wt_bohr -data['bohr_median']) 
+# data['delta_F_min'] = _min
+# data['delta_F_max'] = _max
 
 # Find the inference statsitics for the  DNA binding energy
 stats = pd.read_csv('../../data/csv/DNA_binding_energy_summary.csv')
@@ -67,12 +66,15 @@ for g, d in DNA.groupby(['mutant', 'repressors']):
     else:
         face = colors[g[0]] 
 
-    _ = _ax.plot(d['IPTGuM'], d['delta_F'], marker='o', 
+#     _ = _ax.plot(d['IPTGuM'], d['delta_F'], marker='o', 
+#                 color = colors[g[0]], linestyle='none', ms=4, 
+#                 markerfacecolor=face)
+    _ = _ax.plot(d['IPTGuM'], d['delta_bohr_median'], marker='o', 
                 color = colors[g[0]], linestyle='none', ms=4, 
                 markerfacecolor=face)
-    _ = _ax.plot(wt['IPTGuM'], wt['delta_F'], 'k,')
+#     _ = _ax.plot(wt['IPTGuM'], wt['delta_F'], 'k,')
      
-    _ = _ax.vlines(d['IPTGuM'], -d['delta_F_max'], -d['delta_F_min'], 
+    _ = _ax.vlines(d['IPTGuM'], d['delta_bohr_min'], d['delta_bohr_max'],  
                    lw=0.75, color=colors[g[0]])
 
 

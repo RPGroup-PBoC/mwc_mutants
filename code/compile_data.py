@@ -20,7 +20,7 @@ for k in mutants:
 
 # Define the necessary columns.
 col_names = ['date', 'username', 'class', 'IPTGuM',
-             'operator', 'repressors', 'mutant', 'fold_change']
+             'operator', 'repressors', 'mutant', 'fold_change', 'mean_FITC']
 
 # Generate list of "Accepted" experiments.
 accepted = []

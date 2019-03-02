@@ -18,41 +18,30 @@
 
 data {
     int<lower=1> N; // Number of measurements
-    int<lower=1> J; // Unique number of measurement sets
-    int<lower=1, upper=J> idx[N]; // Identification vector for each measurement
-    vector[J] bohr_ref; // Reference Bohr parameter
+//    int<lower=1> J; // Unique number of measurement sets
+//    int<lower=1, upper=J> idx[N]; // Identification vector for each measurement
+    real ref_bohr;
     vector[N] foldchange; // Observed fold-change in gene expression.
 }
-
+ 
 parameters {
-    vector[J] tan_mu;
-    vector[J] log_fc_sigma;
+    real<lower=0, upper=1> fc_mu ; 
+    real<lower=0> fc_sigma;
 }
-
-transformed parameters {
-   vector<lower=0>[J] fc_sigma = exp(log_fc_sigma);
-   vector[J] fc_mu = atan(tan_mu);
-}
-
-
+ 
 model {
     // Define the prior distributions
-    tan_mu ~ normal(0, 100);
-    log_fc_sigma ~ normal(-2, 1);
+    fc_mu ~ uniform(0, 1);
+    fc_sigma ~ normal(0, 1);
+    
 
     // Evaluate the likelihood
-    foldchange ~ normal(fc_mu[idx], fc_sigma[idx]);
+    foldchange ~ normal(fc_mu, fc_sigma);
 }
 
 generated quantities {
     // Compute the empirical Bohr parameter
-    vector[J] empirical_bohr;    
-
-    // Compute posterior predictive checks to ensure model assumptions are valid. 
-    real y_rep[N] = normal_rng(fc_mu[idx], fc_sigma[idx]);
-    
-    // Evaluate the empirical bohr and delta F
-    for (i in 1:J) {
-        empirical_bohr[i] = log((1 / fc_mu[i]) - 1); 
-    }
+    real empirical_bohr = log((1/fc_mu) - 1); 
+    real delta_bohr = ref_bohr - empirical_bohr;
+    real delta_bohr_corr = delta_bohr + log(1 + (1 / ((fc_mu/fc_sigma) - 1)) * (1 / (1 - fc_mu))); 
 }
