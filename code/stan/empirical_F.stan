@@ -18,8 +18,6 @@
 
 data {
     int<lower=1> N; // Number of measurements
-//    int<lower=1> J; // Unique number of measurement sets
-//    int<lower=1, upper=J> idx[N]; // Identification vector for each measurement
     real ref_bohr;
     vector[N] foldchange; // Observed fold-change in gene expression.
 }
@@ -32,7 +30,7 @@ parameters {
 model {
     // Define the prior distributions
     fc_mu ~ uniform(0, 1);
-    fc_sigma ~ normal(0, 1);
+    fc_sigma ~ normal(0, .1);
     
 
     // Evaluate the likelihood
@@ -42,9 +40,5 @@ model {
 generated quantities {
     // Compute the empirical Bohr parameter
     real empirical_bohr = log((1/fc_mu) - 1); 
-    //real delta_bohr = ref_bohr - empirical_bohr;
-    //real corr_max = log(1 + (1 / ((fc_mu/fc_sigma) - 1))*(1 / (1 - fc_mu))); 
-    //real corr_min = log(1 - (1 / ((fc_mu/fc_sigma) + 1))*(1 / (1 - fc_mu))); 
-    //real delta_bohr_corr_sum = delta_bohr - (corr_min + corr_max);
-    //real delta_bohr_corr_diff = delta_bohr - (corr_min - corr_max);
+    real delta_bohr = ref_bohr - empirical_bohr;
 }
