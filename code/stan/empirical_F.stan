@@ -42,6 +42,9 @@ model {
 generated quantities {
     // Compute the empirical Bohr parameter
     real empirical_bohr = log((1/fc_mu) - 1); 
-    real delta_bohr = ref_bohr - empirical_bohr;
-    real delta_bohr_corr = delta_bohr + log(1 + (1 / ((fc_mu/fc_sigma) - 1)) * (1 / (1 - fc_mu))); 
+    //real delta_bohr = ref_bohr - empirical_bohr;
+    //real corr_max = log(1 + (1 / ((fc_mu/fc_sigma) - 1))*(1 / (1 - fc_mu))); 
+    //real corr_min = log(1 - (1 / ((fc_mu/fc_sigma) + 1))*(1 / (1 - fc_mu))); 
+    //real delta_bohr_corr_sum = delta_bohr - (corr_min + corr_max);
+    //real delta_bohr_corr_diff = delta_bohr - (corr_min - corr_max);
 }
