@@ -23,22 +23,25 @@ data {
 }
  
 parameters {
-    real<lower=0, upper=1> fc_mu ; 
-    real<lower=0> fc_sigma;
+    real<lower=0, upper=1> fc_mu; 
+    real log_fc_sigma;
+}
+
+transformed parameters {
+    real fc_sigma = exp(log_fc_sigma);
 }
  
 model {
     // Define the prior distributions
     fc_mu ~ uniform(0, 1);
-    fc_sigma ~ normal(0, .1);
+    log_fc_sigma ~ normal(0, 10);
     
-
     // Evaluate the likelihood
     foldchange ~ normal(fc_mu, fc_sigma);
 }
 
 generated quantities {
     // Compute the empirical Bohr parameter
-    real empirical_bohr = log((1/fc_mu) - 1); 
+    real empirical_bohr = -log((1/fc_mu) - 1); 
     real delta_bohr = ref_bohr - empirical_bohr;
-}
+    }

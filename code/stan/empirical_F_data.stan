@@ -5,6 +5,9 @@ data {
     real fc_mut[N_mut];
     real fc_wt[N_wt];
 }
+transformed data {
+    f
+}
 
 parameters {
     real<lower=0, upper=1> fc_mu_wt;
