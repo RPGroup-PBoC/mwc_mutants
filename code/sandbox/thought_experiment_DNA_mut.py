@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.insert(0, '../../../')
+sys.path.insert(0, '../../')
 import numpy as np 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -46,10 +46,10 @@ delF = np.zeros(len(c_0))
 epRA = [-17, -10]
 c, ep = np.meshgrid(c_0, epRA)
 mut_arch = mut.thermo.SimpleRepression(R=R_0, effector_conc=c, ka=Ka_0, ki=Ki_0, 
-                                   ep_ai=epAI_0, ep_r=ep, n_sites=n_sites) 
+                                   ep_ai=2, ep_r=epRA_0, n_sites=n_sites) 
 mut_fc = mut_arch.fold_change()
-mut_params = {'effector_conc':c_0, 'Ka':Ka_0, 'Ki':Ki_0, 'ep_RA':epRA[0],
-               'ep_AI':epAI_0, 'R':R_0, 'n_sites':n_sites}
+mut_params = {'effector_conc':c_0, 'Ka':Ka_0, 'Ki':Ki_0, 'ep_RA':epRA_0,
+               'ep_AI':2, 'R':R_0, 'n_sites':n_sites}
 
 mut_delF = np.zeros((2, len(c_0)))
 for i, ep in enumerate(epRA):
