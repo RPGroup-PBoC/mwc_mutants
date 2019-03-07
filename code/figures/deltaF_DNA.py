@@ -61,24 +61,21 @@ rep_idx = {60:3, 124:2, 260:1, 1220:0}
 # ###########################
 for g, d in DNA.groupby(['mutant', 'repressors']):
     _ax = ax[mut_idx[g[0]], rep_idx[g[1]]]
+    _d = d[d['parameter']=='delta_bohr']
     if g[1] == 260:
         face = 'w' 
     else:
         face = colors[g[0]] 
 
-#     _ = _ax.plot(d['IPTGuM'], d['delta_F'], marker='o', 
-#                 color = colors[g[0]], linestyle='none', ms=4, 
-#                 markerfacecolor=face)
-    _ = _ax.plot(d['IPTGuM'], d['delta_bohr_median'], marker='o', 
+    _ = _ax.plot(_d['IPTGuM'], _d['median']+_d['correction'], marker='o', 
                 color = colors[g[0]], linestyle='none', ms=4, 
                 markerfacecolor=face)
-#     _ = _ax.plot(wt['IPTGuM'], wt['delta_F'], 'k,')
      
-    _ = _ax.vlines(d['IPTGuM'], d['delta_bohr_min'], d['delta_bohr_max'],  
+    _ = _ax.vlines(_d['IPTGuM'], _d['hpd_min']+_d['correction'], _d['hpd_max'] - _d['correction'],  
                    lw=0.75, color=colors[g[0]])
 
 
-    median, hpd_min, hpd_max = -(constants['O2'] - 
+    median, hpd_min, hpd_max = (constants['O2'] - 
     stats[stats['mutant']==g[0]][['median', 'hpd_min', 'hpd_max']].values[0])
     _ = _ax.hlines(median, -0.1, 1E4, color=colors[g[0]], lw=0.75)
     _ = _ax.fill_between([-0.1, 1E4], hpd_min, hpd_max, 
@@ -92,7 +89,7 @@ for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=9)
     a.yaxis.set_tick_params(labelsize=9)
     a.set_xlim([-0.3, 1E4])
-    a.set_ylim([-5, 8])
+    a.set_ylim([-10, 10])
     a.hlines(0, -0.1, 1E4, lw=0.75, color='slategray', linestyle='--',
     zorder=1)
 
@@ -113,4 +110,4 @@ for r, ind in rep_idx.items():
                     
 
 plt.subplots_adjust(wspace=0.04, hspace=0.07)
-plt.savefig('../../figures/Fig3_DNA_deltaF.pdf', bbox_inches='tight')
+# plt.savefig('../../figures/Fig3_DNA_deltaF.pdf', bbox_inches='tight')

@@ -21,11 +21,10 @@ data {
     real ref_bohr;
     vector[N] foldchange; // Observed fold-change in gene expression.
 }
-
  
 parameters {
     real<lower=0, upper=1> fc_mu; 
-    real log_fc_sigma;
+    real log_fc_sigma; 
 }
 
 transformed parameters {
