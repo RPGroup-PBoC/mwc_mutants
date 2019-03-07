@@ -12,7 +12,6 @@ constants = mut.thermo.load_constants()
 # Load the compiled data
 data = pd.read_csv('../../data/csv/compiled_data.csv')
 data.dropna(inplace=True)
-data = data[(data['fold_change'] <= 1.2) & (data['fold_change'] >= -0.2)]
 
 # Compute the reference bohr. 
 ops = [constants[op] for op in data['operator']]
@@ -22,37 +21,89 @@ wt_bohr = mut.thermo.SimpleRepression(R=data['repressors'], ep_r=ops,
                                        effector_conc=data['IPTGuM']).bohr_parameter()
 data['ref_bohr'] = wt_bohr
 
-# Load the stan model. 
-model = mut.bayes.StanModel('../stan/empirical_F.stan') #, force_compile=True)
-
 # Assign unique identifiers. 
 idx = data.groupby(['mutant', 'repressors', 'operator', 'IPTGuM']).ngroup() + 1 
 data['idx'] = idx
 data.sort_values('idx', inplace=True)
 
-fc_stats = []
-for g, d in tqdm.tqdm(data.groupby(['mutant', 'repressors', 'operator', 'IPTGuM'])):
-    ref = d['ref_bohr'].unique()[0]
-    # Assemble the data dictionary. 
-    data_dict = {'N':len(d),
-                  'ref_bohr':d['ref_bohr'].unique()[0],
-                 'foldchange': d['fold_change']}
-    fit, samples = model.sample(data_dict, iter=5000, control=dict(adapt_delta=0.99))
+def infer_empirical_bohr(data, model, groupby=['mutant', 'repressors', 'operator', 'IPTGuM'],
+                        verbose=True, force_compile=False, **kwargs):
+    """
+    Infers the empirical bohr parameter (and relevant correction) for a collection of 
+    fold-change measurements
     
-    dF_dfc = (samples['fc_mu'].median() - samples['fc_mu'].median()**2)**-1
-    corr = dF_dfc * np.sign(ref) * ((samples['fc_sigma'].median() - samples['fc_sigma'].median()**2) - (np.exp(-ref)/(1 +    
-                                                                                                    np.exp(-ref))**2)) 
-    # Compute the stats. 
-    _dbohr_stats = mut.stats.compute_statistics(samples, varnames=['delta_bohr', 'empirical_bohr', 'fc_mu', 'fc_sigma'], 
-                                           logprob_name='lp__')    
-    _dbohr_stats['correction'] = corr
-    _dbohr_stats['mutant'] = g[0]
-    _dbohr_stats['repressors'] = g[1]
-    _dbohr_stats['operator'] = g[2]
-    _dbohr_stats['IPTGuM'] = g[3]
-    _dbohr_stats['class'] = d['class'].unique()[0]
-    fc_stats.append(_dbohr_stats)
-fc_stats = pd.concat(fc_stats)
+    Parameters
+    ----------
+    data: pandas DataFrame object
+        The data from which the empirical bohr will be determined. This should have at least
+        a fold-change column and a grouping parameter.
+    model: str
+        Path to Stan model to load. Model will be compiled if `force_compile`==True.
+    groupby: list, optional
+        List of identifiers by which to group the supplied data. Default groups by 
+        'mutant', 'repressors', 'operator', and 'IPTGuM'
+    verbose: bool
+        If true, the progress will be printed to screen as a bar. 
+    force_compile: bool
+        If True, the stan model will be recompiled.
+    **kwargs: keyword arguments
+        kwargs to be passed to the sampler.
+        
+    Returns
+    -------
+    statistics: pandas DataFrame
+        Dataframe of statistics for relevant parameters.
+    """
+    
+    # Load the stan model and compile if needed. 
+    model = mut.bayes.StanModel(model, force_compile=force_compile)
+    
+    # Make a storage list for the individual statistics
+    fc_stats = []
+    
+    # Make a quiet or loud iterator. 
+    if verbose:
+        iter = tqdm.tqdm(data.groupby(groupby))
+    else:
+        iter = data.groupby(groupby)
+        
+    # Iter through each grouping and infer
+    for g, d in iter: 
+        # Define parameters of the reference state
+        ref = d['ref_bohr'].unique()[0]
+        fc_ref = (1 + np.exp(-ref))**-1
+    
+        # Assemble the data dictionary and sample the posterior
+        data_dict = {'N':len(d),
+                     'foldchange': d['fold_change']} 
+        fit, samples = model.sample(data_dict, **kwargs)
 
+        # Identify the extrema
+        extrema = (samples['fc_mu'] < samples['fc_sigma']).astype(int) + (1-samples['fc_mu'] < samples['fc_sigma']).astype(int)
+
+        # Compute the empirical bohr parameter and the delta bohr
+        samples['empirical_bohr'] = -np.log((samples['fc_mu'])**-1 - 1)
+        samples['delta_bohr'] = ref - samples['empirical_bohr']
+
+        # Compute the delta F error of the reference, given the sigma
+        delta_F_ref_upper = np.nan_to_num(ref + np.log((fc_ref + samples['fc_sigma'])**-1 - 1))
+        delta_F_ref_lower = np.nan_to_num(ref + np.log((fc_ref - samples['fc_sigma'])**-1 - 1))
+        samples['correction'] = (delta_F_ref_upper+delta_F_ref_lower) * extrema
+        samples['delta_bohr_corrected'] = samples['delta_bohr'] - samples['correction']
+
+        _dbohr_stats = mut.stats.compute_statistics(samples, varnames=['delta_bohr', 'empirical_bohr', 'fc_mu', 
+                                                                       'fc_sigma', 'delta_bohr_corrected', 'correction'], 
+                                               logprob_name='lp__')    
+        _dbohr_stats['mutant'] = g[0]
+        _dbohr_stats['repressors'] = g[1]
+        _dbohr_stats['operator'] = g[2]
+        _dbohr_stats['IPTGuM'] = g[3]
+        _dbohr_stats['class'] = d['class'].unique()[0]
+        fc_stats.append(_dbohr_stats)
+    
+    return pd.concat(fc_stats)
+
+
+fc_stats = infer_empirical_bohr(data, '../stan/empirical_F', **dict(iter=5000, control=dict(adapt_delta=0.99)))
 fc_stats.to_csv('../../data/csv/empirical_F_statistics.csv', index=False)
 

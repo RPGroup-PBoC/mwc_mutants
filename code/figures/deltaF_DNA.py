@@ -19,20 +19,6 @@ wt_bohr = -mut.thermo.SimpleRepression(data['repressors'], ep_r, ka=constants['K
                                     effector_conc=data['IPTGuM']).bohr_parameter()
 
 
-# def delta_F_lims(bohr_min, bohr_max, bohr_ref):
-#     diff_min = [np.min([np.diff([ref, _min])[0],
-#         np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, bohr_min, bohr_max)]
-#     diff_max = [np.max([np.diff([ref, _min])[0],
-#                 np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, 
-#                                                          bohr_min, bohr_max)]
-#     return [diff_min, diff_max]
-
-# _min, _max = delta_F_lims(data['bohr_min'].values, 
-#             data['bohr_max'].values, wt_bohr)
-# data['bohr_ref'] = wt_bohr
-# data['delta_F'] = (wt_bohr -data['bohr_median']) 
-# data['delta_F_min'] = _min
-# data['delta_F_max'] = _max
 
 # Find the inference statsitics for the  DNA binding energy
 stats = pd.read_csv('../../data/csv/DNA_binding_energy_summary.csv')
@@ -61,17 +47,17 @@ rep_idx = {60:3, 124:2, 260:1, 1220:0}
 # ###########################
 for g, d in DNA.groupby(['mutant', 'repressors']):
     _ax = ax[mut_idx[g[0]], rep_idx[g[1]]]
-    _d = d[d['parameter']=='delta_bohr']
+    _d = d[d['parameter']=='delta_bohr_corrected']
     if g[1] == 260:
         face = 'w' 
     else:
         face = colors[g[0]] 
 
-    _ = _ax.plot(_d['IPTGuM'], _d['median']+_d['correction'], marker='o', 
-                color = colors[g[0]], linestyle='none', ms=4, 
+    _ = _ax.plot(_d['IPTGuM'], _d['mean'], marker='o', 
+                color = colors[g[0]], linestyle='none', ms=3, 
                 markerfacecolor=face)
      
-    _ = _ax.vlines(_d['IPTGuM'], _d['hpd_min']+_d['correction'], _d['hpd_max'] - _d['correction'],  
+    _ = _ax.vlines(_d['IPTGuM'], _d['hpd_min'], _d['hpd_max'],  
                    lw=0.75, color=colors[g[0]])
 
 
@@ -89,7 +75,8 @@ for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=9)
     a.yaxis.set_tick_params(labelsize=9)
     a.set_xlim([-0.3, 1E4])
-    a.set_ylim([-10, 10])
+    a.set_ylim([-8, 8])
+    a.set_xticks([0, 1E1, 1E3]) 
     a.hlines(0, -0.1, 1E4, lw=0.75, color='slategray', linestyle='--',
     zorder=1)
 
@@ -98,7 +85,7 @@ for a in ax.ravel():
 # ###############################
 for i in range(4):
     ax[2, i].set_xlabel('IPTG [µM]')
-    ax[2, i].set_xticks([0, 1E0, 1E2, 1E4])
+    
 for i in range(3):
     ax[i, 0].set_ylabel('$\Delta F$ [$k_BT$]')
 for m, ind in mut_idx.items():
@@ -110,4 +97,5 @@ for r, ind in rep_idx.items():
                     
 
 plt.subplots_adjust(wspace=0.04, hspace=0.07)
-# plt.savefig('../../figures/Fig3_DNA_deltaF.pdf', bbox_inches='tight')
+plt.savefig('../../figures/Fig3_DNA_deltaF.pdf', bbox_inches='tight')
+

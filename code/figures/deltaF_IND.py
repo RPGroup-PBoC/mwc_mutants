@@ -27,7 +27,7 @@ kaki_epAI_samples = kaki_epAI_samples[kaki_epAI_samples['operator']=='O2'].copy(
 
 # Compute the wild-type bohr parameter and pact
 ep_r = [constants[op] for op in IND['operator']]
-wt_bohr = -mut.thermo.SimpleRepression(R=260, ep_r=ep_r,
+wt_bohr = mut.thermo.SimpleRepression(R=260, ep_r=ep_r,
                                       ka=constants['Ka'], ki=constants['Ki'],
                                       ep_ai=constants['ep_AI'], 
                                   effector_conc=IND['IPTGuM']).bohr_parameter()
@@ -36,22 +36,6 @@ c_range[0] = 0
 wt_pact = mut.thermo.MWC(ka=constants['Ka'], ki=constants['Ki'],
                          ep_ai=constants['ep_AI'], 
                          effector_conc=c_range).pact()
-
-# Compute the empirical F and find the maximum and minimum differences. 
-
-def delta_F_lims(bohr_min, bohr_max, bohr_ref):
-    diff_min = [np.min([np.diff([ref, _min])[0],
-        np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, bohr_min, bohr_max)]
-    diff_max = [np.max([np.diff([ref, _min])[0],
-                np.diff([ref, _max])[0]]) for ref, _min, _max  in zip(bohr_ref, 
-                                                         bohr_min, bohr_max)]
-    return [diff_min, diff_max]
-
-_min, _max = delta_F_lims(IND['bohr_min'].values, 
-            IND['bohr_max'].values, wt_bohr)
-IND['delta_F'] = wt_bohr - IND['bohr_median']
-IND['delta_F_max'] = _min
-IND['delta_F_min'] = _max
 
 # Instantiate the figure. 
 fig, ax = plt.subplots(3, 4, figsize=(7, 4.5), sharex=True, sharey=True)
@@ -63,14 +47,15 @@ op_idx = {'O1': 0, 'O2': 1, 'O3': 2}
 # ####################################
 op_glyphs = {'O1': '^', 'O2':'o', 'O3': 's'}
 for g, d in IND.groupby(['mutant', 'operator']):
+    _d = d[d['parameter']=='delta_bohr_corrected']
     _ax = ax[op_idx[g[1]], mut_idx[g[0]]]
     if g[1] == 'O2':
         face = 'w'
     else:
         face = colors[g[0]]
-    _ax.plot(d['IPTGuM'], d['delta_F'], color=colors[g[0]], markerfacecolor=face,
+    _ax.plot(_d['IPTGuM'], _d['mean'], color=colors[g[0]], markerfacecolor=face,
             marker=op_glyphs[g[1]], ms=4, linestyle='none')
-    _ax.vlines(d['IPTGuM'], d['delta_F_min'], d['delta_F_max'], lw=0.75, color=colors[g[0]])
+    _ax.vlines(_d['IPTGuM'], _d['hpd_min'], _d['hpd_max'], lw=0.75, color=colors[g[0]])
 
 # ###################################
 # THEORY
@@ -101,7 +86,7 @@ for d in IND['mutant'].unique():
             pact = mut.thermo.MWC(ka=_samples['Ka'], ki=_samples['Ki'],
                                       ep_ai=_samples['ep_AI'],
                                       effector_conc=c).pact()
-            deltaF = np.log(wt_pact[j] / pact)
+            deltaF = -np.log(wt_pact[j] / pact)
             cred_region[:, j] = mut.stats.compute_hpd(deltaF, 0.95)
         _ = _ax.fill_between(c_range, cred_region[0, :], cred_region[1,:],
             color=colors[d], alpha=0.4, zorder=1)
@@ -109,7 +94,7 @@ for d in IND['mutant'].unique():
         # Plot the medians
         pact = mut.thermo.MWC(ka=Ka, ki=Ki, ep_ai=ep_AI,
                               effector_conc=c_range).pact()
-        deltaF = np.log(wt_pact/pact)
+        deltaF = -np.log(wt_pact/pact)
         _ = _ax.plot(c_range, deltaF, lw=0.75, color=colors[d], zorder=2)
 
 

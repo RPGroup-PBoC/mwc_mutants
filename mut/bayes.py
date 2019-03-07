@@ -5,7 +5,7 @@ import pandas as pd
 import pickle
 import pystan
 import bokeh.plotting
-from .viz import bokeh_traceplot
+from .stats import compute_statistics
 
 class StanModel(object):
     R"""
@@ -145,53 +145,7 @@ class StanModel(object):
         df['dimension'] = df['dimension'].astype(int) 
         return df 
 
-        
-    # Vizualization    
-    def traceplot(self, varnames=None):
-        """
-        Shows the sampling trace and distributions for desired varnames
-        See documentation for mwc.viz.bokeh_traceplot for more details.
-        """
-        return bokeh_traceplot(self.samples, varnames=varnames) 
-
-     
-    def parcoord(self,  varnames=None):
-        """
-        Creates a parallel coordinate plot with centered parameters. 
-        """
-        # Get names of unconstrained parameters. 
-        parnames = self.samples.unconstrained_param_names()
-    
-        # Create a new dataframe and rescale the parameters from 0 to 1
-        centered_df = pd.DataFrame()
-        formatted_parnames = ['lp__']
-        for p in parnames:
-            par, num = p.split('.')
-            formatted_parnames.append(f'{par}[{num}]')
-            samp = self.df[f'{par}[{num}]']
-            centered_df[f'{par}[{num}]'] = (samp - samp.min()) / (samp.max() - samp.min())
-        centered_df['lp__'] = (self.df['lp__'] - self.df['lp__'].min()) / (self.df['lp__'].max() - self.df['lp__'].min())
-        centered_df['divergence'] = self.df['divergent__']
-        centered_df['samp_idx'] = np.arange(0, len(self.df)) + 1
-    
-
-        # Set up the figure canvas. 
-        p = bokeh.plotting.figure(width=500, height=200, 
-                            x_axis_label='parameter',
-                            y_axis_label='normalized',
-                            x_range=formatted_parnames)
-        
-        # Group each sample and plot. 
-        for g, d in centered_df.groupby('samp_idx'):
-            if d['divergence'].values[0] != 0:
-                color ='tomato'
-            else:
-                color='black'
-            p.line(x=formatted_parnames, y=d[formatted_parnames].values[0], line_width=0.1, alpha=0.5, color=color)
-        return p
-
                 
-
 def loadStanModel(fname, force=False):
     """Loads a precompiled Stan model. If no compiled model is found, one will be saved."""
     # Identify the model name and directory structure
@@ -211,100 +165,81 @@ def loadStanModel(fname, force=False):
         with open(pkl_name, 'wb') as f:
             pickle.dump(model, f)      
     return model
-    
 
-def chains_to_dataframe(fit, varnames=None):
+def infer_empirical_bohr(data, model, groupby=['mutant', 'repressors', 'operator', 'IPTGuM'],
+                        verbose=True, force_compile=False, **kwargs):
     """
-    Converts the generated traces from MCMC sampling to a tidy
-    pandas DataFrame.
-
+    Infers the empirical bohr parameter (and relevant correction) for a collection of 
+    fold-change measurements
+    
     Parameters
     ----------
-    fit : pystan sampling output
-        The raw MCMC output.
-    var_names : list of str
-        Names of desired parameters. If `None`, all parameters will be
-        returned.
-
+    data: pandas DataFrame object
+        The data from which the empirical bohr will be determined. This should have at least
+        a fold-change column and a grouping parameter.
+    model: str
+        Path to Stan model to load. Model will be compiled if `force_compile`==True.
+    groupby: list, optional
+        List of identifiers by which to group the supplied data. Default groups by 
+        'mutant', 'repressors', 'operator', and 'IPTGuM'
+    verbose: bool
+        If true, the progress will be printed to screen as a bar. 
+    force_compile: bool
+        If True, the stan model will be recompiled.
+    **kwargs: keyword arguments
+        kwargs to be passed to the sampler.
+        
     Returns
     -------
-    df : pandas DataFrame
-        Pandas DataFrame containing all samples from the MCMC.
+    statistics: pandas DataFrame
+        Dataframe of statistics for relevant parameters.
     """
-
-    data = fit.extract()
-    keys = list(data.keys())
-    if varnames == None:
-        varnames = [k for k in keys if 'lp__' not in k]
+    
+    # Load the stan model and compile if needed. 
+    model = StanModel(model, force_compile=force_compile)
+    
+    # Make a storage list for the individual statistics
+    fc_stats = []
+    
+    # Make a quiet or loud iterator. 
+    if verbose:
+        iter = tqdm.tqdm(data.groupby(groupby))
     else:
-        varnames = fit.unconstrained_param_names()
+        iter = data.groupby(groupby)
+        
+    # Iter through each grouping and infer
+    for g, d in iter: 
+        # Define parameters of the reference state
+        ref = d['ref_bohr'].unique()[0]
+        fc_ref = (1 + np.exp(-ref))**-1
+    
+        # Assemble the data dictionary and sample the posterior
+        data_dict = {'N':len(d),
+                     'foldchange': d['fold_change']} 
+        fit, samples = model.sample(data_dict **kwargs)
 
-    samples = {}
-    for i, key in enumerate(varnames):
-        # Get the shape.
-        dim = np.shape(data[key])
-        if len(dim) == 2:
-            for j in range(dim[-1]):
-                samples['{}.{}'.format(key, j+1)] = data[key][:, j]
-    
-        else:
-            samples[key] = data[key]
-    samples['logp'] = data['lp__']
-    return pd.DataFrame(samples)
-    
-def assemble_StanModelCode(model_file, function_file):
-    """
-    Returns a string of the stan model code from a model and function file
+        # Identify the extrema
+        extrema = (samples['fc_mu'] < samples['fc_sigma']).astype(int) +\
+                  (1-samples['fc_mu'] < samples['fc_sigma']).astype(int)
 
-    Parameters 
-    -----------
-    model_file: str
-        Path to the model file.
-    function_file: str
-        Path to the file of functions.
+        # Compute the empirical bohr parameter and the delta bohr
+        samples['empirical_bohr'] = -np.log((samples['fc_mu'])**-1 - 1)
+        samples['delta_bohr'] = ref + np.sign(ref) * samples['empirical_bohr']
 
-    Returns
-    -------
-    model_code: str
-        String of the stitched together model code.
-    """
-    lines = []
-    files = [function_file, model_file]
-    for f in files:
-        with open(f, 'r') as file:
-            out = file.read().splitlines()
-            for line in out:
-                lines.append(line) 
-    model_code = """\n"""
-    for line in lines:
-        model_code += line + '\n'
-    return model_code
+        # Compute the delta F error of the reference, given the sigma
+        delta_F_ref_upper = np.nan_to_num(ref + np.log((fc_ref + samples['fc_sigma'])**-1 - 1))
+        delta_F_ref_lower = np.nan_to_num(ref + np.log((fc_ref - samples['fc_sigma'])**-1 - 1))
+        samples['correction'] = (delta_F_ref_upper-delta_F_ref_lower) * extrema
+        samples['delta_bohr_corrected'] = samples['delta_bohr'] - samples['correction']
 
-
-def longform_mcmc_df(dataframe, split_pattern='.', root='logp',
-                    idx_name='mutant', param_name='parameter'):
-    """
-    Convert a dataframe of MCMC samples to longform tidy format.
+        _dbohr_stats = compute_statistics(samples, varnames=['delta_bohr', 'empirical_bohr', 'fc_mu', 
+                                                            'fc_sigma', 'delta_bohr_corrected', 'correction'], 
+                                               logprob_name='lp__')    
+        _dbohr_stats['mutant'] = g[0]
+        _dbohr_stats['repressors'] = g[1]
+        _dbohr_stats['operator'] = g[2]
+        _dbohr_stats['IPTGuM'] = g[3]
+        _dbohr_stats['class'] = d['class'].unique()[0]
+        fc_stats.append(_dbohr_stats)
     
-    Parameters
-    ----------
-    dataframe: pandas DataFrame object.
-        The data frame of MCMC samples 
-    
-    """
-    
-    # Perform initial melting
-    melt = dataframe.melt([root])
-    
-    # Split the variables given identifier
-    idx = [v.split(split_pattern)[1] for v in melt['variable']]
-    param = [v.split(split_pattern)[0] for v in melt['variable']]
-    
-    # Assign the splits
-    melt[idx_name] = idx
-    melt[param_name] = param
-    
-    # Drop unnecessary column and perform final melting operation
-    melt.drop('variable', axis=1, inplace=True)
-    longform = melt.melt([root, idx_name, param_name])
-    return longform 
+    return pd.concat(fc_stats)    
