@@ -47,7 +47,7 @@ for d in tqdm(DBL['mutant'].unique()):
     # Compute the credible regions. 
     cred_region = np.zeros((2, len(c_range)))
     for i, c in enumerate(c_range):
-        mut_arch = -mut.thermo.SimpleRepression(R=260, ep_r=epRA_draws.values,
+        mut_arch = mut.thermo.SimpleRepression(R=260, ep_r=epRA_draws.values,
                                     ka=ind_draws['Ka'], ki=ind_draws['Ki'],
                                     ep_ai=ind_draws['ep_AI'],
                                     effector_conc=c).bohr_parameter()
@@ -61,14 +61,11 @@ for d in tqdm(DBL['mutant'].unique()):
 draw_df = pd.concat(draw_dfs)
 ind_draws['ep_AI']
 # Compute the wild-typhe bohr parameter. 
-wt_bohr = -mut.thermo.SimpleRepression(R=260, ep_r=constants['O2'],
+wt_bohr = mut.thermo.SimpleRepression(R=260, ep_r=constants['O2'],
                                       ka=constants['Ka'], ki=constants['Ki'],
                                       ep_ai=constants['ep_AI'], 
                                   effector_conc=DBL['IPTGuM']).bohr_parameter()
 
-DBL['delta_F'] = wt_bohr - DBL['bohr_median']
-DBL['delta_F_min'] = wt_bohr - DBL['bohr_min']
-DBL['delta_F_max'] = wt_bohr - DBL['bohr_max']
 
 # Instantiate the figure. 
 fig, ax = plt.subplots(3, 3, figsize=(6, 6), sharex=True, sharey=True)
@@ -79,7 +76,7 @@ IND_idx = {'F164T':0, 'Q294V': 1, 'Q294K': 2}
 # DATA
 # #####################################
 
-wt_bohr = -mut.thermo.SimpleRepression(R=260, ep_r=constants['O2'],
+wt_bohr = mut.thermo.SimpleRepression(R=260, ep_r=constants['O2'],
                                       ka=constants['Ka'], ki=constants['Ki'],
                                       ep_ai=constants['ep_AI'], 
                                   effector_conc=c_range).bohr_parameter()
@@ -88,9 +85,10 @@ for g, d in DBL.groupby(['mutant']):
     dna_mut, ind_mut = g.split('-')
     _ax = ax[DNA_idx[dna_mut], IND_idx[ind_mut]]
 
+    _d  = d[d['parameter']=='delta_bohr_corrected']
     # Plot the data and error bars
-    _ = _ax.plot(d['IPTGuM'], d['delta_F'], 'o', color=colors[g], ms=4)
-    _ = _ax.vlines(d['IPTGuM'], d['delta_F_min'], d['delta_F_max'], lw=0.75,
+    _ = _ax.plot(_d['IPTGuM'], _d['mean'], 'o', color=colors[g], ms=4)
+    _ = _ax.vlines(_d['IPTGuM'], _d['hpd_min'], d['hpd_max'], lw=0.75,
                 color=colors[g])
 
     # Plot the credible regions. 
