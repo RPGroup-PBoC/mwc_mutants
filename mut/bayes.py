@@ -5,6 +5,7 @@ import pandas as pd
 import pickle
 import pystan
 import bokeh.plotting
+import tqdm
 from .stats import compute_statistics
 
 class StanModel(object):
@@ -216,7 +217,7 @@ def infer_empirical_bohr(data, model, groupby=['mutant', 'repressors', 'operator
         # Assemble the data dictionary and sample the posterior
         data_dict = {'N':len(d),
                      'foldchange': d['fold_change']} 
-        fit, samples = model.sample(data_dict **kwargs)
+        fit, samples = model.sample(data_dict, **kwargs)
 
         # Identify the extrema
         extrema = (samples['fc_mu'] < samples['fc_sigma']).astype(int) +\
@@ -224,12 +225,12 @@ def infer_empirical_bohr(data, model, groupby=['mutant', 'repressors', 'operator
 
         # Compute the empirical bohr parameter and the delta bohr
         samples['empirical_bohr'] = -np.log((samples['fc_mu'])**-1 - 1)
-        samples['delta_bohr'] = ref + np.sign(ref) * samples['empirical_bohr']
+        samples['delta_bohr'] = ref - samples['empirical_bohr']
 
         # Compute the delta F error of the reference, given the sigma
         delta_F_ref_upper = np.nan_to_num(ref + np.log((fc_ref + samples['fc_sigma'])**-1 - 1))
         delta_F_ref_lower = np.nan_to_num(ref + np.log((fc_ref - samples['fc_sigma'])**-1 - 1))
-        samples['correction'] = (delta_F_ref_upper-delta_F_ref_lower) * extrema
+        samples['correction'] = (delta_F_ref_upper+delta_F_ref_lower) * extrema
         samples['delta_bohr_corrected'] = samples['delta_bohr'] - samples['correction']
 
         _dbohr_stats = compute_statistics(samples, varnames=['delta_bohr', 'empirical_bohr', 'fc_mu', 
