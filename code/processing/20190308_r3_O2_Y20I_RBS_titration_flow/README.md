@@ -1,6 +1,6 @@
 ---
 status: Accepted 
-notes: Lowest repressor copy number is above 1 -- interesting
+notes: Nothing suspect
 ---
 # 2019-03-08 Y20I IPTG titration
 

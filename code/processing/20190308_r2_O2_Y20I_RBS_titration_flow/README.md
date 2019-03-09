@@ -2,7 +2,7 @@
 status: Accepted 
 notes: Lowest repressor copy number is above 1 -- interesting
 ---
-# 2019-03-08 Y20I-Q294K IPTG titration
+# 2019-03-08 Y20I IPTG titration
 
 ## Purpose
 This experiment measures the fold-change in gene expression for the DNA binding 
