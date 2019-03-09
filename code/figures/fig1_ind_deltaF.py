@@ -46,12 +46,19 @@ c_ref = mut.thermo.SimpleRepression(R=data['repressors'], ep_r=data['binding_ene
                                    n_sites=constants['n_sites'],
                                    effector_conc=c0,
                                    ep_ai=constants['ep_AI']).bohr_parameter()
+# Compute the statistics. 
+data['ref_bohr'] = R_ref
+R_stats = mut.bayes.infer_empirical_bohr(data, '../stan/empirical_F.stan')
+data['ref_bohr'] = ep_ref
+ep_stats = mut.bayes.infer_empirical_bohr(data, '../stan/empirical_F.stan')
+data['ref_bohr'] = c_ref
+c_stats = mut.bayes.infer_empirical_bohr(data, '../stan/empirical_F.stan')
 
 
 # Define the parameter ranges for the collapse curves 
 r_range = np.logspace(0, 4, 200)
 ep_range = np.linspace(-17, -2, 200)
-c_range = np.logspace(-9, 9, 200)
+c_range = np.logspace(-4, 4, 200)
 pact_ref = mut.thermo.MWC(ka=constants['Ka'], ki=constants['Ki'],
                          n_sites=constants['n_sites'], ep_ai=constants['ep_AI'],
                          effector_conc=c0).pact()
@@ -63,14 +70,6 @@ pact_range = mut.thermo.MWC(ka=constants['Ka'], ki=constants['Ki'],
 ep_collapse = epRA0 - ep_range
 r_collapse = -np.log(R0/r_range)
 pact_collapse = -np.log(pact_ref / pact_range)
-
-# Compute the statistics. 
-data['ref_bohr'] = R_ref
-R_stats = mut.bayes.infer_empirical_bohr(data, '../stan/empirical_F.stan')
-data['ref_bohr'] = ep_ref
-ep_stats = mut.bayes.infer_empirical_bohr(data, '../stan/empirical_F.stan')
-data['ref_bohr'] = c_ref
-c_stats = mut.bayes.infer_empirical_bohr(data, '../stan/empirical_F.stan')
 
 
 # Instantiate the figure
