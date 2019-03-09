@@ -51,7 +51,7 @@ c_ref = mut.thermo.SimpleRepression(R=data['repressors'], ep_r=data['binding_ene
 # Define the parameter ranges for the collapse curves 
 r_range = np.logspace(0, 4, 200)
 ep_range = np.linspace(-17, -2, 200)
-c_range = np.logspace(-2, 4, 200)
+c_range = np.logspace(-9, 9, 200)
 pact_ref = mut.thermo.MWC(ka=constants['Ka'], ki=constants['Ki'],
                          n_sites=constants['n_sites'], ep_ai=constants['ep_AI'],
                          effector_conc=c0).pact()
@@ -74,31 +74,28 @@ c_stats = mut.bayes.infer_empirical_bohr(data, '../stan/empirical_F.stan')
 
 
 # Instantiate the figure
-fig, ax = plt.subplots(1, 3, figsize=(7, 2))
+fig, ax = plt.subplots(1, 3, figsize=(6, 1.5))
 
-iter = 0
 for g, d in c_stats.groupby(['repressors', 'operator']):
     _d = d[d['parameter']=='delta_bohr_corrected']
-    _ = ax[0].plot(_d['IPTGuM']/c0, _d['median'], marker='o',
-                  color='slategray', ms=2, linestyle='none', alpha=0.5,
+    pact = mut.thermo.MWC(ka=constants['Ka'], ki=constants['Ki'],
+                                      ep_ai=constants['ep_AI'], n_sites=constants['n_sites'],
+                                      effector_conc=_d['IPTGuM']).pact()
+    _ = ax[0].plot(pact_ref/pact, _d['median'], marker='o',
+                  color='slategray', ms=3, linestyle='none', alpha=0.5,
                   markerfacecolor='none')
-    iter += 1
-
-
-iter = 0
+    
 for g, d in R_stats.groupby(['repressors', 'operator']):
     _d = d[d['parameter']=='delta_bohr_corrected']
-    _ = ax[1].plot(_d['repressors']/R0, _d['median'], marker='o',
-                  color='slategray', ms=2, linestyle='none', 
+    _ = ax[1].plot(R0/_d['repressors'], _d['median'], marker='o',
+                  color='slategray', ms=3, linestyle='none', 
                   alpha=0.5)
 
-iter = 0
 for g, d in ep_stats.groupby(['repressors', 'operator']):
     _d = d[d['parameter']=='delta_bohr_corrected']
     _ = ax[2].plot(epRA0 - constants[g[1]] * np.ones(len(_d)), _d['median'], marker='o',
-                  color='slategray', ms=2, linestyle='none', alpha=0.5,
+                  color='slategray', ms=3, linestyle='none', alpha=0.5,
                   markerfacecolor=None)
-    iter += 1
     
 c_grouped = c_stats[c_stats['parameter']==\
                     'delta_bohr_corrected'].groupby(['IPTGuM']).agg(
@@ -110,24 +107,40 @@ ep_grouped = ep_stats[ep_stats['parameter']==\
                     'delta_bohr_corrected'].groupby(['operator']).agg(
                     ('mean', 'std')).reset_index()
 ep_binding_energy = np.array([constants[op] for op in ep_grouped['operator'].values])
-_ = ax[0].errorbar(c_grouped['IPTGuM']/c0, c_grouped['median']['mean'], c_grouped['median']['std'],
+pact = mut.thermo.MWC(ka=constants['Ka'], ki=constants['Ki'], n_sites=constants['n_sites'],
+                     ep_ai=constants['ep_AI'],  effector_conc=c_grouped['IPTGuM']).pact()
+_ = ax[0].errorbar(pact_ref/pact, c_grouped['median']['mean'], c_grouped['median']['std'],
                    linestyle='none', color='black', fmt='.', lw=1, zorder=1000,
                   markerfacecolor='w', capsize=2)
-_ = ax[1].errorbar(R_grouped['repressors']/R0, R_grouped['median']['mean'], R_grouped['median']['std'],
+_ = ax[1].errorbar(R0/R_grouped['repressors'], R_grouped['median']['mean'], R_grouped['median']['std'],
                    linestyle='none', color='black', fmt='.', lw=1, zorder=1000,
                   markerfacecolor='w', capsize=2)
 _ = ax[2].errorbar(epRA0 - ep_binding_energy, ep_grouped['median']['mean'], ep_grouped['median']['std'],
                    linestyle='none', color='black', fmt='.', lw=1, zorder=1000,
                   markerfacecolor='w', capsize=2)  
-ax[0].plot(c_range/c0, pact_collapse, color=pboc['blue'], lw=2)
-ax[1].plot(r_range/R0, r_collapse, pboc['red'], lw=2)
+ax[0].plot(pact_ref/pact_range, pact_collapse, color=pboc['blue'], lw=2)
+ax[1].plot(R0/r_range, r_collapse, pboc['red'], lw=2)
 ax[2].plot(epRA0 - ep_range, ep_collapse, pboc['purple'], lw=2)
 
+# Add appropriate labels. 
+ax[0].set_xlabel('$p_\mathrm{act}^{(\mathrm{ref})}(c)) / p_\mathrm{act}^*(c)$', fontsize=8)
+ax[1].set_xlabel('$R^{(\mathrm{ref})} / R^*$', fontsize=8)
+ax[2].set_xlabel(r'$\Delta\varepsilon_{RA}^{(\mathrm{ref})} - \Delta\varepsilon_{RA}^*$ [$k_BT$]', fontsize=8)
 
+for a in ax:
+    a.set_ylabel('$F^{(\mathrm{ref})} - F^*$ [$k_BT$]', fontsize=8)
+    a.xaxis.set_tick_params(labelsize=8)
+    a.yaxis.set_tick_params(labelsize=8)
+    a.grid(False)
+    
 # Set the various limits    
+ax[0].set_xlim([1E-2, 1E1])
+ax[1].set_xlim([R0/1, R0/1E4])
+ax[2].set_xlim((-7,3))
+ax[2].set_ylim([-10, 5])
 ax[0].set_xscale('log')
 ax[1].set_xscale('log')
-# ax[2].set_xlim([-1, 1E-2])
-plt.savefig('/Users/gchure/Desktop/test.pdf')
+# plt.tight_layout()
+plt.savefig('../../figures/fig1_RazoMejia2018_deltaF.svg', bbox_inches='tight')
 
 
