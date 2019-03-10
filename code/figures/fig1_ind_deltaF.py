@@ -82,7 +82,7 @@ for g, d in c_stats.groupby(['repressors', 'operator']):
                                       effector_conc=_d['IPTGuM']).pact()
     _ = ax[0].plot(pact_ref/pact, _d['median'], marker='o',
                   color='slategray', ms=3, linestyle='none', alpha=0.5,
-                  markerfacecolor='none')
+                  )
     
 for g, d in R_stats.groupby(['repressors', 'operator']):
     _d = d[d['parameter']=='delta_bohr_corrected']
