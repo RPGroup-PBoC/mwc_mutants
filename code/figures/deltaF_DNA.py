@@ -46,7 +46,7 @@ rep_idx = {60:3, 124:2, 260:1, 1220:0}
 # DATA AND THEORY
 # ###########################
 for g, d in DNA.groupby(['mutant', 'repressors']):
-    _ax = ax[mut_idx[g[0]], rep_idx[g[1]]]
+    _ax = ax[mut_idx[g[0]], 0]
     _d = d[d['parameter']=='delta_bohr_corrected']
     if g[1] == 260:
         face = 'w' 
