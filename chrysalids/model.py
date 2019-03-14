@@ -42,74 +42,80 @@ def mutant_app():
                                          x_axis_type='log',
                                          x_axis_label='IPTG [µM]',
                                          y_axis_label='fold-change',
-                                         y_range=[-0.1, 1.1], title='Induction Profile')
+                                         y_range=[-0.1, 1.1], title='     INDUCTION PROFILE     ')
 
     p_collapse = bokeh.plotting.figure(width=400, height=300, 
                                          x_axis_label='free energy [kT]',
                                          y_axis_label='fold-change',
                                          y_range=[-0.1, 1.2], 
-                                         x_range=[-10, 10], title='Phenotypic Data Collapse')
+                                         x_range=[-10, 10], title='     PHENOTYPIC DATA COLLAPSE     ')
 
     p_deltaF = bokeh.plotting.figure(width=400, height=300, 
                                          x_axis_type='log',
                                          x_axis_label='IPTG [µM]',
                                          y_axis_label='∆F [kT]',
-                                         y_range=[-10, 10], title='Change in free energy')
+                                         y_range=[-10, 10], title='     CHANGE IN FREE ENERGY     ')
    
     # ##############
     # FOLD-CHANGE PLOTS
     # ##############
-    p_foldchange.line(x='c', y='fc', source=mut_fc_source, color=pboc['red']) 
+    p_foldchange.line(x='c', y='fc', color='black', source=ref_fc_source, line_width=2)
+    p_foldchange.line(x='c', y='fc', source=mut_fc_source, color=pboc['red'],
+        line_width=2)
     p_foldchange.circle(x='c', y='fc', source=mut_point_source, color=pboc['red'],
-    size=10) 
-    p_foldchange.line(x='c', y='fc', color='black', source=ref_fc_source)
+    size=8) 
 
     # ####################
     # BOHR PARAMETER PLOTS 
     # ####################
+    p_collapse.line(x=bohr_range, y=(1 + np.exp(-bohr_range))**-1, color='black',
+    line_width=2)
     p_collapse.circle(x='bohr', y='fc', color=pboc['red'], source=mut_point_source,
-    size=10)
-    p_collapse.line(x=bohr_range, y=(1 + np.exp(-bohr_range))**-1, color='black')
+    size=8)
 
     # ####################
     # DELTA F PLOTS
-    # ###################
-    p_deltaF.line(x='c', y='delta_F', source=mut_fc_source, color=pboc['red'])
+    # ######j#############
+    p_deltaF.line(x=c_range, y=ref_bohr - ref_bohr, color='black', line_width=2)
+    p_deltaF.line(x='c', y='delta_F', source=mut_fc_source, color=pboc['red'],
+    line_width=2)
     p_deltaF.circle(x='c', y='delta_F', source=mut_point_source, color=pboc['red'],
                     size=10)
-    p_deltaF.line(x=c_range, y=ref_bohr - ref_bohr, color='black')
 
     # ####################
     # CONTROL
     # ####################
     # Mutants
-    reset = Button(label='Reset to Reference', button_type='success')
+    ref_color = 'slategray'
+    mut_color = pboc['light_red']
+    reset = Button(label='Reset to Reference')
     repressors = Slider(title='Repressors per cell', 
-                        value=260, start=1, end=2000, step=1)
+                        value=260, start=1, end=2000, step=1, bar_color=mut_color)
     binding_energy = Slider(title='DNA binding energy [kT]',
-                            value=-13.9, start=-20, end=-3, step=0.1)
+                            value=-13.9, start=-20, end=-3, step=0.1,
+                            bar_color=mut_color)
     Ka = Slider(title='Ka [µM]',
-                            value=139, start=1, end=1000, step=1)
+                            value=139, start=1, end=1000, step=1, bar_color=mut_color)
     Ki = Slider(title='Ki [µM]',
-                            value=0.53, start=0.1, end=50, step=0.1)
-    epAI = Slider(title='allosteric energy differece [kT]',
-                            value=4.5, start=-10, end=10, step=0.1)
+                            value=0.53, start=0.1, end=50, step=0.1, bar_color=mut_color)
+    epAI = Slider(title='allosteric energy difference [kT]',
+                            value=4.5, start=-10, end=10, step=0.1, bar_color=mut_color)
     Nsites = Slider(title='Number of allosteric sites', 
-                     value=2, start=0, end=10, step=1)
+                     value=2, start=0, end=10, step=1, bar_color=mut_color)
     # Reference
-    ref_reset = Button(label='Reset to Default', button_type='success')
+    ref_reset = Button(label='Reset to Default')
     ref_repressors = Slider(title='Repressors per cell', 
-                        value=260, start=1, end=2000, step=1)
+                        value=260, start=1, end=2000, step=1, bar_color=ref_color)
     ref_binding_energy = Slider(title='DNA binding energy [kT]',
-                            value=-13.9, start=-20, end=-3, step=0.1)
+                            value=-13.9, start=-20, end=-3, step=0.1, bar_color=ref_color)
     ref_Ka = Slider(title='Ka [µM]',
-                            value=139, start=1, end=1000, step=1)
+                            value=139, start=1, end=1000, step=1, bar_color=ref_color)
     ref_Ki = Slider(title='Ki [µM]',
-                            value=0.53, start=0.1, end=50, step=0.1)
-    ref_epAI = Slider(title='allosteric energy differece [kT]',
-                            value=4.5, start=-10, end=10, step=0.1)
+                            value=0.53, start=0.1, end=50, step=0.1, bar_color=ref_color)
+    ref_epAI = Slider(title='allosteric energy difference [kT]',
+                            value=4.5, start=-10, end=10, step=0.1, bar_color=ref_color)
     ref_Nsites = Slider(title='Number of allosteric sites', 
-                     value=2, start=0, end=10, step=1)
+                     value=2, start=0, end=10, step=1, bar_color=ref_color)
 
 
 
@@ -120,7 +126,7 @@ def mutant_app():
         Ka.value = ref_Ka.value
         Ki.value = ref_Ki.value
         epAI.value = ref_epAI.value
-        Nsites = ref_Nsites.value
+        Nsites.value = ref_Nsites.value
 
     def _ref_reset():
         ref_repressors.value = init_states['R']
@@ -179,7 +185,7 @@ def mutant_app():
         c.on_change('value', lambda attr, old, new: update_canvas())
    
     # Assemble the layout options
-    mut_inputs = widgetbox(mut_controls, sizing_mode='scale_width')
+    mut_inputs = widgetbox(mut_controls, sizing_mode='scale_width', name='Perturbed State Parameters')
     ref_inputs = widgetbox(ref_controls, sizing_mode='scale_width')
     lay = layout([[mut_inputs, ref_inputs], [p_foldchange, p_collapse, p_deltaF]])
     tab = bokeh.models.widgets.Panel(child=lay, title='Theoretical Model')
