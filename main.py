@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-    
 import sys
+import pandas as pd
 from chrysalids.model import mutant_app
+from chrysalids.wildtype import induction_app
+from chrysalids.dna_muts import dna_app
 import bokeh.io
 import bokeh.plotting
 from bokeh.models import ColumnDataSource, Div
@@ -10,6 +13,29 @@ import bokeh.themes
 import glob
 import  mut.viz
 colors = mut.viz.color_selector('pboc')
+
+# ###########################
+# DATA LOADING
+# ############################
+ind_data = pd.read_csv('mwc_mutants/data/csv/RazoMejia2018_data.csv')
+ind_data['repressors'] *= 2
+ind_data.rename(columns={'fold_change_A':'fold_change',
+                        'IPTG_uM':'IPTGuM'}, inplace=True)
+ind_data = ind_data[ind_data['repressors'] > 0 ].copy()
+
+# ###########################
+# MUTANT DATA PRUNING
+# ##########################
+mut_data = pd.read_csv('mwc_mutants/data/csv/compiled_data.csv')
+dbohr_stats = pd.read_csv('mwc_mutants/data/csv/empirical_F_statistics.csv')
+epRA_stats = pd.read_csv('mwc_mutants/data/csv/DNA_binding_energy_summary.csv')
+DNA_data = mut_data[((mut_data['class']=='WT') | (mut_data['class']=='DNA')) & 
+                    (mut_data['operator']=='O2')]
+DNA_stats = dbohr_stats[dbohr_stats['class']=='DNA'].copy()
+
+# #############################
+# THEME DETAILS
+# ############################
 theme_json = {'attrs':
             {'Figure': {
                 'background_fill_color': '#E3DCD0',
@@ -39,8 +65,12 @@ theme_json = {'attrs':
                 'text_font': 'Lucida Sans',
                 'offset': 2,
             }}}
+
+print(epRA_stats.head())
 theme = bokeh.themes.Theme(json=theme_json)
 tab1 = mutant_app()
-tabs = bokeh.models.widgets.Tabs(tabs=[tab1])
+tab2 = induction_app(ind_data)
+tab3 = dna_app(DNA_data, DNA_stats, epRA_stats)
+tabs = bokeh.models.widgets.Tabs(tabs=[tab1, tab2, tab3])
 bokeh.io.curdoc().theme = theme
 bokeh.io.curdoc().add_root(tabs)
