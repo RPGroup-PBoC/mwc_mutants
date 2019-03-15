@@ -46,14 +46,14 @@ rep_idx = {60:3, 124:2, 260:1, 1220:0}
 # DATA AND THEORY
 # ###########################
 for g, d in DNA.groupby(['mutant', 'repressors']):
-    _ax = ax[mut_idx[g[0]], 0]
+    _ax = ax[mut_idx[g[0]], rep_idx[g[1]]]
     _d = d[d['parameter']=='delta_bohr_corrected']
     if g[1] == 260:
         face = 'w' 
     else:
         face = colors[g[0]] 
 
-    _ = _ax.plot(_d['IPTGuM'], _d['mean'], marker='o', 
+    _ = _ax.plot(_d['IPTGuM'], _d['median'], marker='o', 
                 color = colors[g[0]], linestyle='none', ms=3, 
                 markerfacecolor=face)
      
