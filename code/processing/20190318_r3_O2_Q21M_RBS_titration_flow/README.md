@@ -2,7 +2,7 @@
 status: Accepted
 notes: Looks great
 ---
-# 2019-03-18 Q21A IPTG titration
+# 2019-03-18 Q21M IPTG titration
 
 ## Purpose
 This experiment measures the fold-change in gene expression for the DNA
@@ -23,7 +23,7 @@ binding mutant Q21A across several repressor copy numbers.
 ## Analysis Files
 
 **Induction Profile**
-![](output/20190318_r2_fold_change_curve.png)
+![](output/20190318_r3_fold_change_curve.png)
 
 ## Experimental Protocol
 
