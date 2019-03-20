@@ -1,6 +1,6 @@
 --
 status: Accepted
-notes: Obvious pipetting error for concentrations 1000 and 5000 µM. These were dropped 
+notes: Looks great
 ---
 # 2019-03-19 Q21M IPTG titration
 
@@ -23,7 +23,7 @@ binding mutant Q21A across several repressor copy numbers.
 ## Analysis Files
 
 **Induction Profile**
-![](output/20190319_r2_fold_change_curve.png)
+![](output/20190319_r3_fold_change_curve.png)
 
 ## Experimental Protocol
 

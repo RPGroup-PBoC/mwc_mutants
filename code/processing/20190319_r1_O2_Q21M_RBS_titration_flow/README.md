@@ -23,7 +23,7 @@ binding mutant Q21A across several repressor copy numbers.
 ## Analysis Files
 
 **Induction Profile**
-![](output/20190318_r3_fold_change_curve.png)
+![](output/20190319_r1_fold_change_curve.png)
 
 ## Experimental Protocol
 
