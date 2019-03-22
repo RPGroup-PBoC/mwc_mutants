@@ -6,20 +6,20 @@ import glob
 
 # Define the details fo the expriment.
 USERNAME = 'gchure'
-DATE = 20190320
-RUN_NO = 3
-FCS_PATTERN = 'RP2019-03-20'
+DATE = 20190321
+RUN_NO = 1
+FCS_PATTERN = 'RP2019-03-21'
 
 savedir = '../../../data/flow/csv/'
 
 # Define the order of rows and the cols.
-R = (0, 0, 260, 260, 260, 260)
+R = (0, 0, 60, 124, 260, 1220)
 ROWS = ('auto', 'delta', 'F164T', 'Q294V', 'Q294K', 'Q294R')
 OPS = ('NA', 'O1', 'O1', 'O1', 'O1', 'O1')
 COLS = (0, 0.1, 5, 10, 25, 50, 75, 100, 250, 500, 1000, 5000)
 
 # Get the names of the files
-files = glob.glob('../../../data/flow/fcs/{0}*r{1}*.fcs'.format(FCS_PATTERN, RUN_NO))
+files = glob.glob('../../../data/flow/fcs/{0}*.fcs'.format(FCS_PATTERN, RUN_NO))
 files = np.sort(files)
 
 # Break the list up into columns.

@@ -6,9 +6,9 @@ import glob
 
 # Define the details fo the expriment.
 USERNAME = 'gchure'
-DATE = 20190320
-RUN_NO = 3
-FCS_PATTERN = 'RP2019-03-20'
+DATE = 20190321
+RUN_NO = 2
+FCS_PATTERN = 'RP2019-03-21'
 
 savedir = '../../../data/flow/csv/'
 
