@@ -46,6 +46,7 @@ function derivKi(ep, c, ka, kiValue, n) {
     return numer / (denom_a * denom_b);
 }
 
+
 // Define the parameter values
 var data = source.data;
 var ka = Math.pow(10, Ka.value);
@@ -54,14 +55,8 @@ var epAI = EpAI.value;
 var c = Math.pow(10, C.value);
 var n = nSites;
 
-// Define the observed ranges
-data['epAI'] = linspace(xepAI.start, xepAI.end, n_points); 
-data['ka'] = logspace(Math.log10(xKa.start), Math.log10(xKa.end), n_points);
-data['ki'] = logspace(Math.log10(xKi.start), Math.log10(xKi.end), n_points);
-data['c']= logspace(Math.log10(xC.start), Math.log10(xC.end), n_points);
-console.log(data['ka'])
 // Call the functions to compute the derivatives
-for (var i = 0; i < n_points; i++) {
+for (var i = 0; i < nPoints; i++) {
    data['dF_depAI'][i] = derivEpAI(data['epAI'][i], c, ka, ki, n);
    data['dF_dc'][i] = derivC(epAI, data['c'][i], ka, ki, n);
    data['dF_dka'][i] = derivKa(epAI, c, data['ka'][i], ki, n);
