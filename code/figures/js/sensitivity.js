@@ -62,5 +62,9 @@ for (var i = 0; i < nPoints; i++) {
    data['dF_dka'][i] = derivKa(epAI, c, data['ka'][i], ki, n);
    data['dF_dki'][i] = derivKi(epAI, c, ka, data['ki'][i], n);}
 
+
+data['epAI'] = 4.5 - data['epAI']
+data['c'] = data['c'] / 50
+
 // Update the sources. 
 source.change.emit()
