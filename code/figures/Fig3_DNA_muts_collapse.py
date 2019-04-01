@@ -39,7 +39,7 @@ axes = {'Y20I': 0, 'Q21A':1, 'Q21M':2}
 for i in range(3): 
     ax[0, i].set_ylim([-0.1, 1.2])
     ax[1, i].set_xlim([-8, 8])
-    ax[0, i].set_xscale('symlog')
+    ax[0, i].set_xscale('log')
     ax[0, i].set_xlabel('IPTG  [µM]', fontsize=8)
     ax[1, i].set_xlabel('free energy [$k_BT$]', fontsize=8)
 for a in ax.ravel():
@@ -69,26 +69,24 @@ wt_fit = mut.thermo.SimpleRepression(R=260, ep_r=-13.9, ka=constants['Ka'], ki=c
                                     effector_conc=c_range).fold_change()
 for i in range(3):
     # Induction data
-    _ = ax[0, i].errorbar(wt_ind['IPTGuM'], wt_ind['fold_change']['mean'],
-                         wt_ind['fold_change']['sem'], fmt='.', color='black',
-                         alpha=0.5, ms=5, label='wild-type')
-    _ = ax[0, i].plot(c_range, wt_fit, lw=1, color='black', alpha=0.5, label='__nolegend__')
+#     _ = ax[0, i].errorbar(wt_ind['IPTGuM'], wt_ind['fold_change']['mean'],
+#                          wt_ind['fold_change']['sem'], fmt='.', color='gray',
+#                          alpha=0.5, ms=5, label='WT')
+    _ = ax[0, i].plot(c_range, wt_fit, lw=1, color='black', alpha=0.5, label='__nolegend__', linestyle=':')
 
     # Free Energy data
-    _ = ax[1, i].errorbar(wt_ind['bohr_param'], wt_ind['fold_change']['mean'],
-                         wt_ind['fold_change']['sem'], fmt='.', color='black',
-                         alpha=0.5, ms=5, label='__nolegend__')
-    _ = ax[1, i].plot(bohr_range, (1 + np.exp(-bohr_range))**-1, lw=1, color='k')
+#     _ = ax[1, i].errorbar(wt_ind['bohr_param'], wt_ind['fold_change']['mean'],
+#                          wt_ind['fold_change']['sem'], fmt='.', color='gray',
+#                          alpha=0.5, ms=5, label='__nolegend__')
+    _ = ax[1, i].plot(bohr_range, (1 + np.exp(-bohr_range))**-1, lw=1, color='k', linestyle='-')
     
-    
-
-                 
+ 
 # #######################################
 # INDUCTION DATA 
 # ######################################
 for g, d in grouped[grouped['mutant'] != 'wt'].groupby(['mutant', 'repressors']):
     if g[0] == 'Y20I':
-        label = int(prior_bounds[f'R{int(g[1])}_mu'])
+        label = int(g[1])
     else:
         label='__nolegend__'
         
@@ -104,8 +102,8 @@ for g, d in grouped[grouped['mutant'] != 'wt'].groupby(['mutant', 'repressors'])
                 color=rep_colors[g[1]], zorder=zorder, label=label)
     
     
-# leg = ax[0, 0].legend(loc='lower right', fontsize=7, title='rep / cell')
-# leg.get_title().set_fontsize(7)
+leg = ax[0, 0].legend(loc='lower right', fontsize=6, title='rep / cell')
+leg.get_title().set_fontsize(6)
 
     
 # #############################################################################
@@ -153,3 +151,4 @@ for g, d in fit_stats[fit_stats['mutant'] != 'wt'].groupby('mutant'):
                        linewidth=1, zorder=zorder)
     
 plt.tight_layout()
+plt.savefig('../../figures/Fig3_DNA_collapse.pdf', bbox_inches='tight')
