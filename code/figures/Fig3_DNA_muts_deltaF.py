@@ -103,27 +103,53 @@ for g, d in grouped[grouped['mutant'] != 'wt'].groupby(['mutant', 'repressors'])
                 capsize=1, linestyle='none', fmt='.', ms=8, markerfacecolor=face,
                 color=rep_colors[g[1]], zorder=zorder, label=label)
     
+    
 # leg = ax[0, 0].legend(loc='lower right', fontsize=7, title='rep / cell')
 # leg.get_title().set_fontsize(7)
 
     
 # #############################################################################
 # MUTANT PROFILE CURVES 
-# ######################################
+# #############################################################################
 fit_stats = epRA_stats[(epRA_stats['repressors']==fit_strain) & (epRA_stats['parameter']=='ep_RA')]
 
 for g, d in fit_stats[fit_stats['mutant'] != 'wt'].groupby(['mutant']):
     _ind_ax = ax[0, axes[g]]
     for r, c in rep_colors.items():
         _c, _ep = np.meshgrid(c_range, d[['median', 'hpd_min', 'hpd_max']].values)
-        arch = mut.thermo.SimpleRepression(R=prior_bounds[f'R{int(r)}_mu'], ep_r=_ep, 
-                                           ka=prior_bounds['Ka_mu'],
-                                         ki=prior_bounds['Ki_mu'], ep_ai=constants['ep_AI'],
+        arch = mut.thermo.SimpleRepression(R=r, ep_r=_ep, 
+                                           ka=constants['Ka'],
+                                         ki=constants['Ki'], ep_ai=constants['ep_AI'],
                                          n_sites=constants['n_sites'], n_ns=constants['Nns'],
                                          effector_conc=_c)
         _fc = arch.fold_change()
         _ind_ax.plot(c_range, _fc[0,:], lw=1, color=c)
         _ind_ax.fill_between(c_range, _fc[1, :], _fc[2, :], color=c, alpha=0.5)
 
+        
+# ###############################################################################
+# MUTANT COLLAPSE CURVES
+# ################################################################################
+for g, d in fit_stats[fit_stats['mutant'] != 'wt'].groupby('mutant'):
+    _bohr_ax = ax[1, axes[g]]
+    for r, c in rep_colors.items():
+        _mut_strain = grouped[(grouped['mutant']==g) & (grouped['repressors']==r)]
+        if r == 260:
+            face='w'
+            zorder=1000
+        else:
+            face = c
+            zorder=100
+        _c, _ep = np.meshgrid(_mut_strain['IPTGuM'], d[['median', 'hpd_min', 'hpd_max']])
+        arch = mut.thermo.SimpleRepression(R=r, ep_r=_ep, ka=constants['Ka'],
+                                          ki=constants['Ki'], ep_ai=constants['ep_AI'],
+                                          n_sites=constants['n_sites'], effector_conc=_c)
+        bohr = arch.bohr_parameter()
+        _bohr_ax.errorbar(bohr[0, :], _mut_strain['fold_change']['mean'], 
+                          _mut_strain['fold_change']['sem'], ms=8, markerfacecolor=face,
+                          color=c, linestyle='none', fmt='.', zorder=zorder)
+        
+        _bohr_ax.hlines(_mut_strain['fold_change']['mean'], bohr[1, :], bohr[2, :], color=c,
+                       linewidth=1, zorder=zorder)
     
 plt.tight_layout()
