@@ -32,7 +32,7 @@ bohr_range = np.linspace(-8, 8, 500)
 # ########################################################
 # FIGURE INSTANTIATION / FORMATTING 
 # ########################################################
-fig, ax = plt.subplots(2, 3, figsize=(7, 4.5))
+fig, ax = plt.subplots(2, 3, figsize=(5, 3.5), sharey=True)
 axes = {'Y20I': 0, 'Q21A':1, 'Q21M':2}
 
 # Format axes
@@ -41,16 +41,19 @@ for i in range(3):
     ax[1, i].set_xlim([-8, 8])
     ax[0, i].set_xscale('log')
     ax[0, i].set_xlabel('IPTG  [µM]', fontsize=8)
+    ax[0, i].set_xlim([1E-2, 1E4])
     ax[1, i].set_xlabel('free energy [$k_BT$]', fontsize=8)
 for a in ax.ravel():
-    a.set_ylabel('fold-change', fontsize=8)
+
     a.xaxis.set_tick_params(labelsize=8)
     a.yaxis.set_tick_params(labelsize=8) 
 
 # Add labels
 for m, a in axes.items():
-    ax[0, a].set_title(m, y=1.08, backgroundcolor=pboc['pale_yellow'])
+    ax[0, a].set_title(m, y=1.08, backgroundcolor=pboc['pale_yellow'],
+                      fontsize=8)
 for i in range(2):
+    ax[i, 0].set_ylabel('fold-change', fontsize=8)
     ax[0, i+1].set_yticklabels([])
     ax[1, i+1].set_yticklabels([])
 
@@ -78,18 +81,13 @@ for i in range(3):
 #     _ = ax[1, i].errorbar(wt_ind['bohr_param'], wt_ind['fold_change']['mean'],
 #                          wt_ind['fold_change']['sem'], fmt='.', color='gray',
 #                          alpha=0.5, ms=5, label='__nolegend__')
-    _ = ax[1, i].plot(bohr_range, (1 + np.exp(-bohr_range))**-1, lw=1, color='k', linestyle='-')
+    _ = ax[1, i].plot(bohr_range, (1 + np.exp(-bohr_range))**-1, lw=0.75, color='k', linestyle='-')
     
  
 # #######################################
 # INDUCTION DATA 
 # ######################################
-for g, d in grouped[grouped['mutant'] != 'wt'].groupby(['mutant', 'repressors']):
-    if g[0] == 'Y20I':
-        label = int(g[1])
-    else:
-        label='__nolegend__'
-        
+for g, d in grouped[grouped['mutant'] != 'wt'].groupby(['mutant', 'repressors']): 
     if g[1] == fit_strain:
         face = 'w'
         zorder=1000
@@ -97,12 +95,12 @@ for g, d in grouped[grouped['mutant'] != 'wt'].groupby(['mutant', 'repressors'])
         face = rep_colors[g[1]]
         zorder=1
     _ax = ax[0, axes[g[0]]]
-    _ax.errorbar(d['IPTGuM'], d['fold_change']['mean'], d['fold_change']['sem'], lw=1, 
-                capsize=1, linestyle='none', fmt='.', ms=8, markerfacecolor=face,
-                color=rep_colors[g[1]], zorder=zorder, label=label)
+    _ax.errorbar(d['IPTGuM'], d['fold_change']['mean'], d['fold_change']['sem'], lw=0.75, 
+                capsize=1, linestyle='none', fmt='.', ms=5, markerfacecolor=face,
+                color=rep_colors[g[1]], zorder=zorder, label=int(g[1]))
     
     
-leg = ax[0, 0].legend(loc='lower right', fontsize=6, title='rep / cell')
+leg = ax[0, -1].legend(loc='upper left', fontsize=6, title='rep / cell')
 leg.get_title().set_fontsize(6)
 
     
@@ -144,7 +142,7 @@ for g, d in fit_stats[fit_stats['mutant'] != 'wt'].groupby('mutant'):
                                           n_sites=constants['n_sites'], effector_conc=_c)
         bohr = arch.bohr_parameter()
         _bohr_ax.errorbar(bohr[0, :], _mut_strain['fold_change']['mean'], 
-                          _mut_strain['fold_change']['sem'], ms=8, markerfacecolor=face,
+                          _mut_strain['fold_change']['sem'], ms=5, markerfacecolor=face,
                           color=c, linestyle='none', fmt='.', zorder=zorder)
         
         _bohr_ax.hlines(_mut_strain['fold_change']['mean'], bohr[1, :], bohr[2, :], color=c,
@@ -152,3 +150,4 @@ for g, d in fit_stats[fit_stats['mutant'] != 'wt'].groupby('mutant'):
     
 plt.tight_layout()
 plt.savefig('../../figures/Fig3_DNA_collapse.pdf', bbox_inches='tight')
+
