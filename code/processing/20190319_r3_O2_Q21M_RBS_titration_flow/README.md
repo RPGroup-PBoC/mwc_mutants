@@ -1,4 +1,4 @@
---
+---
 status: Accepted
 notes: Looks great
 ---

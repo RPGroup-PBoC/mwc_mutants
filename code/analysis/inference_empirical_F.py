@@ -87,7 +87,7 @@ def infer_empirical_bohr(data, model, groupby=['mutant', 'repressors', 'operator
 
         # Compute the delta F error of the reference, given the sigma
         delta_F_ref_upper = np.nan_to_num(ref + np.log((fc_ref + samples['fc_sigma'])**-1 - 1))
-        delta_F_ref_lower = np.nan_to_num(ref + np.log((fc_ref - samples['fc_sigma'])**-1 - 1))
+        delta_F_ref_lower = np.nan_to_num(ref + np.log((fc_ref -  samples['fc_sigma'])**-1 - 1))
         samples['correction'] = (delta_F_ref_upper-delta_F_ref_lower) * extrema
         samples['delta_bohr_corrected'] = samples['delta_bohr'] + np.sign(ref) * samples['correction']
 
@@ -104,6 +104,6 @@ def infer_empirical_bohr(data, model, groupby=['mutant', 'repressors', 'operator
     return pd.concat(fc_stats)
 
 
-fc_stats = infer_empirical_bohr(data, '../stan/empirical_F', **dict(iter=5000, control=dict(adapt_delta=0.99)))
+fc_stats = infer_empirical_bohr(data, '../stan/empirical_F', **dict(iter=1000, control=dict(adapt_delta=0.99)))
 fc_stats.to_csv('../../data/csv/empirical_F_statistics.csv', index=False)
 

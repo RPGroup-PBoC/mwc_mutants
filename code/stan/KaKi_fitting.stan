@@ -61,14 +61,4 @@ model {
   }
 }
 
-generated quantities {
-    vector[N] mu;
-    vector[N] y_rep;
-    
-    for (i in 1:N) {
-        mu[i] = fold_change(R[i], Nns, ep_RA, c[i], ep_a[idx[i]], ep_i[idx[i]], ep_AI, n_sites);
-        y_rep[i] = normal_rng(mu[i], sigma[idx[i]]);
-    }
-}
-
 

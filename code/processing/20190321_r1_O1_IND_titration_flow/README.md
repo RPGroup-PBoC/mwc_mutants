@@ -1,8 +1,8 @@
---
-status: Accepted
+---
+status: Rejected
 notes: Looks okay.
 ---
-# 2019-03-20 IND IPTG titration
+# 2019-03-21 IND IPTG titration
 
 ## Purpose
 This experiment measures the fold-change in gene expression for the inducer binding mutants.

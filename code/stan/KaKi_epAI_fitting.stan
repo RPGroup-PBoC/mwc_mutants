@@ -53,7 +53,7 @@ model {
   vector[N] mu;
     
   // Define the priors. 
-  sigma ~ normal(0, 1);
+  sigma ~ normal(0, 0.1);
   ep_a ~ normal(0, 10);
   ep_i ~ normal(0, 10);
   ep_AI ~ normal(0, 10);

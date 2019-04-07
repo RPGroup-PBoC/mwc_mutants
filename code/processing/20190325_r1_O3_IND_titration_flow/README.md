@@ -1,5 +1,5 @@
---
-status: Rejected 
+---
+status: Accepted
 notes: Almost all measurements well above 1. 
 ---
 # 2019-03-25 IND IPTG titration
