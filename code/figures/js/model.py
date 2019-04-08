@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+import sys
+sys.path.insert(0, '../../../')
 import numpy as np
 from bokeh.themes import Theme
 import mut.viz
@@ -26,7 +29,7 @@ ref_delta_bohr = ref_bohr - ref_bohr
 # Define the source
 source = ColumnDataSource(data=dict(c=c_range, ref_fc=ref_fc, 
                                         mut_fc=ref_fc, mut_bohr=ref_bohr,
-                                        mut_delta_bohr=ref_delta_bohr))
+                                        mut_delta_bohr=ref_delta_bohr, ref_bohr=ref_bohr))
 view = CDSView(source=source, filters=[IndexFilter(subsamp)])
 
 
@@ -40,9 +43,9 @@ p_bohr = bokeh.plotting.figure(width=425, height=300,
                                 y_axis_label='fold-change',
                                 x_range=[-15, 15], y_range=[-0.1, 1.1],
                                 title='    PHENOTYPIC DATA COLLAPSE    ')
-p_delBohr = bokeh.plotting.figure(width=425, height=300, x_axis_type='log', 
-                                  x_axis_label='IPTG [µM]', y_axis_label='∆F [kT]',
-                                  x_range=[1E-2, 1E5], y_range=[-15, 15],
+p_delBohr = bokeh.plotting.figure(width=425, height=300,
+                                  x_axis_label='reference free energy [kT]', y_axis_label='∆F [kT]',
+                                  y_range=[-15, 15],
                                   title='    CHANGE IN FREE ENERGY    ')
 
 # Plot fold-change values
@@ -63,9 +66,9 @@ p_bohr.circle(x='mut_bohr', y='mut_fc', source=source, view=view,
 # Pot the delta bohr
 dbohr_ref = bokeh.models.Span(location=0, dimension='width', line_color='black',
                                line_width=2)
-p_delBohr.line(x='c', y='mut_delta_bohr', source=source, color=pboc['red'], 
+p_delBohr.line(x='ref_bohr', y='mut_delta_bohr', source=source, color=pboc['red'], 
             legend='mutant strain', line_width=2)
-p_delBohr.circle(x='c' , y='mut_delta_bohr', view=view, source=source,
+p_delBohr.circle(x='ref_bohr' , y='mut_delta_bohr', view=view, source=source,
                 color=pboc['red'],  size=8, legend='mutant strain')
 dbohr_ref = bokeh.models.Span(location=0, dimension='width', line_color='black',
                                line_width=2)
@@ -197,6 +200,7 @@ callback  = CustomJS(args=callback_args, code="""
                     var ref_bohr = computeBohrParameter(ref_R, ref_ep_r, c[i],
                                                         ref_ka, ref_ki, ref_ep_ai,
                                                         ref_n);
+                    source.data['ref_bohr'][i] = ref_bohr;
                     mut_delta_bohr[i] = ref_bohr - mut_bohr[i];
                 }
                 source.change.emit();
