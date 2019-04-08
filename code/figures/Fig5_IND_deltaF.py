@@ -23,6 +23,8 @@ kaki_only_stats = pd.read_csv('../../data/csv/KaKi_only_summary.csv')
 kaki_only_stats = kaki_only_stats[kaki_only_stats['operator']=='O2']
 kaki_epai_stats = pd.read_csv('../../data/csv/KaKi_epAI_summary.csv')
 kaki_epai_stats = kaki_epai_stats[kaki_epai_stats['operator']=='O2']
+kaki_only_samps = pd.read_csv('../../data/csv/KaKi_only_samples.csv')
+kaki_only_samps = kaki_only_samps[kaki_only_samps['operator']=='O2']
 kaki_epai_samps = pd.read_csv('../../data/csv/KaKi_epAI_samples.csv')
 kaki_epai_samps = kaki_epai_samps[kaki_epai_samps['operator']=='O2']
 
@@ -39,8 +41,21 @@ mut_ind = {'F164T': 3, 'Q294V': 2, 'Q294K':1, 'Q294R': 0}
 for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=8)
     a.yaxis.set_tick_params(labelsize=8)
-    # a.set_xlim([-8, 8])
 
+for i in range(4):
+    ax[i, 0].set_ylabel('$\Delta F$ [$k_BT$]', fontsize=8, labelpad=0.08)
+    if i < 3:
+        ax[-1, i].set_xlabel('$F^{(ref)}$ [$k_BT$]', fontsize=8)
+for m, a in mut_ind.items():
+    ax[a, 0].text(-0.7, 0.65, m, fontsize=8, rotation='vertical',
+                  backgroundcolor=pboc['pale_yellow'], transform=ax[a,0].transAxes)
+for i in range(4):
+    ax[i, 0].set_xticks([-5, -2.5, 0])
+    ax[i, 1].set_xticks([-3, 0, 2])
+    ax[i, 2].set_xticks([1, 2.5, 5])
+for i in range(3):
+    for j in range(3):
+        ax[j,i].set_xticklabels([])
 for o, ind in op_ind.items():
     ax[0, ind].set_title(o, fontsize=7, backgroundcolor=pboc['pale_yellow'], y=1.08)
 
@@ -49,7 +64,7 @@ for o, ind in op_ind.items():
 # DELTA F DATA
 # ##############################################################################
 for g, d in data.groupby(['mutant', 'operator']):
-    param = d[d['parameter']=='delta_bohr_corrected'] 
+    param = d[d['parameter']=='delta_bohr'] 
     ref = mut.thermo.SimpleRepression(R=260, ep_r=constants[g[1]],
                                       ka=constants['Ka'], ki=constants['Ki'],
                                       ep_ai=constants['ep_AI'],
@@ -84,17 +99,10 @@ for i, m in enumerate(mut_ind.keys()):
         fit1 = mut.thermo.SimpleRepression(R=260, ep_r=constants[o],
                                             ka=ka_median, ki=ki_median, 
                                               ep_ai=constants['ep_AI'],
-                                              effector_conc=c_range).bohr_parameter()
-
-        _stats = kaki_epai_stats[kaki_epai_stats['mutant']==m]
+                                              effector_conc=c_range).bohr_parameter()   
+        ax[mut_ind[m], op_ind[o]].plot(ref, ref - fit1, ':', color=op_colors[o],
+                                        lw=1)
         _samps = kaki_epai_samps[kaki_epai_samps['mutant']==m]
-        ka_median = _stats[_stats['parameter']=='Ka']['median'].values[0]
-        ki_median = _stats[_stats['parameter']=='Ki']['median'].values[0]
-        epai_median = _stats[_stats['parameter']=='ep_AI']['median'].values[0]
-        fit = mut.thermo.SimpleRepression(R=260, ep_r=constants[o],
-                             ka=ka_median, ki=ki_median, 
-                             ep_ai=epai_median,
-                             effector_conc=c_range).bohr_parameter()
         cred_region = np.zeros((2, len(c_range)))
         for k, c in enumerate(c_range):
             arch = mut.thermo.SimpleRepression(R=260, ep_r=constants[o],
@@ -104,15 +112,12 @@ for i, m in enumerate(mut_ind.keys()):
             delF = ref[k] - arch
             cred_region[:, k] = mut.stats.compute_hpd(delF, 0.95)
 
-        # ax[mut_ind[m], op_ind[o]].plot(ref, ref - fit, '--', color=op_colors[o])
         ax[mut_ind[m], op_ind[o]].fill_between(ref, cred_region[0, :],
                                                cred_region[1, :], color=op_colors[o],
                                                alpha=0.4)
 
-    
-
 plt.subplots_adjust(hspace=0.1, wspace=0.1)
-plt.savefig('/Users/gchure/Desktop/ind_muts.pdf')
+plt.savefig('../../figures/Fig6_IND_deltaF.pdf', bbox_inches='tight')
 
 
 

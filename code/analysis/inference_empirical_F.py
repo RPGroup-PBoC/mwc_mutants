@@ -104,6 +104,6 @@ def infer_empirical_bohr(data, model, groupby=['mutant', 'repressors', 'operator
     return pd.concat(fc_stats)
 
 
-fc_stats = infer_empirical_bohr(data, '../stan/empirical_F', **dict(iter=1000, control=dict(adapt_delta=0.99)))
+fc_stats = infer_empirical_bohr(data, '../stan/empirical_F.stan', force_compile=True, **dict(iter=1000, control=dict(adapt_delta=0.99)))
 fc_stats.to_csv('../../data/csv/empirical_F_statistics.csv', index=False)
 

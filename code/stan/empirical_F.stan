@@ -21,17 +21,13 @@ data {
  
 parameters {
     real<lower=0, upper=1> fc_mu; 
-    real log_fc_sigma; 
-}
-
-transformed parameters {
-    real fc_sigma = exp(log_fc_sigma);
+    real<lower=0> fc_sigma; 
 }
  
 model {
     // Define the prior distributions
-    fc_mu ~ uniform(0, 1);
-    log_fc_sigma ~ normal(0, 1);
+    fc_mu ~ normal(0, 1)T[0,1];
+    fc_sigma ~ normal(0, 0.1);
     
     // Evaluate the likelihood
     foldchange ~ normal(fc_mu, fc_sigma);
