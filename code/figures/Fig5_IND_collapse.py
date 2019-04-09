@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import sys
 sys.path.insert(0, '../../')
 import numpy as np
@@ -118,8 +119,8 @@ for g, d in ind_summary.groupby(['mutant', 'operator']):
                                     ep_ai=constants['ep_AI'], 
                                     n_sites=constants['n_sites'], 
                                     effector_conc=c_range).fold_change()
-    # _axis.plot(c_range, fit, color=op_colors[g[1]], lw=1, label='__nolegend__',
-            # linestyle=':')
+    _axis.plot(c_range, fit, color=op_colors[g[1]], lw=1, label='__nolegend__',
+            linestyle=':')
 
 
     # Plot the "good" fits
@@ -130,13 +131,13 @@ for g, d in ind_summary.groupby(['mutant', 'operator']):
     epAI_median = _stats[_stats['parameter']=='ep_AI']['median'].values[0]
     _samps = kaki_epAI_samps[(kaki_epAI_samps['mutant']==g[0]) &
                              (kaki_epAI_samps['operator']=='O2')]
-    fit = mut.thermo.SimpleRepression(R=260, ep_r=constants[g[1]],
-                                    ka=ka_median, ki=ki_median, 
-                                    ep_ai=epAI_median, 
-                                    n_sites=constants['n_sites'], 
-                                    effector_conc=c_range).fold_change()
-    _axis.plot(c_range, fit, color=op_colors[g[1]], lw=1, label='__nolegend__',
-            linestyle=':')
+    # fit = mut.thermo.SimpleRepression(R=260, ep_r=constants[g[1]],
+                                    # ka=ka_median, ki=ki_median, 
+                                    # ep_ai=epAI_median, 
+                                    # n_sites=constants['n_sites'], 
+                                    # effector_conc=c_range).fold_change()
+    # _axis.plot(c_range, fit, color=op_colors[g[1]], lw=1, label='__nolegend__',
+            # linestyle=':')
     cred_region = np.zeros((2, len(c_range)))
     for i, c in enumerate(c_range):
         arch = mut.thermo.SimpleRepression(R=260, ep_r=constants[g[1]],
@@ -147,7 +148,7 @@ for g, d in ind_summary.groupby(['mutant', 'operator']):
         cred_region[:, i] = mut.stats.compute_hpd(arch, 0.95)
 
     
-    _axis.plot(c_range, fit, color=op_colors[g[1]], lw=1, label='__nolegend__')
+
     _axis.fill_between(c_range, cred_region[0, :], cred_region[1, :], color=op_colors[g[1]],
     alpha=0.5)
 
