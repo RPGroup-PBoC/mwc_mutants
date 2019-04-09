@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import sys
 sys.path.insert(0, '../../')
 import numpy as np
@@ -54,7 +53,8 @@ for g, d in ind_data.groupby(['operator', 'mutant']):
 ind_summary = ind_data.groupby(['mutant', 'operator', 'IPTGuM']).agg(('mean', 'sem')).reset_index()
 
 # Define the  constants for plotting the fits. 
-c_range = np.logspace(-2, 4, 500)
+c_range = np.logspace(-3, 4, 500)
+c_range[0] = 0
 bohr_range = np.linspace(-8, 8, 500)
 
 # Set up the figure canvas
@@ -66,17 +66,18 @@ for a in ax.ravel():
     a.yaxis.set_tick_params(labelsize=8)
     a.set_ylim([-0.1, 1.2])
 for i in range(4):
-    ax[0, i].set_xscale('log')
+    ax[0, i].set_xscale('symlog', linthreshx=1E-3, linscalex=0.5)
     ax[0, i].set_xlabel('IPTG [µM]', fontsize=8)
     ax[1, i].set_xlabel('free energy [$k_BT$]', fontsize=8)
     ax[1, i].set_xlim([-8, 8])
-    ax[0, i].set_xlim([1E-2, 1E4])
+    ax[0, i].set_xlim([0, 1E4])
+    ax[0, i].set_xlim([-0.001, 1E4])
 
 mut_ind = {'F164T':3, 'Q294V':2, 'Q294K':1, 'Q294R':0}
 for m, i in mut_ind.items():
-    ax[0,i].set_title(m, fontsize=8, backgroundcolor=pboc['pale_yellow'],
-    y=1.08) 
-  
+    ax[0,i].set_title(m, fontsize=8, backgroundcolor=pboc['pale_yellow'], y=1.08)
+    ax[0, i].set_xticks([0, 1E-2, 1E0, 1E2, 1E4])
+
 ax[0, 0].set_ylabel('fold-change', fontsize=8)
 ax[1, 0].set_ylabel('fold-change', fontsize=8)
 # ##############################################################################
@@ -92,7 +93,7 @@ for g, d in ind_summary.groupby(['mutant', 'operator']):
         face = op_colors[g[1]]
         zorder = 1
 
-    label = constants[g[1]]
+    label = g[1]
     fc_ax.errorbar(d['IPTGuM'], d['fold_change']['mean'], 
                    d['fold_change']['sem'], fmt='.', ms=5, linestyle='none',
                     lw=1, capsize=1,  markerfacecolor=face, 
@@ -162,7 +163,7 @@ for i in range(4):
 # ##############################################################################
 # LEGEND
 # ##############################################################################
-leg = ax[0, 0].legend(title=r'$\Delta\varepsilon_{RA}$', fontsize=7,
+leg = ax[0, 0].legend(title=r'operator', fontsize=7,
     handletextpad=0.1)
 leg.get_title().set_fontsize(7)
 plt.tight_layout()
