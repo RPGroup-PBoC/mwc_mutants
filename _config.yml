@@ -57,7 +57,7 @@ defaults:
       share: false
       comments: false
       sidebar:
-    nav: "docs"
+        nav: "docs"
 
 # Site Author
 author:
@@ -112,7 +112,7 @@ markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 collections:
   docs:
     output: true
-permalink: /:collection/:path/
+    permalink: /:collection/:path/
 
 # Conversion
 markdown: kramdown
