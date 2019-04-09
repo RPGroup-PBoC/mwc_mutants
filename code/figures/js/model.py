@@ -11,6 +11,7 @@ from bokeh import events
 from bokeh.models import ColumnDataSource, Div, CustomJS, CDSView, IndexFilter
 from bokeh.layouts import layout, widgetbox
 from bokeh.models.widgets import Select, Slider, RadioButtonGroup, Button
+from bokeh.embed import components
 pboc = mut.viz.color_selector('pboc')
 bokeh.plotting.output_file("model_explorer.html")
 
@@ -267,3 +268,10 @@ theme_json = {'attrs':
 theme = Theme(json=theme_json)
 bokeh.io.curdoc().theme = theme
 bokeh.io.save(layout)
+script, div = components(layout)
+scriptfile = open("model_explorer_script.html", 'w')
+scriptfile.write(script)
+scriptfile.close()
+divfile = open("model_explorer_div.html", 'w')
+divfile.write(div)
+divfile.close()
