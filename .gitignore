@@ -69,5 +69,6 @@ doc/induction_paper/graphicspath.tex
 /data/csv/DBL_error_sampling.csv
 _site/
 
+
 # Plot garbage. 
 *.json
