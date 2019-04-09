@@ -18,13 +18,11 @@ title                    : "MWC Mutants"
 title_separator          : "-"
 description              : "Website for the manuscript in preparation"
 url                      : # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
-baseurl                  : / # the subpath of your site, e.g. "/blog"
+baseurl                  : /
 repository               : rpgroup-pboc/mwc_mutants
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
-# breadcrumbs            : false # true, false (default)
-# words_per_minute         : 200
 # Analytics
 analytics:
   provider               : false # false (default), "google", "google-universal", "custom"
@@ -32,6 +30,34 @@ analytics:
     tracking_id          :
     anonymize_ip         : # true, false (default)
 
+
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+   # _pages
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+    # _docs
+  - scope:
+      path: ""
+      type: docs
+    values:
+      layout: single
+      read_time: false
+      author_profile: false
+      share: false
+      comments: false
+      sidebar:
+    nav: "docs"
 
 # Site Author
 author:
@@ -45,7 +71,6 @@ author:
 include:
   - .htaccess
   - _pages
-  - _posts
 exclude:
   - "*.sublime-project"
   - "*.sublime-workspace"
@@ -82,6 +107,12 @@ keep_files:
   - .svn
 encoding: "utf-8"
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+
+# Collections
+collections:
+  docs:
+    output: true
+permalink: /:collection/:path/
 
 # Conversion
 markdown: kramdown
@@ -135,6 +166,35 @@ whitelist:
   - jekyll-include-cache
 
 
+# Archives
+#  Type
+#  - GitHub Pages compatible archive pages built with Liquid ~> type: liquid (default)
+#  - Jekyll Archives plugin archive pages ~> type: jekyll-archives
+#  Path (examples)
+#  - Archive page should exist at path when using Liquid method or you can
+#    expect broken links (especially with breadcrumbs enabled)
+#  - <base_path>/tags/my-awesome-tag/index.html ~> path: /tags/
+#  - <base_path/categories/my-awesome-category/index.html ~> path: /categories/
+#  - <base_path/my-awesome-category/index.html ~> path: /
+category_archive:
+  type: liquid
+  path: /categories/
+tag_archive:
+  type: liquid
+  path: /tags/
+# https://github.com/jekyll/jekyll-archives
+# jekyll-archives:
+#   enabled:
+#     - categories
+#     - tags
+#   layouts:
+#     category: archive-taxonomy
+#     tag: archive-taxonomy
+#   permalinks:
+#     category: /categories/:name/
+#     tag: /tags/:name/
+
+
 # HTML Compression
 # - http://jch.penibelst.de/
 compress_html:
@@ -143,16 +203,4 @@ compress_html:
     envs: development
 
 
-# Defaults
-defaults:
-  # _posts
-  - scope:
-      path: ""
-      type: posts
-    values:
-      layout: single
-      author_profile: true
-      read_time: true
-      comments: # true
-      share: true
-      related: true
+    
