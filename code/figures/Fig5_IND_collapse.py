@@ -131,13 +131,7 @@ for g, d in ind_summary.groupby(['mutant', 'operator']):
     epAI_median = _stats[_stats['parameter']=='ep_AI']['median'].values[0]
     _samps = kaki_epAI_samps[(kaki_epAI_samps['mutant']==g[0]) &
                              (kaki_epAI_samps['operator']=='O2')]
-    # fit = mut.thermo.SimpleRepression(R=260, ep_r=constants[g[1]],
-                                    # ka=ka_median, ki=ki_median, 
-                                    # ep_ai=epAI_median, 
-                                    # n_sites=constants['n_sites'], 
-                                    # effector_conc=c_range).fold_change()
-    # _axis.plot(c_range, fit, color=op_colors[g[1]], lw=1, label='__nolegend__',
-            # linestyle=':')
+
     cred_region = np.zeros((2, len(c_range)))
     for i, c in enumerate(c_range):
         arch = mut.thermo.SimpleRepression(R=260, ep_r=constants[g[1]],

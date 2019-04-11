@@ -39,12 +39,12 @@ axes = {'Y20I': 0, 'Q21A':1, 'Q21M':2}
 for i in range(3): 
     ax[0, i].set_ylim([-0.1, 1.2])
     ax[1, i].set_xlim([-8, 8])
-    ax[0, i].set_xscale('log')
+    ax[0, i].set_xscale('symlog', linthreshx=1E-2)
+    ax[0, i].set_xticks([0, 1E-2, 1E0, 1E2, 1E4])
     ax[0, i].set_xlabel('IPTG  [µM]', fontsize=8)
-    ax[0, i].set_xlim([1E-2, 1E4])
+    ax[0, i].set_xlim([-0.001, 1E4])
     ax[1, i].set_xlabel('free energy [$k_BT$]', fontsize=8)
 for a in ax.ravel():
-
     a.xaxis.set_tick_params(labelsize=8)
     a.yaxis.set_tick_params(labelsize=8) 
 
@@ -54,33 +54,11 @@ for m, a in axes.items():
                       fontsize=8)
 for i in range(2):
     ax[i, 0].set_ylabel('fold-change', fontsize=8)
-    ax[0, i+1].set_yticklabels([])
-    ax[1, i+1].set_yticklabels([])
-
 
 # ######################################################################
-# WILD-TYPE DATA
+# COLLAPSE CURVE
 # ######################################################################
-wt_ind = grouped[grouped['mutant']=='wt']
-wt_ind['bohr_param'] = mut.thermo.SimpleRepression(R=wt_ind['repressors'], ep_r=constants['O2'],
-                                                  ka=constants['Ka'], ki=constants['Ki'], 
-                                                  n_sites=constants['n_sites'],
-                                                  ep_ai=constants['ep_AI'], 
-                                                   effector_conc=wt_ind['IPTGuM']).bohr_parameter()
-wt_fit = mut.thermo.SimpleRepression(R=260, ep_r=-13.9, ka=constants['Ka'], ki=constants['Ki'],
-                                    ep_ai=constants['ep_AI'], n_sites=constants['n_sites'],
-                                    effector_conc=c_range).fold_change()
 for i in range(3):
-    # Induction data
-#     _ = ax[0, i].errorbar(wt_ind['IPTGuM'], wt_ind['fold_change']['mean'],
-#                          wt_ind['fold_change']['sem'], fmt='.', color='gray',
-#                          alpha=0.5, ms=5, label='WT')
-    _ = ax[0, i].plot(c_range, wt_fit, lw=1, color='black', alpha=0.5, label='__nolegend__', linestyle=':')
-
-    # Free Energy data
-#     _ = ax[1, i].errorbar(wt_ind['bohr_param'], wt_ind['fold_change']['mean'],
-#                          wt_ind['fold_change']['sem'], fmt='.', color='gray',
-#                          alpha=0.5, ms=5, label='__nolegend__')
     _ = ax[1, i].plot(bohr_range, (1 + np.exp(-bohr_range))**-1, lw=0.75, color='k', linestyle='-')
     
  
@@ -119,7 +97,6 @@ for g, d in fit_stats[fit_stats['mutant'] != 'wt'].groupby(['mutant']):
                                          n_sites=constants['n_sites'], n_ns=constants['Nns'],
                                          effector_conc=_c)
         _fc = arch.fold_change()
-        _ind_ax.plot(c_range, _fc[0,:], lw=1, color=c)
         _ind_ax.fill_between(c_range, _fc[1, :], _fc[2, :], color=c, alpha=0.5)
 
         
@@ -150,4 +127,3 @@ for g, d in fit_stats[fit_stats['mutant'] != 'wt'].groupby('mutant'):
     
 plt.tight_layout()
 plt.savefig('../../figures/Fig3_DNA_collapse.pdf', bbox_inches='tight')
-

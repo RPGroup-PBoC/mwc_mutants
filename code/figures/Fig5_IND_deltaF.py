@@ -78,7 +78,7 @@ for g, d in data.groupby(['mutant', 'operator']):
         face = op_colors[g[1]]
 
     _ax.plot(ref, param['median'], 'o', markerfacecolor=face, color=op_colors[g[1]],
-            ms=2)
+            ms=4)
     _ax.vlines(ref, param['hpd_min'], param['hpd_max'], color=op_colors[g[1]], lw=1)
     
 # ##############################################################################
