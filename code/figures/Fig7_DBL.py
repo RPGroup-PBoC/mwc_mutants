@@ -29,7 +29,11 @@ kaki_epai_samps = kaki_epai_samples[kaki_epai_samples['operator']=='O2'].copy()
 # ##############################################################################
 # FIGURE INSTANTIATION AND FORMATTING 
 # ##############################################################################
-fig, ax = plt.subplots(3, 7, figsize=(7.1, 3.8))
+fig, ax = plt.subplots(3, 7, figsize=(7.1, 2.8))
+# Define the mutant axes
+DNA_idx = {'Y20I':0, 'Q21A':1, 'Q21M':2}
+IND_idx = {'F164T': 0, 'Q294V':1, 'Q294K':2}
+
 for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=8)
     a.yaxis.set_tick_params(labelsize=8)
@@ -41,11 +45,13 @@ for i in range(3):
 # Set scaling
 for i in range(3):
     for j in range(3):
+        ax[i, j].set_xscale('symlog', linthreshx=1E-2, linscalex=0.5)
         ax[i, j].set_xlim([1E-2, 1E4])
-        ax[i, j].set_xscale('log')
+        ax[i, j].set_xlim([-0.001, 1E4])
+        ax[i, j].set_xticks([0, 1E-1, 1E1, 1E3])
         ax[i, j].set_ylim([-0.1, 1.2])
-        ax[i, j+4].set_ylim([-10, 10])
-        ax[i, j].set_xticks([1E-1, 1E1, 1E3])
+        ax[i, j+4].set_ylim([-9, 9])
+        ax[i, j].set_yticks([0, 0.5, 1])
 
 
 # Set the titles and axis labels. 
@@ -55,7 +61,6 @@ for m, idx in IND_idx.items():
         ax[0, idx + 4].set_title(m, fontsize=8, y=1.04, 
                            backgroundcolor=pboc['pale_yellow'])
         ax[-1, idx].set_xlabel('IPTG [µM]', fontsize=8)
-        ax[-1, idx].set_xticks([1E-1, 1E1, 1E3])
         ax[-1, idx + 4].set_xlabel('$F^{(ref)}$ [$k_BT$]', fontsize=8)
 
 # Remove unnecessary ticklabels
@@ -70,9 +75,6 @@ for i in range(2):
         ax[j, i+5].set_xticklabels([])
         ax[j, i+5].set_yticklabels([])
 
-# Define the mutant axes
-DNA_idx = {'Y20I':0, 'Q21A':1, 'Q21M':2}
-IND_idx = {'F164T': 0, 'Q294V':1, 'Q294K':2}
 
 # Mutant Identifiers
 for m, idx in DNA_idx.items():
@@ -96,7 +98,7 @@ for dna, dna_idx in DNA_idx.items():
 
         ax[dna_idx, ind_idx].errorbar(_data['IPTGuM'], _data['mean'], _data['sem'],
             fmt='.', lw=1, capsize=1, linestyle='none', color=pboc['red'],
-            ms=4)
+            ms=3)
 
 # ##############################################################################
 # DELTA F DATA
@@ -111,14 +113,15 @@ for dna, dna_idx in DNA_idx.items():
                        (deltaF['parameter']=='delta_bohr_corrected')]
 
         ax[dna_idx, ind_idx + 4].plot(ref, _data['median'], '.', 
-                                color=pboc['red'], ms=4)
+                                color=pboc['red'], ms=3)
         ax[dna_idx, ind_idx + 4].vlines(ref, _data['hpd_min'], _data['hpd_max'],
                                         lw=1, color=pboc['red'])
 
 # ##############################################################################
 # THEORY CURVES
 # ##############################################################################
-c_range = np.logspace(-2, 4, 200)
+c_range = np.logspace(-3, 4, 200)
+c_range[0] = 0
 ref_bohr = mut.thermo.SimpleRepression(R=260, ep_r=-13.9, ka=139, ki=0.53,
                                         n_sites=2, effector_conc=c_range,
                                         ep_ai=4.5).bohr_parameter()

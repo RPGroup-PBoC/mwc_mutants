@@ -70,7 +70,6 @@ for i in range(4):
     ax[0, i].set_xlabel('IPTG [µM]', fontsize=8)
     ax[1, i].set_xlabel('free energy [$k_BT$]', fontsize=8)
     ax[1, i].set_xlim([-8, 8])
-    ax[0, i].set_xlim([0, 1E4])
     ax[0, i].set_xlim([-0.001, 1E4])
 
 mut_ind = {'F164T':3, 'Q294V':2, 'Q294K':1, 'Q294R':0}
