@@ -25,7 +25,6 @@ epRA_samps = epRA_samples[(epRA_samples['operator']=='O2') &
 kaki_epai_samples = pd.read_csv('../../data/csv/KaKi_epAI_samples.csv')
 kaki_epai_samps = kaki_epai_samples[kaki_epai_samples['operator']=='O2'].copy()
 
-
 # ##############################################################################
 # FIGURE INSTANTIATION AND FORMATTING 
 # ##############################################################################
@@ -35,8 +34,8 @@ DNA_idx = {'Y20I':0, 'Q21A':1, 'Q21M':2}
 IND_idx = {'F164T': 0, 'Q294V':1, 'Q294K':2}
 
 for a in ax.ravel():
-    a.xaxis.set_tick_params(labelsize=8)
-    a.yaxis.set_tick_params(labelsize=8)
+    a.xaxis.set_tick_params(labelsize=6)
+    a.yaxis.set_tick_params(labelsize=6)
 
 # Disable middle column
 for i in range(3):
@@ -45,7 +44,7 @@ for i in range(3):
 # Set scaling
 for i in range(3):
     for j in range(3):
-        ax[i, j].set_xscale('symlog', linthreshx=1E-2, linscalex=0.5)
+        ax[i, j].set_xscale('symlog', linthreshx=1E-3, linscalex=0.5)
         ax[i, j].set_xlim([1E-2, 1E4])
         ax[i, j].set_xlim([-0.001, 1E4])
         ax[i, j].set_xticks([0, 1E-1, 1E1, 1E3])
@@ -75,15 +74,14 @@ for i in range(2):
         ax[j, i+5].set_xticklabels([])
         ax[j, i+5].set_yticklabels([])
 
-
 # Mutant Identifiers
 for m, idx in DNA_idx.items():
-        ax[idx, 0].text(-0.9, 0.62, m, fontsize=8,rotation='vertical', 
+        ax[idx, 0].text(-0.9, 0.62, m, fontsize=7,rotation='vertical', 
             backgroundcolor=pboc['pale_yellow'], transform=ax[idx, 0].transAxes)
-        ax[idx, 4].text(-0.9, 0.62, m, fontsize=8,rotation='vertical', 
+        ax[idx, 4].text(-0.9, 0.62, m, fontsize=7,rotation='vertical', 
             backgroundcolor=pboc['pale_yellow'], transform=ax[idx, 4].transAxes)
-        ax[idx, 0].set_ylabel('fold-change', fontsize=8, labelpad=0.1)
-        ax[idx, 4].set_ylabel('$\Delta F$ [$k_BT$]', fontsize=8, labelpad=0.01)
+        ax[idx, 0].set_ylabel('fold-change', fontsize=7, labelpad=0.1)
+        ax[idx, 4].set_ylabel('$\Delta F$ [$k_BT$]', fontsize=7, labelpad=0.01)
 
 # Panel Labels
 fig.text(0, 0.94, '(A)', fontsize=8)
@@ -97,7 +95,7 @@ for dna, dna_idx in DNA_idx.items():
         _data = data[data['mutant']==f'{dna}-{ind}']
 
         ax[dna_idx, ind_idx].errorbar(_data['IPTGuM'], _data['mean'], _data['sem'],
-            fmt='.', lw=1, capsize=1, linestyle='none', color=pboc['red'],
+            fmt='.', lw=1, capsize=1, linestyle='none', color=pboc['purple'],
             ms=3)
 
 # ##############################################################################
@@ -113,9 +111,9 @@ for dna, dna_idx in DNA_idx.items():
                        (deltaF['parameter']=='delta_bohr_corrected')]
 
         ax[dna_idx, ind_idx + 4].plot(ref, _data['median'], '.', 
-                                color=pboc['red'], ms=3)
+                                color=pboc['purple'], ms=3)
         ax[dna_idx, ind_idx + 4].vlines(ref, _data['hpd_min'], _data['hpd_max'],
-                                        lw=1, color=pboc['red'])
+                                        lw=1, color=pboc['purple'])
 
 # ##############################################################################
 # THEORY CURVES
@@ -145,10 +143,10 @@ for dna, dna_idx in DNA_idx.items():
 
         ax[dna_idx, ind_idx].fill_between(c_range, fc_cred_region[0, :], 
                                         fc_cred_region[1, :], alpha=0.5, 
-                                        color=pboc['red'])
+                                        color=pboc['purple'])
         ax[dna_idx, ind_idx + 4].fill_between(ref_bohr, bohr_cred_region[0, :], 
                                         bohr_cred_region[1, :], alpha=0.5, 
-                                        color=pboc['red'])
+                                        color=pboc['purple'])
 
 plt.subplots_adjust(wspace=0.1, hspace=0.1)
 plt.savefig('../../figures/Fig7_DBL_deltaF.pdf', bbox_inches='tight')
