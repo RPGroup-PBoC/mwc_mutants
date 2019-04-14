@@ -1,5 +1,0 @@
-# Date : 2019-01-03
-# Equipment : MACSQuant (Bjorkman lab)
-# User : gchure 
-# Description :
-# An IPTG titration run of double mutant Y20IQ294K

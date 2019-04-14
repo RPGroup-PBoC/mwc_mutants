@@ -1,5 +1,0 @@
-# Date : 2018-04-17
-# Equipment : MACSQuant (Bjorkman lab)
-# User : gchure 
-# Description :
-# A titration run of the inducer mutants Q294R (in 5 biological replicates) and Q21A-Q294K double mutant.

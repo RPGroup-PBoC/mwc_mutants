@@ -1,9 +1,0 @@
-# Date : 2018-04-10
-# Equipment : MACSQuant (Bjorkman lab)
-# User : nbellive
-# Description :
-# A titration run of the double mutants 'Q21A-F164T', 'Q21A-Q294V', 
-# ’Y20I-F164T', 'Y20I-Q294K', 'Y20I-Q294V' in HG105 with an integrated 
-# RBS1027 LacI (R=260) and an O2 operator.
-# I started overnight, Griffin started M9 glucose dilution, and I ran on flow
-# cytometer.

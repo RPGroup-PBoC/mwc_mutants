@@ -1,5 +1,0 @@
-# Date : 2018-11-30
-# Equipment : MACSQuant (Bjorkman lab)
-# User : gchure 
-# Description :
-# An IPTG titration run of inducer mutants Q294V and F164T in O1 and O3

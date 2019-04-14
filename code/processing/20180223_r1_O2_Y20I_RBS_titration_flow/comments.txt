@@ -1,8 +1,0 @@
-# Date : 2018-02-23
-# Equipment : MACSQuant (Bjorkman lab)
-# User : sbarnes
-# Description :
-# A titration run of the DNA mutant Y20I with all RBS modifications as well as
-# a WT control with R=260.
-# These were coupled with an O2-regulated YFP.
-# Comments:
