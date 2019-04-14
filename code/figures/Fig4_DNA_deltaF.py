@@ -32,8 +32,8 @@ for a in ax.ravel():
     a.set_ylim([-8, 8])
     a.set_xlim([-6, 4.5])
     a.set_xticks([-6, -4, -2, 0 , 2, 4])
-    a.xaxis.set_tick_params(labelsize=7)
-    a.yaxis.set_tick_params(labelsize=7)
+    a.xaxis.set_tick_params(labelsize=6)
+    a.yaxis.set_tick_params(labelsize=6)
 # for i in range(2):
 #     for j in range(4):
 #         ax[i, j].set_xticklabels([])

@@ -52,12 +52,11 @@ for i in range(3):
         ax[i, j+4].set_ylim([-9, 9])
         ax[i, j].set_yticks([0, 0.5, 1])
 
-
 # Set the titles and axis labels. 
 for m, idx in IND_idx.items():
-        ax[0, idx].set_title(m, fontsize=8, y=1.04, 
+        ax[0, idx].set_title(m, fontsize=7, y=1.04, 
                            backgroundcolor=pboc['pale_yellow'])
-        ax[0, idx + 4].set_title(m, fontsize=8, y=1.04, 
+        ax[0, idx + 4].set_title(m, fontsize=7, y=1.04, 
                            backgroundcolor=pboc['pale_yellow'])
         ax[-1, idx].set_xlabel('IPTG [µM]', fontsize=8)
         ax[-1, idx + 4].set_xlabel('$F^{(ref)}$ [$k_BT$]', fontsize=8)
@@ -76,9 +75,9 @@ for i in range(2):
 
 # Mutant Identifiers
 for m, idx in DNA_idx.items():
-        ax[idx, 0].text(-0.9, 0.62, m, fontsize=7,rotation='vertical', 
+        ax[idx, 0].text(-0.85, 0.62, m, fontsize=7,rotation='vertical', 
             backgroundcolor=pboc['pale_yellow'], transform=ax[idx, 0].transAxes)
-        ax[idx, 4].text(-0.9, 0.62, m, fontsize=7,rotation='vertical', 
+        ax[idx, 4].text(-0.85, 0.62, m, fontsize=7,rotation='vertical', 
             backgroundcolor=pboc['pale_yellow'], transform=ax[idx, 4].transAxes)
         ax[idx, 0].set_ylabel('fold-change', fontsize=7, labelpad=0.1)
         ax[idx, 4].set_ylabel('$\Delta F$ [$k_BT$]', fontsize=7, labelpad=0.01)

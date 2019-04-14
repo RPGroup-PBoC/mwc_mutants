@@ -58,33 +58,39 @@ c_range[0] = 0
 bohr_range = np.linspace(-8, 8, 500)
 
 # Set up the figure canvas
-fig, ax = plt.subplots(2, 4, figsize=(7, 4), sharey=True)
+fig, ax = plt.subplots(4, 2, figsize=(3.42, 5.25), sharey=True)
 
 # Add labels and format the axes
 for a in ax.ravel():
-    a.xaxis.set_tick_params(labelsize=8)
-    a.yaxis.set_tick_params(labelsize=8)
+    a.xaxis.set_tick_params(labelsize=6)
+    a.yaxis.set_tick_params(labelsize=6)
     a.set_ylim([-0.1, 1.2])
+    a.set_yticks([0, 0.5, 1.0])
 for i in range(4):
-    ax[0, i].set_xscale('symlog', linthreshx=1E-3, linscalex=0.5)
-    ax[0, i].set_xlabel('IPTG [µM]', fontsize=8)
-    ax[1, i].set_xlabel('free energy [$k_BT$]', fontsize=8)
-    ax[1, i].set_xlim([-8, 8])
-    ax[0, i].set_xlim([-0.001, 1E4])
+    ax[i, 0].set_xscale('symlog', linthreshx=1E-3, linscalex=0.5)
+    ax[i, 1].set_xlim([-8, 8])
+    ax[i, 0].set_xlim([-0.0005, 1E4])
 
 mut_ind = {'F164T':3, 'Q294V':2, 'Q294K':1, 'Q294R':0}
 for m, i in mut_ind.items():
-    ax[0,i].set_title(m, fontsize=8, backgroundcolor=pboc['pale_yellow'], y=1.08)
-    ax[0, i].set_xticks([0, 1E-2, 1E0, 1E2, 1E4])
+    ax[i, 0].set_xticks([0, 1E-2, 1E0, 1E2, 1E4])
+    ax[i, 0].text(-0.43, 0.68, m, fontsize=8, backgroundcolor=pboc['pale_yellow'],
+                  rotation='vertical')
 
-ax[0, 0].set_ylabel('fold-change', fontsize=8)
-ax[1, 0].set_ylabel('fold-change', fontsize=8)
+for i in range(4):
+    ax[i, 0].set_ylabel('fold-change', fontsize=8, labelpad=0.1)
+
+for a in ax.ravel()[:6]:
+    a.set_xticklabels([])
+ax[-1, 0].set_xlabel('IPTG [µM]', fontsize=8)
+ax[-1, 1].set_xlabel('free energy [$k_BT$]', fontsize=8)
+
 # ##############################################################################
 #  INDUCTION AND COLLAPSE DATA
 # ##############################################################################
 for g, d in ind_summary.groupby(['mutant', 'operator']):    
-    fc_ax = ax[0, mut_ind[g[0]]]
-    bohr_ax = ax[1, mut_ind[g[0]]]
+    fc_ax = ax[mut_ind[g[0]], 0]
+    bohr_ax = ax[mut_ind[g[0]], 1]
     if g[1] == 'O2':
         face = 'w'
         zorder = 1000
@@ -107,7 +113,7 @@ for g, d in ind_summary.groupby(['mutant', 'operator']):
 # INDUCTION CURVES  
 # ##############################################################################
 for g, d in ind_summary.groupby(['mutant', 'operator']):
-    _axis = ax[0, mut_ind[g[0]]]
+    _axis = ax[mut_ind[g[0]], 0]
 
     # Plot the "poor" prediction curves
     _stats = kaki_only_stats[(kaki_only_stats['mutant']==g[0]) & 
@@ -150,14 +156,14 @@ for g, d in ind_summary.groupby(['mutant', 'operator']):
 # COLLAPSE MASTER CURVE
 # ##############################################################################
 for i in range(4):
-    ax[1, i].plot(bohr_range, (1 + np.exp(-bohr_range))**-1, 'k-', lw=1,
+    ax[i, 1].plot(bohr_range, (1 + np.exp(-bohr_range))**-1, 'k-', lw=1,
                     zorder=1)
 
 # ##############################################################################
 # LEGEND
 # ##############################################################################
-leg = ax[0, 0].legend(title=r'operator', fontsize=7,
-    handletextpad=0.1)
-leg.get_title().set_fontsize(7)
-plt.tight_layout()
+leg = ax[0, 0].legend(title=r'operator', fontsize=6,
+    handletextpad=0.1, ncol=3, bbox_to_anchor=(0.5, 1.06))
+leg.get_title().set_fontsize(6)
+plt.subplots_adjust(hspace=0.08, wspace=0.08)
 plt.savefig('../../figures/Fig5_ind_collapse.pdf', bbox_inches='tight')
