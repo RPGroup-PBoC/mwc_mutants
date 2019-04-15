@@ -28,7 +28,7 @@ for g, d in tqdm.tqdm(prior_data.groupby('sim_idx')):
     # Determine the ground truth for each parameter.
     gt = {'ep_RA': d['ep_RA'].unique(),
          'sigma': d['sigma'].unique()}
-    
+
     # Generate the data dictionary. 
     data_dict = {'J':1,
                 'N': len(d),
@@ -43,7 +43,7 @@ for g, d in tqdm.tqdm(prior_data.groupby('sim_idx')):
                 'fc': d['fc_draw']}
     
     # Sample the model
-    _, samples = model.sample(data_dict=data_dict, iter=2000, control=dict(adapt_delta=0.99))
+    _, samples = model.sample(data_dict=data_dict) #, iter=2000, control=dict(adapt_delta=0.99))
     samples.rename(columns={'ep_RA[1]': 'ep_RA', 'sigma[1]':'sigma'},
                   inplace=True)
     samples['sim_idx'] = g
