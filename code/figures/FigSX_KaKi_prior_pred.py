@@ -21,41 +21,37 @@ ep_ai_unique = ppc_data[ppc_data['model']=='KaKi_epAI']['ep_ai'].unique()
 # ##############################################################################
 # FIGURE INSTANTIATION #
 # ##############################################################################
-fig = plt.figure(figsize=(6, 4))
-gs = gridspec.GridSpec(4, 6)
-ax1 = fig.add_subplot(gs[0:2, 0:2])
-ax2 = fig.add_subplot(gs[0:2, 2:4])
-ax3 = fig.add_subplot(gs[0:2, 4:])
-ax4 = fig.add_subplot(gs[2:, 0:3])
-ax5 = fig.add_subplot(gs[2:, 3:])
-ax = [ax1, ax2, ax3, ax4, ax5]
-for a in ax:
+fig, ax = plt.subplots(2, 3, figsize=(6, 4))
+ax1, ax2, ax3, ax4, _, ax5 = ax.ravel()
+for a in ax.ravel(0):
    a.xaxis.set_tick_params(labelsize=6) 
    a.yaxis.set_tick_params(labelsize=6)
+_.set_axis_off()
 
 # Add axis labels
-ax1.set_xlabel(r'$\tilde k_a$', fontsize=8)
-ax1.set_ylabel(r'$\tilde k_i$', fontsize=8)
-ax2.set_xlabel(r'$\Delta\varepsilon_{AI}$ [$k_BT$]', fontsize=8)
-ax2.set_ylabel(r'$\tilde k_a$', fontsize=8)
+ax1.set_xlabel(r'$\tilde k_a$', fontsize=8, labelpad=0.1)
+ax1.set_ylabel(r'$\tilde k_i$', fontsize=8, labelpad=0.1)
+ax2.set_xlabel(r'$\Delta\varepsilon_{AI}$ [$k_BT$]', fontsize=8, labelpad=0.1)
+ax2.set_ylabel(r'$\tilde k_a$', fontsize=8, labelpad=0.1)
 ax3.set_xlabel(r'$\Delta\varepsilon_{AI}$ [$k_BT$]', fontsize=8)
-ax3.set_ylabel(r'$\tilde k_i$', fontsize=8)
+ax3.set_ylabel(r'$\tilde k_i$', fontsize=8, labelpad=0.1)
 
 # Set scaling
 ax4.set_xscale('symlog', linthreshx=1E-2)
 ax5.set_xscale('symlog', linthreshx=1E-2)
 
 # Set limits
-models = ['$K_A$ and $K_A$ only', r'$K_A$, $K_I$, and $\Delta\varepsilon_{AI}$']
+models = ['$K_A$ and $K_I$ only', r'$K_A$, $K_I$, and $\Delta\varepsilon_{AI}$']
 for i, a in enumerate([ax4, ax5]):
    a.set_xlim([-0.001, 5E3])
    a.set_yticks([-0.25, 0, 0.25, 0.5, 0.75, 1, 1.25])
    a.set_xlabel('IPTG [µM]', fontsize=8)
    a.set_ylabel('fold-change', fontsize=8)
    a.set_title(models[i], fontsize=8, y=1.08, backgroundcolor=colors['pale_yellow'])
+   a.set_xticks([0, 1E-2, 1E0, 1E2, 1E4])
 
 # Add panel labels
-fig.text(0, 0.95, '(A)', fontsize=8)
+fig.text(0, 0.90, '(A)', fontsize=8)
 fig.text(0, 0.45, '(B)', fontsize=8)
 
 # Define the axes
@@ -102,8 +98,15 @@ for g, d in  df.groupby(['model', 'percentile']):
    else:
       cmap = cmap_kakiepai
    _ax.fill_between(d['IPTGuM'], d['fc_low'], d['fc_high'], color=cmap[g[1]],
-                  zorder=zorder[g[1]], label = g[0])
-plt.tight_layout()
+                  zorder=zorder[g[1]], label = g[1])
+leg = ax4.legend(title='percentile', fontsize=6, bbox_to_anchor=(1.9, 1))
+leg.get_title().set_fontsize(6)
+leg = ax5.legend(title='percentile', fontsize=6, bbox_to_anchor=(-0.7, 1))
+leg.get_title().set_fontsize(6)
+
+plt.subplots_adjust(wspace=0.6, hspace=0.6)
+# plt.tight_layout()
+
 plt.savefig('../../figures/FigSX_IND_prior_predictive_checks.pdf', bbox_inches='tight')
 
 
