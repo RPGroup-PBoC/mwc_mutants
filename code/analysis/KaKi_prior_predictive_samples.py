@@ -16,7 +16,7 @@ IPTG = data[(data['mutant']=='Q294K') & (data['operator']=='O2')]['IPTGuM']
 n_draws = 800
 ep_a = np.random.normal(0, 5, n_draws)
 ep_i = np.random.normal(0, 5, n_draws)
-ep_ai = np.random.normal(0, 2, n_draws)
+ep_ai = np.random.normal(0, 5, n_draws)
 sigma = np.abs(np.random.normal(0, 0.1, n_draws))
 ka = np.exp(ep_a)
 ki = np.exp(ep_i)
