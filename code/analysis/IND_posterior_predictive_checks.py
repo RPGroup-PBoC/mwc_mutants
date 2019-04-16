@@ -28,15 +28,15 @@ dfs = []
 for m, s in samples.items():
     print(f'Processing model: {m}')
     counts = data.groupby('IPTGuM').count()['fold_change'].values.astype(int)
-    c, ka, ki, epai = np.meshgrid(IPTGuM, s['Ka'], s['Ki'], s['ep_AI'])
-    fc_mu = mut.thermo.SimpleRepression(R=260, ep_r=-13.9,
-                                    ka=ka, ki=ki,
-                                    effector_conc=c, ep_ai=epai).fold_change()
 
     sigma = s['sigma'].values
-    for i in tqdm.tqdm(range(len(samples))):
+    for i in tqdm.tqdm(range(len(s))):
         for j in range(len(IPTGuM)):
-            draws = np.random.normal(fc_mu[i,j], sigma[i], size=counts[j])
+            fc_mu = mut.thermo.SimpleRepression(R=260, ep_r=-13.9,
+                                    ka=s['Ka'].values[i], ki=s['Ki'].values[i],
+                                    effector_conc=IPTGuM[j], ep_ai=s['ep_AI'].values[i]).fold_change()
+
+            draws = np.random.normal(fc_mu, sigma[i], size=counts[j])
             _df = pd.DataFrame([], columns = ['IPTGuM'])
             _df['fc_mu'] = draws
             _df['IPTGuM'] = IPTGuM[j]
