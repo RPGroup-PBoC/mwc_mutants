@@ -36,15 +36,15 @@ data {
   }
 
 parameters {
-  real ep_a[J]; // log transform of Ka
-  real ep_i[J]; // log transform of Ki
+  real<lower=0> Ka[J]; // log transform of Ka
+  real<lower=0> Ki[J]; // log transform of Ki
   real ep_AI[J];
   real<lower=0> sigma[J]; //  Homoscedastic error
 }
 
 transformed parameters {
-  real Ka[J] = exp(ep_a); 
-  real Ki[J] = exp(ep_i);
+  real ep_a[J] = log(Ka); 
+  real ep_i[J] = log(Ki);
 }
 
 model {
@@ -52,8 +52,8 @@ model {
     
   // Define the priors. 
   sigma ~ normal(0, 0.1);
-  ep_a ~ normal(0, 5);
-  ep_i ~ normal(0, 5);
+  ep_a ~ normal(0, 2);
+  ep_i ~ normal(0, 2);
   ep_AI ~ normal(0, 5);
 
   for (i in 1:N) {

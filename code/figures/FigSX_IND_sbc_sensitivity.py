@@ -53,5 +53,3 @@ for g, d in sbc_data.groupby(['model']):
         _ax.step(ep_x, y, 'k')
     _ax.step(ka_x, y, color=colors['red']) 
     _ax.step(ki_x, y, color=colors['blue'])
-
-   

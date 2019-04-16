@@ -35,14 +35,14 @@ data {
   }
 
 parameters {  
-  real ep_a[J]; // Log transform of K_A
-  real ep_i[J]; // Log transform of K_I
+  real<lower=0> Ka[J]; // Log transform of K_A
+  real<lower=0> Ki[J]; // Log transform of K_I
   real<lower=0> sigma[J]; //  Homoscedastic error
 }
 
 transformed parameters {
-  real Ka[J] = exp(ep_a); 
-  real Ki[J] = exp(ep_i);
+  real ep_a[J] = log(Ka); 
+  real ep_i[J] = log(Ki);
 }
 
 model {
@@ -50,8 +50,8 @@ model {
 
   // Define the priors. 
   sigma ~ normal(0, 0.1);
-  ep_a ~ normal(0, 5);
-  ep_i ~ normal(0, 5);
+  ep_a ~ normal(0, 2);
+  ep_i ~ normal(0, 2);
 
   for (i in 1:N) {
     mu[i] = fold_change(R[i], Nns, ep_RA, c[i], ep_a[idx[i]], ep_i[idx[i]], ep_AI, n_sites);
