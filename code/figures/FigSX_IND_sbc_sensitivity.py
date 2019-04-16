@@ -21,9 +21,9 @@ for a in ax.ravel():
 
 # Assign axes
 axes = {'KaKi_only': 0, 'KaKi_epAI':1}
-for i in range(2):
-    ax[0, i].set_ylim([-5, 5])
-    ax[0, i].set_xlim([-0.1, 1.1])
+# for i in range(2):
+    # ax[0, i].set_ylim([-5, 5])
+    # ax[0, i].set_xlim([-0.1, 1.1])
 # ##############################################################################
 # SHRINKAGE AND Z-SCORE
 # ##############################################################################
