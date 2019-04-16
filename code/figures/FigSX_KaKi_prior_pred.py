@@ -3,8 +3,9 @@ import sys
 sys.path.insert(0, '../../')
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot 
+import matplotlib.pyplot  as plt
 import matplotlib.gridspec as gridspec
+import seaborn as sns
 import mut.viz
 import mut.thermo
 import mut.stats
@@ -16,10 +17,10 @@ ppc_data = pd.read_csv('../../data/csv/IND_prior_predictive_checks.csv')
 ep_a_unique = ppc_data['ep_a'].unique()
 ep_i_unique = ppc_data['ep_i'].unique()
 ep_ai_unique = ppc_data[ppc_data['model']=='KaKi_epAI']['ep_ai'].unique()
+
 # ##############################################################################
 # FIGURE INSTANTIATION #
 # ##############################################################################
-
 fig = plt.figure(figsize=(6, 4))
 gs = gridspec.GridSpec(4, 6)
 ax1 = fig.add_subplot(gs[0:2, 0:2])
@@ -29,16 +30,80 @@ ax4 = fig.add_subplot(gs[2:, 0:3])
 ax5 = fig.add_subplot(gs[2:, 3:])
 ax = [ax1, ax2, ax3, ax4, ax5]
 for a in ax:
-   a.xaxis.set_tick_params(labelsize=8) 
-   a.yaxis.set_tick_params(labelsize=8)
+   a.xaxis.set_tick_params(labelsize=6) 
+   a.yaxis.set_tick_params(labelsize=6)
 
+# Add axis labels
+ax1.set_xlabel(r'$\tilde k_a$', fontsize=8)
+ax1.set_ylabel(r'$\tilde k_i$', fontsize=8)
+ax2.set_xlabel(r'$\Delta\varepsilon_{AI}$ [$k_BT$]', fontsize=8)
+ax2.set_ylabel(r'$\tilde k_a$', fontsize=8)
+ax3.set_xlabel(r'$\Delta\varepsilon_{AI}$ [$k_BT$]', fontsize=8)
+ax3.set_ylabel(r'$\tilde k_i$', fontsize=8)
+
+# Set scaling
+ax4.set_xscale('symlog', linthreshx=1E-2)
+ax5.set_xscale('symlog', linthreshx=1E-2)
+
+# Set limits
+models = ['$K_A$ and $K_A$ only', r'$K_A$, $K_I$, and $\Delta\varepsilon_{AI}$']
+for i, a in enumerate([ax4, ax5]):
+   a.set_xlim([-0.001, 5E3])
+   a.set_yticks([-0.25, 0, 0.25, 0.5, 0.75, 1, 1.25])
+   a.set_xlabel('IPTG [µM]', fontsize=8)
+   a.set_ylabel('fold-change', fontsize=8)
+   a.set_title(models[i], fontsize=8, y=1.08, backgroundcolor=colors['pale_yellow'])
+
+# Add panel labels
+fig.text(0, 0.95, '(A)', fontsize=8)
+fig.text(0, 0.45, '(B)', fontsize=8)
+
+# Define the axes
+axes = {'KaKi_only':  ax4, 'KaKi_epAI': ax5}
 # ##############################################################################
-# TRUE PRIOR DISTRIBUTIONS
+# SAMPLED PRIOR DISTRIBUTIONS
 # ##############################################################################
 ax1.plot(ep_a_unique, ep_i_unique, '.', ms=2, color=colors['red'])
-ax2.plot(ep_ai_unique, ep_a_unique, '.', ms=2, color=colors['red'])
-ax3.plot(ep_ai_unique, ep_i_unique, '.', ms=2, color=colors['red'])
-# ax1.fill_between(epk_range, np.zeros(len(epa_epi_pdf)), epa_epi_pdf, color=colors['light_red'])
-# ax2.plot(np.exp(epk_range), np.exp(epa_epi_pdf), '-', color=colors['red'])
+ax2.plot(ep_ai_unique, ep_a_unique, '.', ms=2, color=colors['blue'])
+ax3.plot(ep_ai_unique, ep_i_unique, '.', ms=2, color=colors['blue'])
+
+
+# ##############################################################################
+#  PRIOR PREDICTIVE CHECKS
+# ##############################################################################
+# for g, d in ppc_data.groupby(['draw', 'model']):
+#    _ax = axes[g[1]]
+#    _ax.plot(d['IPTGuM'], d['fc_draw'], '-', lw=0.01, color=colors['red'], alpha=0.5)
+percs = [99, 95, 80, 50, 20, 10, 5]
+cmap_kakionly = {p:c for p, c in zip(percs, sns.color_palette('Reds', len(percs)))}
+cmap_kakiepai = {p:c for p, c, in zip(percs, sns.color_palette('Blues', len(percs)))}
+zorder = {p:i for p, i in zip(percs, [10, 11, 12, 13, 14, 15, 16, 17])}
+
+# Compute the percentiles of the simulations. 
+grouped = ppc_data.groupby(['IPTGuM', 'model'])
+df = pd.DataFrame([], columns=['percentile', 'IPTGuM', 'fc_low', 'fc_high', 'model'])
+for g, d in grouped:
+    for p in percs:     
+        remainder = 100 - p
+        low = remainder / 2
+        upper = p + remainder / 2 
+        _percs = np.percentile(d['fc_draw'], [low, upper])
+        df = df.append({'percentile': p,
+                         'IPTGuM': g[0],
+                         'fc_low':_percs[0],
+                         'fc_high': _percs[1],
+                         'model': g[1]},
+                      ignore_index=True)
+
+for g, d in  df.groupby(['model', 'percentile']):
+   _ax = axes[g[0]]
+   if g[0] == 'KaKi_only':
+      cmap = cmap_kakionly
+   else:
+      cmap = cmap_kakiepai
+   _ax.fill_between(d['IPTGuM'], d['fc_low'], d['fc_high'], color=cmap[g[1]],
+                  zorder=zorder[g[1]], label = g[0])
+plt.tight_layout()
+plt.savefig('../../figures/FigSX_IND_prior_predictive_checks.pdf', bbox_inches='tight')
 
 

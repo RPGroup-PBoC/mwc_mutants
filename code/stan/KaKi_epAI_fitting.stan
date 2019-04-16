@@ -36,17 +36,15 @@ data {
   }
 
 parameters {
-  real<lower=0, upper=10000> Ka[J]; // Active repressor inducer dissociation constant
-  real<lower=0, upper=10000> Ki[J]; // Inactive repressor inducer dissociation constant
+  real ep_a[J]; // log transform of Ka
+  real ep_i[J]; // log transform of Ki
   real ep_AI[J];
   real<lower=0> sigma[J]; //  Homoscedastic error
 }
 
 transformed parameters {
-  real ep_a[J]; 
-  real ep_i[J];
-  ep_a = log(Ka);
-  ep_i = log(Ki);
+  real Ka[J] = exp(ep_a); 
+  real Ki[J] = exp(ep_i);
 }
 
 model {
@@ -54,9 +52,9 @@ model {
     
   // Define the priors. 
   sigma ~ normal(0, 0.1);
-  ep_a ~ normal(0, 10);
-  ep_i ~ normal(0, 10);
-  ep_AI ~ normal(0, 10);
+  ep_a ~ normal(0, 5);
+  ep_i ~ normal(0, 5);
+  ep_AI ~ normal(0, 2);
 
   for (i in 1:N) {
     mu[i] = fold_change(R[i], Nns, ep_RA, c[i], ep_a[idx[i]], ep_i[idx[i]], ep_AI[idx[i]], n_sites);

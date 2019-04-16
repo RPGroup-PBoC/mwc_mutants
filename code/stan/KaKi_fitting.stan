@@ -34,24 +34,22 @@ data {
   vector[N] fc;
   }
 
-parameters {
-  real<lower=0, upper=5000> Ka[J]; // Active repressor inducer dissociation constant
-  real<lower=0, upper=5000> Ki[J]; // Inactive repressor inducer dissociation constant
+parameters {  
+  real ep_a[J]; // Log transform of K_A
+  real ep_i[J]; // Log transform of K_I
   real<lower=0> sigma[J]; //  Homoscedastic error
 }
 
 transformed parameters {
-  real ep_a[J]; 
-  real ep_i[J];
-  ep_a = log(Ka);
-  ep_i = log(Ki);
+  real Ka[J] = exp(ep_a); 
+  real Ki[J] = exp(ep_i);
 }
 
 model {
   vector[N] mu;
 
   // Define the priors. 
-  sigma ~ normal(0, 1);
+  sigma ~ normal(0, 0.1);
   ep_a ~ normal(0, 5);
   ep_i ~ normal(0, 5);
 
