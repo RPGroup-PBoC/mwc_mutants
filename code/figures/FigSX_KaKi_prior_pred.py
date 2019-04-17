@@ -14,8 +14,8 @@ colors = mut.viz.color_selector('pboc')
 mut.viz.plotting_style()
 ppc_data = pd.read_csv('../../data/csv/IND_prior_predictive_checks.csv')
 
-ep_a_unique = ppc_data['ep_a'].unique()
-ep_i_unique = ppc_data['ep_i'].unique()
+ep_a_unique = ppc_data['ka'].unique()
+ep_i_unique = ppc_data['ki'].unique()
 ep_ai_unique = ppc_data[ppc_data['model']=='KaKi_epAI']['ep_ai'].unique()
 
 # ##############################################################################
@@ -29,12 +29,12 @@ for a in ax.ravel(0):
 _.set_axis_off()
 
 # Add axis labels
-ax1.set_xlabel(r'$\Delta\varepsilon_{A}$ [$k_BT$]', fontsize=8, labelpad=0.1)
-ax1.set_ylabel(r'$\Delta\varepsilon_{I}$ [$k_BT$]', fontsize=8, labelpad=0.1)
+ax1.set_xlabel(r'$K_A$ [µM]', fontsize=8, labelpad=0.1)
+ax1.set_ylabel(r'$K_I$ [µM]', fontsize=8, labelpad=0.1)
 ax2.set_xlabel(r'$\Delta\varepsilon_{AI}$ [$k_BT$]', fontsize=8, labelpad=0.1)
-ax2.set_ylabel(r'$\Delta\varepsilon_{A}$ [$k_BT$', fontsize=8, labelpad=0.1)
+ax2.set_ylabel(r'$K_A$ [µM]', fontsize=8, labelpad=0.1)
 ax3.set_xlabel(r'$\Delta\varepsilon_{AI}$ [$k_BT$]', fontsize=8)
-ax3.set_ylabel(r'$\Delta\varepsilon_{I}$ [$k_BT$]', fontsize=8, labelpad=0.1)
+ax3.set_ylabel(r'$K_I$ [µM]', fontsize=8, labelpad=0.1)
 
 # Set scaling
 ax4.set_xscale('symlog', linthreshx=1E-2)
@@ -59,9 +59,9 @@ axes = {'KaKi_only':  ax4, 'KaKi_epAI': ax5}
 # ##############################################################################
 # SAMPLED PRIOR DISTRIBUTIONS
 # ##############################################################################
-ax1.plot(ep_a_unique, ep_i_unique, '.', ms=2, color=colors['red'])
-ax2.plot(ep_ai_unique, ep_a_unique, '.', ms=2, color=colors['blue'])
-ax3.plot(ep_ai_unique, ep_i_unique, '.', ms=2, color=colors['blue'])
+ax1.loglog(ep_a_unique, ep_i_unique, '.', ms=2, color=colors['red'])
+ax2.semilogy(ep_ai_unique, ep_a_unique, '.', ms=2, color=colors['blue'])
+ax3.semilogy(ep_ai_unique, ep_i_unique, '.', ms=2, color=colors['blue'])
 
 
 # ##############################################################################

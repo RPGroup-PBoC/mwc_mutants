@@ -50,8 +50,8 @@ model {
 
   // Define the priors. 
   sigma ~ normal(0, 0.1);
-  ep_a ~ normal(0, 10);
-  ep_i ~ normal(0, 10);
+  Ka ~ lognormal(0, 2.5);
+  Ki ~ lognormal(0, 2.5);
 
   for (i in 1:N) {
     mu[i] = fold_change(R[i], Nns, ep_RA, c[i], ep_a[idx[i]], ep_i[idx[i]], ep_AI, n_sites);

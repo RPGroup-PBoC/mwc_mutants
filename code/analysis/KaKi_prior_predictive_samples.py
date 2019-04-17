@@ -14,13 +14,11 @@ IPTG = data[(data['mutant']=='Q294K') & (data['operator']=='O2')]['IPTGuM']
 
 # Define the constants relative for drawing samples
 n_draws = 500
-ep_a = np.random.normal(0, 10, n_draws)
-ep_i = np.random.normal(0, 10, n_draws)
-ep_ai = np.random.normal(0, 10, n_draws)
+ka = np.random.lognormal(0, sigma=2.5, size=n_draws)
+ki = np.random.lognormal(0, sigma=2.5, size=n_draws)
+ep_ai = np.random.normal(0, 3, n_draws)
 
 sigma = np.abs(np.random.normal(0, 0.1, n_draws))
-ka = np.exp(ep_a)
-ki = np.exp(ep_i)
 model_names = ['KaKi_only', 'KaKi_epAI']
 dfs = []
 
@@ -35,9 +33,9 @@ for m in model_names:
                                            **args).fold_change() 
         _df = pd.DataFrame([]) 
         _df['fc_draw'] = np.random.normal(arch, sigma[i])
-        _df['ep_a'] = ep_a[i] 
+        _df['ep_a'] = np.log(ka[i])
         _df['ka'] = ka[i]
-        _df['ep_i'] = ep_i[i]
+        _df['ep_i'] = np.log(ki[i])
         _df['ki'] = ki[i]
         _df['ep_ai'] = args['ep_ai'] 
         _df['sigma'] = sigma[i]
