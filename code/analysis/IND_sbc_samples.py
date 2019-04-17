@@ -62,7 +62,7 @@ def sbc(g, d):
             
         # Sample the model
         model = _model[g[0]]
-        _, samples = model.sample(data_dict=data_dict,  iter=4000, n_jobs=1, chains=1, control=dict(adapt_delta=0.99))
+        _, samples = model.sample(data_dict=data_dict,  iter=1000, n_jobs=1, chains=4, control=dict(adapt_delta=0.99))
         samples.rename(columns=columns, inplace=True)
         samples['sim_idx'] = g[1]
         samples['model'] = g[0]
@@ -97,5 +97,5 @@ _samples = [a[0] for a in out]
 _sbc = [a[1] for a in out]
 sbc_df = pd.concat(_sbc) 
 sbc_df.to_csv('../../data/csv/IND_sbc.csv', index=False)
-samples_df = pd.concat(_samples)
-samples_df.to_csv('../../data/csv/IND_sbc_samples.csv', index=False)
+# samples_df = pd.concat(_samples)
+# samples_df.to_csv('../../data/csv/IND_sbc_samples.csv', index=False)
