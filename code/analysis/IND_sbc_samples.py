@@ -41,23 +41,23 @@ def sbc(g, d):
                     'c': d['IPTGuM'],
                     'fc': d['fc_draw']}
         # Define the columns for renaming
-        columns={'Ka[1]': 'Ka', 'sigma[1]':'sigma', 'Ki[1]':'Ki'}
+        columns={'Ka[1]': 'Ka', 'sigma[1]':'sigma', 'Ki[1]':'Ki',
+                 'ep_a[1]':'ep_a', 'ep_i[1]': 'ep_i'}
 
     
         # Determine the ground truth for each parameter.
-        if g[0] == 'KaKi_only':
-            gt = {'Ka': d['ka'].unique(),
+        gt = {'Ka': d['ka'].unique(),
                   'Ki': d['ki'].unique(),
+                  'ep_a':d['ep_a'].unique(),
+                  'ep_i':d['ep_i'].unique(),
                   'sigma': d['sigma'].unique()}
+        if g[0] == 'KaKi_only': 
             data_dict['ep_AI'] = constants['ep_AI']
-            pars = ['Ka', 'Ki', 'sigma']
+            pars = ['Ka', 'Ki', 'ep_a', 'ep_i', 'sigma']
         else:
-            gt = {'Ka': d['ka'].unique(),
-                  'Ki': d['ki'].unique(),
-                  'ep_AI': d['ep_ai'].unique(),
-                  'sigma': d['sigma'].unique()}
+            gt['ep_AI'] = d['ep_ai'].unique()
     
-            pars = ['Ka', 'Ki', 'ep_AI', 'sigma']
+            pars = ['Ka', 'Ki', 'ep_AI', 'ep_a', 'ep_i', 'sigma']
             columns['ep_AI[1]'] = 'ep_AI'
     
             
