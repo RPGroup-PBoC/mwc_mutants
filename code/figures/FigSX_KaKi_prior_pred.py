@@ -29,12 +29,12 @@ for a in ax.ravel(0):
 _.set_axis_off()
 
 # Add axis labels
-ax1.set_xlabel(r'$\tilde k_a$', fontsize=8, labelpad=0.1)
-ax1.set_ylabel(r'$\tilde k_i$', fontsize=8, labelpad=0.1)
+ax1.set_xlabel(r'$\Delta\varepsilon_{A}$ [$k_BT$]', fontsize=8, labelpad=0.1)
+ax1.set_ylabel(r'$\Delta\varepsilon_{I}$ [$k_BT$]', fontsize=8, labelpad=0.1)
 ax2.set_xlabel(r'$\Delta\varepsilon_{AI}$ [$k_BT$]', fontsize=8, labelpad=0.1)
-ax2.set_ylabel(r'$\tilde k_a$', fontsize=8, labelpad=0.1)
+ax2.set_ylabel(r'$\Delta\varepsilon_{A}$ [$k_BT$', fontsize=8, labelpad=0.1)
 ax3.set_xlabel(r'$\Delta\varepsilon_{AI}$ [$k_BT$]', fontsize=8)
-ax3.set_ylabel(r'$\tilde k_i$', fontsize=8, labelpad=0.1)
+ax3.set_ylabel(r'$\Delta\varepsilon_{I}$ [$k_BT$]', fontsize=8, labelpad=0.1)
 
 # Set scaling
 ax4.set_xscale('symlog', linthreshx=1E-2)
