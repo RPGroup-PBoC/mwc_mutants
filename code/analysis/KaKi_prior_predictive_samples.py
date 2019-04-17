@@ -14,9 +14,9 @@ IPTG = data[(data['mutant']=='Q294K') & (data['operator']=='O2')]['IPTGuM']
 
 # Define the constants relative for drawing samples
 n_draws = 500
-ka = np.random.lognormal(0, sigma=2.5, size=n_draws)
-ki = np.random.lognormal(0, sigma=2.5, size=n_draws)
-ep_ai = np.random.normal(0, 3, n_draws)
+ka = np.random.lognormal(0, sigma=3, size=n_draws)
+ki = np.random.lognormal(0, sigma=3, size=n_draws)
+ep_ai = np.random.normal(0, 5, n_draws)
 
 sigma = np.abs(np.random.normal(0, 0.1, n_draws))
 model_names = ['KaKi_only', 'KaKi_epAI']
