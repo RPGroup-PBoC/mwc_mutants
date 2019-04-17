@@ -29,8 +29,8 @@ axes = {'KaKi_only': 0, 'KaKi_epAI':1}
 # ##############################################################################
 for g, d in sbc_data.groupby(['model']):
     _ax = ax[0, axes[g]]
-    ka = d[d['param']=='Ka']
-    ki = d[d['param']=='Ki']
+    ka = d[d['param']=='ep_a']
+    ki = d[d['param']=='ep_i']
     if g != 'KaKi_only':
         ep = d[d['param']=='ep_AI']
         _ax.plot(ep['shrinkage'], ep['z_score'], ',', color='k')
