@@ -52,8 +52,8 @@ model {
     
   // Define the priors. 
   sigma ~ normal(0, 0.1);
-  ep_a ~ normal(0, 2);
-  ep_i ~ normal(0, 2);
+  ep_a ~ normal(0, 5);
+  ep_i ~ normal(0, 5);
   ep_AI ~ normal(0, 5);
 
   for (i in 1:N) {

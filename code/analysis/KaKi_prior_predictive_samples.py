@@ -14,8 +14,8 @@ IPTG = data[(data['mutant']=='Q294K') & (data['operator']=='O2')]['IPTGuM']
 
 # Define the constants relative for drawing samples
 n_draws = 500
-ep_a = np.random.normal(0, 2, n_draws)
-ep_i = np.random.normal(0, 2, n_draws)
+ep_a = np.random.normal(0, 5, n_draws)
+ep_i = np.random.normal(0, 5, n_draws)
 ep_ai = np.random.normal(0, 5, n_draws)
 sigma = np.abs(np.random.normal(0, 0.1, n_draws))
 ka = np.exp(ep_a)

@@ -21,16 +21,16 @@ for a in ax.ravel():
 
 # Assign axes
 axes = {'KaKi_only': 0, 'KaKi_epAI':1}
-# for i in range(2):
+for i in range(2):
     # ax[0, i].set_ylim([-5, 5])
-    # ax[0, i].set_xlim([-0.1, 1.1])
+    ax[0, i].set_xlim([-0.1, 1.1])
 # ##############################################################################
 # SHRINKAGE AND Z-SCORE
 # ##############################################################################
 for g, d in sbc_data.groupby(['model']):
     _ax = ax[0, axes[g]]
-    ka = d[d['param']=='Ka']
-    ki = d[d['param']=='Ki']
+    ka = d[d['param']=='ep_a']
+    ki = d[d['param']=='ep_i']
     if g != 'KaKi_only':
         ep = d[d['param']=='ep_AI']
         _ax.plot(ep['shrinkage'], ep['z_score'], ',', color='k')
@@ -42,8 +42,8 @@ for g, d in sbc_data.groupby(['model']):
 # ##############################################################################
 for g, d in sbc_data.groupby(['model']):
     _ax = ax[1, axes[g]]
-    ka = d[d['param']=='Ka']
-    ki = d[d['param']=='Ki']
+    ka = d[d['param']=='ep_a']
+    ki = d[d['param']=='ep_i']
     ka_x = np.sort(ka['rank'])
     ki_x = np.sort(ki['rank'])
     y = np.arange(0, len(ka), 1) / len(ka)
