@@ -43,8 +43,8 @@ parameters {
 }
 
 transformed parameters {
-  real ep_a[J] = -log(Ka); 
-  real ep_i[J] = -log(Ki);
+  real ep_a[J] = log(Ka); 
+  real ep_i[J] = log(Ki);
 }
 
 model {
@@ -57,7 +57,7 @@ model {
   ep_AI ~ normal(0, 5);
 
   for (i in 1:N) {
-    mu[i] = fold_change(R[i], Nns, ep_RA, c[i], ep_a[idx[i]], ep_i[idx[i]], ep_AI[idx[i]], n_sites);
+    mu[i] = fold_change(R[i], Nns, ep_RA, c[i], -ep_a[idx[i]], -ep_i[idx[i]], ep_AI[idx[i]], n_sites);
     fc[i] ~ normal(mu[i], sigma[idx[i]]);
   }
 }
