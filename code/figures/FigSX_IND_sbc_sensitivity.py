@@ -42,8 +42,8 @@ for g, d in sbc_data.groupby(['model']):
 # ##############################################################################
 for g, d in sbc_data.groupby(['model']):
     _ax = ax[1, axes[g]]
-    ka = d[d['param']=='ep_a']
-    ki = d[d['param']=='ep_i']
+    ka = d[d['param']=='Ka']
+    ki = d[d['param']=='Ki']
     ka_x = np.sort(ka['rank'])
     ki_x = np.sort(ki['rank'])
     y = np.arange(0, len(ka), 1) / len(ka)
