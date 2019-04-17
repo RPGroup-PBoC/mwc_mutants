@@ -41,8 +41,8 @@ parameters {
 }
 
 transformed parameters {
-  real ep_a[J] = log(Ka); 
-  real ep_i[J] = log(Ki);
+  real ep_a[J] = -log(Ka); 
+  real ep_i[J] = -log(Ki);
 }
 
 model {
