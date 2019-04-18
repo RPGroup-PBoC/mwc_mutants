@@ -19,6 +19,10 @@ for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=6)
     a.yaxis.set_tick_params(labelsize=6)
 
+plt.semilogy(ki['shrinkage'], ka['post_median'].values / ki['post_median'], '.')
+plt.xlim([-0.1, 1])
+
+len(ki)
 # Assign axes
 axes = {'KaKi_only': 0, 'KaKi_epAI':1}
 for i in range(2):
@@ -31,6 +35,7 @@ for g, d in sbc_data.groupby(['model']):
     _ax = ax[0, axes[g]]
     ka = d[d['param']=='Ka']
     ki = d[d['param']=='Ki']
+    print(g, np.sum(ka['shrinkage'] > 0.9) / len(ka))
     if g != 'KaKi_only':
         ep = d[d['param']=='ep_AI']
         _ax.plot(ep['shrinkage'], ep['z_score'], ',', color='k')
@@ -53,3 +58,4 @@ for g, d in sbc_data.groupby(['model']):
         _ax.step(ep_x, y, 'k')
     _ax.step(ka_x, y, color=colors['red']) 
     _ax.step(ki_x, y, color=colors['blue'])
+plt.savefig('/Users/gchure/Desktop/test.pdf')

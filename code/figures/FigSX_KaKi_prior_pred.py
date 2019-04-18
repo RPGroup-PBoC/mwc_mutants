@@ -103,10 +103,7 @@ leg = ax4.legend(title='percentile', fontsize=6, bbox_to_anchor=(1.9, 1))
 leg.get_title().set_fontsize(6)
 leg = ax5.legend(title='percentile', fontsize=6, bbox_to_anchor=(-0.7, 1))
 leg.get_title().set_fontsize(6)
-
 plt.subplots_adjust(wspace=0.6, hspace=0.6)
-# plt.tight_layout()
-
 plt.savefig('../../figures/FigSX_IND_prior_predictive_checks.pdf', 
          bbox_inches='tight', background='white')
 
