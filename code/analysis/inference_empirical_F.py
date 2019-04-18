@@ -25,7 +25,7 @@ data['ref_bohr'] = wt_bohr
 idx = data.groupby(['mutant', 'repressors', 'operator', 'IPTGuM']).ngroup() + 1 
 data['idx'] = idx
 data.sort_values('idx', inplace=True)
-
+samples_dfs = []
 def infer_empirical_bohr(data, model, groupby=['mutant', 'repressors', 'operator', 'IPTGuM'],
                         verbose=True, force_compile=False, **kwargs):
     """
