@@ -84,7 +84,7 @@ ax6.hist(kaki_samples['Ki'], bins=30, histtype='stepfilled', color=cmap[0],
 # PERCENTILES
 # ##############################################################################
 percs = [99, 95, 80, 50, 20, 10, 5]
-perc_cmap = sns.color_palette('magma', n_colors=(len(percs) + 2))
+perc_cmap = sns.color_palette('viridis', n_colors=(len(percs) + 2))
 zorder = [11, 12, 13, 14, 15, 16, 17]
 z = {p:z for p, z in zip(percs, zorder)}
 c = {p:c for p, c in zip(percs, perc_cmap)}
@@ -104,7 +104,7 @@ for g, d in grouped:
 
 for g, d in df.groupby('percentile'):
     ax7.fill_between(d['IPTGuM'], d['fc_low'], d['fc_high'], color=c[g], 
-                    zorder=z[g], label=int(g))
+                    zorder=z[g], label=int(g), alpha=0.5)
   
 # ##############################################################################
 # EXPERIMENTAL MEAUREMENTS
