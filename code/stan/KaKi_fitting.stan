@@ -50,7 +50,7 @@ model {
 
   // Define the priors. 
   sigma ~ normal(0, 0.1);
-  Ka ~ lognormal(0, 2);
+  Ka ~ lognormal(2, 1);
   Ki ~ lognormal(0, 2);
 
   for (i in 1:N) {
