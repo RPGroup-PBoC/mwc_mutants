@@ -19,10 +19,6 @@ for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=6)
     a.yaxis.set_tick_params(labelsize=6)
 
-plt.semilogy(ki['shrinkage'], ka['post_median'].values / ki['post_median'], '.')
-plt.xlim([-0.1, 1])
-
-len(ki)
 # Assign axes
 axes = {'KaKi_only': 0, 'KaKi_epAI':1}
 for i in range(2):
