@@ -16,8 +16,8 @@ constants = mut.thermo.load_constants()
 prior_data = pd.read_csv('../../data/csv/IND_prior_predictive_checks.csv')
 
 # Load the stan model. 
-KaKi_model = mut.bayes.StanModel('../stan/KaKi_fitting.stan', force_compile=True)
-KaKi_epAI_model = mut.bayes.StanModel('../stan/KaKi_epAI_fitting.stan', force_compile=True) 
+KaKi_model = mut.bayes.StanModel('../stan/KaKi_fitting.stan') #, force_compile=True)
+KaKi_epAI_model = mut.bayes.StanModel('../stan/KaKi_epAI_fitting.stan') #, force_compile=True) 
 _model = {'KaKi_only': KaKi_model, 'KaKi_epAI':KaKi_epAI_model}
 
 # Set up a dataframe to store the properties.
@@ -33,7 +33,7 @@ def sbc(g, d):
         data_dict = {'J':1,
                     'N': len(d),
                     'idx': np.ones(len(d)).astype(int),
-                    'ep_RA': constants['O2'],
+                    'ep_RA': -11.9,
                     'R': np.ones(len(d)) * constants['RBS1027'],
                     'Nns': 4.6E6,
                     'n_sites': constants['n_sites'],
@@ -62,7 +62,7 @@ def sbc(g, d):
             
         # Sample the model
         model = _model[g[0]]
-        _, samples = model.sample(data_dict=data_dict,  iter=1500, n_jobs=1, chains=4)
+        _, samples = model.sample(data_dict=data_dict,  iter=1000, n_jobs=1, chains=4)
         samples.rename(columns=columns, inplace=True)
         samples['sim_idx'] = g[1]
         samples['model'] = g[0]
