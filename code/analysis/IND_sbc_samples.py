@@ -62,7 +62,7 @@ def sbc(g, d):
             
         # Sample the model
         model = _model[g[0]]
-        _, samples = model.sample(data_dict=data_dict,  iter=1000, n_jobs=1, chains=4)
+        _, samples = model.sample(data_dict=data_dict,  iter=4000, n_jobs=1, chains=4)
         samples.rename(columns=columns, inplace=True)
         samples['sim_idx'] = g[1]
         samples['model'] = g[0]
