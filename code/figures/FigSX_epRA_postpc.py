@@ -51,75 +51,83 @@ ppc_df = pd.concat(dfs)
 
 
 # ##############################################################################
-# FIGURE INSTANTIATION
-# ##############################################################################
-fig = plt.figure(figsize=(6,  3))
-gs = gridspec.GridSpec(4, 9)
-ax1 = fig.add_subplot(gs[0:2, 0:2])
-ax2 = fig.add_subplot(gs[2:4, 0:2])
-ax3 = fig.add_subplot(gs[2:4, 2:4])
-ax4 = fig.add_subplot(gs[:, 5:])
-ax = [ax1, ax2, ax3, ax4]
-for a in ax:
+# FIGURE INSTANTIATION #
+##############################################################################
+fig = plt.figure(figsize=(6,  3)) 
+gs = gridspec.GridSpec(4, 9) 
+ax1 = fig.add_subplot(gs[0:2, 0:2]) 
+ax2 = fig.add_subplot(gs[2:4, 0:2]) 
+ax3 = fig.add_subplot(gs[2:4, 2:4]) 
+ax4 = fig.add_subplot(gs[:, 5:]) 
+ax = [ax1, ax2, ax3, ax4] 
+for a in ax: 
     a.xaxis.set_tick_params(labelsize=8)
-    a.yaxis.set_tick_params(labelsize=8)
-
+    a.yaxis.set_tick_params(labelsize=8) 
 # Turn off axes where not needed
-ax1.set_xticklabels([])
-ax1.set_yticks([])
-ax3.set_yticks([])
-
-# Add labels
+ax1.set_xticklabels([]) 
+ax1.set_yticks([]) 
+ax3.set_yticks([]) # Add labels
 ax[1].set_xlabel(r'$\Delta\varepsilon_{RA}$ [$k_BT$]', fontsize=8)
-ax[1].set_ylabel('$\sigma$', fontsize=8)
-ax[2].set_xlabel('$\sigma$', fontsize=8)
+ax[1].set_ylabel('$\sigma$', fontsize=8) 
+ax[2].set_xlabel('$\sigma$',fontsize=8) 
 ax[-1].set_xlabel('IPTG [µM]', fontsize=8)
-ax[-1].set_ylabel('fold-change', fontsize=8)
+ax[-1].set_ylabel('fold-change', fontsize=8) # Add appropriate formatting
+ax[3].set_xscale('symlog', linxthresh=1E-3) # Adjust limits
+ax[3].set_ylim([-0.15, 0.9]) 
 
-# Add appropriate formatting
-ax[3].set_xscale('symlog', linxthresh=1E-3)
+# Add panel labels 
+fig.text(0.05, 0.90, '(A)', fontsize=8) 
+fig.text(0.5, 0.90, '(B)', fontsize=8) #
 
-# Adjust limits
-ax[3].set_ylim([-0.15, 0.9])
+##############################################################################
+# JOINT DISTRIBUTION #
+##############################################################################
+cmap = sns.color_palette('viridis', n_colors=len(samples))
+ax[1].scatter(samples['ep_RA'].values, samples['sigma'].values,  c=cmap,
+                marker='.', s=0.5)
 
-# Add panel labels
-fig.text(0.05, 0.90, '(A)', fontsize=8)
-fig.text(0.5, 0.90, '(B)', fontsize=8)
+##############################################################################
+# MARGINAL DISTRIBUTIONS #
+##############################################################################
+ax[0].hist(samples['ep_RA'].values, bins=30, color=cmap[10],
+histtype='stepfilled', alpha=0.5) 
+ax[2].hist(samples['sigma'].values, bins=30,
+color=cmap[10], histtype='stepfilled', alpha=0.5) #
 
-# ##############################################################################
-# JOINT DISTRIBUTION
-# ##############################################################################
-ax[1].scatter(samples['ep_RA'].values, samples['sigma'].values,  c=cmap, marker='.', s=0.5)
-
-# ##############################################################################
-# MARGINAL DISTRIBUTIONS
-# ##############################################################################
-ax[0].hist(samples['ep_RA'].values, bins=30, color=cmap[10], histtype='stepfilled', alpha=0.5)
-ax[2].hist(samples['sigma'].values, bins=30, color=cmap[10], histtype='stepfilled', alpha=0.5)
-
-# ##############################################################################
-# DATA POINTS
-# ##############################################################################
-for g, d in data.groupby(['IPTGuM']):
-    if g==0:
-        label = 'data'
-    else:
-        label = '__nolegend__'
+##############################################################################
+# DATA POINTS #
+##############################################################################
+for g, d in data.groupby(['IPTGuM']): 
+    if g==0: 
+        label = 'data' 
+    else: 
+        label = '__nolegend__' 
     ax[3].plot(d['IPTGuM'], d['fold_change'], '.', color='k', ms=5, 
-                markerfacecolor='w', alpha=0.5, label=label)
+              markerfacecolor='w', alpha=0.5, label=label, zorder=1000) #
 
-# ##############################################################################
-# POSTERIOR PREDICTIVE CHECKS
-# ##############################################################################
-perc_low = []
-perc_high = []
-for g, d in ppc_df.groupby('IPTGuM'):
-    _low, _high = np.percentile(d['fc_mu'].values, (0.5, 99.5))
-    perc_low.append(_low)
-    perc_high.append(_high)
-ax[3].fill_between(IPTGuM, perc_low, perc_high, color='rebeccapurple', alpha=0.4,
-                  label =r'$y \sim \mathcal{N}(\mu, \sigma)$')
-ax[3].legend(fontsize=8)
+##############################################################################
+# POSTERIOR PREDICTIVE CHECKS #
+##############################################################################
+percs = [99, 95, 80, 50, 20, 10, 5] 
+cmap = {p:c for p, c in zip(percs, sns.color_palette('viridis', len(percs)+2))} 
+zorder = {p:i for p, i in zip(percs, [10, 11, 12, 13, 14, 15, 16, 17])} 
+
+# Compute the percentiles of the simulations. 
+grouped = ppc_df.groupby(['IPTGuM']) 
+df = pd.DataFrame([], columns=['percentile', 'IPTGuM', 'fc_low', 'fc_high']) 
+for g, d in grouped:
+    for p in percs:     
+        remainder = 100 - p 
+        low = remainder / 2 
+        upper = p + remainder / 2 
+        _percs = np.percentile(d['fc_mu'], [low, upper]) 
+        df = df.append({'percentile': p, 'IPTGuM': g, 'fc_low':_percs[0], 
+                        'fc_high': _percs[1]}, ignore_index=True) 
+
+for g, d in  df.groupby(['percentile']):
+    ax4.fill_between(d['IPTGuM'], d['fc_low'], d['fc_high'], color=cmap[g],
+                    zorder=zorder[g], label = int(g), alpha=0.5) 
+    leg = ax[3].legend(fontsize=8, title='percentile') 
+    leg.get_title().set_fontsize(8)
 plt.savefig('../../figures/FigSX_epRA_post_pc.pdf', bbox_inches='tight')
-
 
