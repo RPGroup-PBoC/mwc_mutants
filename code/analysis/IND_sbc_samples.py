@@ -16,8 +16,8 @@ constants = mut.thermo.load_constants()
 prior_data = pd.read_csv('../../data/csv/IND_prior_predictive_checks.csv')
 
 # Load the stan model. 
-KaKi_model = mut.bayes.StanModel('../stan/KaKi_fitting.stan', force_compile=True)
-KaKi_epAI_model = mut.bayes.StanModel('../stan/KaKi_epAI_fitting.stan', force_compile=True) 
+KaKi_model = mut.bayes.StanModel('../stan/KaKi_fitting.stan') #, force_compile=True)
+KaKi_epAI_model = mut.bayes.StanModel('../stan/KaKi_epAI_fitting.stan') #, force_compile=True) 
 _model = {'KaKi_only': KaKi_model, 'KaKi_epAI':KaKi_epAI_model}
 
 # Set up a dataframe to store the properties.
@@ -33,7 +33,7 @@ def sbc(g, d):
         data_dict = {'J':1,
                     'N': len(d),
                     'idx': np.ones(len(d)).astype(int),
-                    'ep_RA': -11.9,
+                    'ep_RA': -13.9,
                     'R': np.ones(len(d)) * constants['RBS1027'],
                     'Nns': 4.6E6,
                     'n_sites': constants['n_sites'],
