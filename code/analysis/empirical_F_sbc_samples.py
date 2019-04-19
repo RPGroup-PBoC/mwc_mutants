@@ -8,7 +8,7 @@ import mut.bayes
 # Load the data
 data = pd.read_csv('../../data/csv/empirical_F_prior_predictive_checks.csv')
 data.rename(columns={'mu':'fc_mu', 'sigma':'fc_sigma'}, inplace=True)
-model = mut.bayes.StanModel('../stan/empirical_F.stan')
+model = mut.bayes.StanModel('../stan/empirical_F.stan', force_compile=True)
 
 # Iterate through each simulation
 thin = 5

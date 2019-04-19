@@ -69,9 +69,24 @@ for a in ax.ravel():
 # ##############################################################################
 # ZERO LINES
 # ##############################################################################
-ax[0, 0].hlines(0, 1E-4, 1E4, linestyle=':', lw=1)
+ax[0, 0].plot(np.arange(0, 1, 0.1), np.arange(0, 1, 0.1), 'k-')
 
 # ##############################################################################
 # ERROR IN FC
 # ##############################################################################
-d
+for g, d in stats.groupby('IPTGuM'):
+    fc_mu = d[d['parameter']=='fc_mu']
+    ax[0, 0].plot(fc_mu['true_mu'], fc_mu['median'], '.', color=colors['blue'])
+    ax[0, 0].vlines(fc_mu['median'], fc_mu['hpd_min'], fc_mu['hpd_max'],  
+                    color=colors['blue'])
+
+ax[0, 0].set_xlim([0.9, 1.01])
+ax[0,0].set_ylim([0.9, 1.01])
+
+# ##############################################################################
+# ERROR IN F
+# ##############################################################################
+for g, d in stats.groupby('IPTGuM'):
+    dbohr = d[d['parameter']=='empirical_bohr']
+    ax[0, 1].plot(dbohr['true_bohr'], dbohr['median'], '.', color=colors['blue'])
+

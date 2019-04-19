@@ -13,7 +13,7 @@ data = pd.read_csv('../../data/csv/compiled_data.csv')
 IPTG = data[(data['mutant']=='Q294K') & (data['operator']=='O2')]['IPTGuM']
 
 # Define the constants relative for drawing samples
-n_draws = 1000
+n_draws = 800
 ka = np.random.lognormal(2, sigma=2, size=n_draws)
 ki = np.random.lognormal(0, sigma=2, size=n_draws)
 ep_ai = np.random.normal(0, 5, n_draws)
@@ -29,7 +29,7 @@ for m in model_names:
            args = dict(ka=ka[i], ki=ki[i], ep_ai=constants['ep_AI'])
         else: 
             args = dict(ka=ka[i], ki=ki[i], ep_ai=ep_ai[i])
-        arch = mut.thermo.SimpleRepression(R=260, ep_r=-11.9, effector_conc=IPTG,
+        arch = mut.thermo.SimpleRepression(R=260, ep_r=-1.9, effector_conc=IPTG,
                                            **args).fold_change() 
         _df = pd.DataFrame([]) 
         _df['fc_draw'] = np.random.normal(arch, sigma[i])

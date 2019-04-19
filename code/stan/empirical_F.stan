@@ -26,7 +26,7 @@ parameters {
  
 model {
     // Define the prior distributions
-    fc_mu ~ normal(0, 1)T[0,1];
+    fc_mu ~ uniform(0, 1);
     fc_sigma ~ normal(0, 0.1);
     
     // Evaluate the likelihood
