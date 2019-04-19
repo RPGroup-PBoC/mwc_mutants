@@ -29,7 +29,7 @@ for m in model_names:
            args = dict(ka=ka[i], ki=ki[i], ep_ai=constants['ep_AI'])
         else: 
             args = dict(ka=ka[i], ki=ki[i], ep_ai=ep_ai[i])
-        arch = mut.thermo.SimpleRepression(R=260, ep_r=-1.9, effector_conc=IPTG,
+        arch = mut.thermo.SimpleRepression(R=260, ep_r=-13.9, effector_conc=IPTG,
                                            **args).fold_change() 
         _df = pd.DataFrame([]) 
         _df['fc_draw'] = np.random.normal(arch, sigma[i])
