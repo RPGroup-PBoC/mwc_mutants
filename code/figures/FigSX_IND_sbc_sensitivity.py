@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-cd code/figures
 import sys
 sys.path.insert(0, '../../')
 import numpy as np
 import pandas as pd
+import scipy.stats
 import matplotlib.pyplot as plt
 import mut.viz
 colors = mut.viz.color_selector('pboc')

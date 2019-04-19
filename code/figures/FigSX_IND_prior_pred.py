@@ -67,9 +67,6 @@ ax3.semilogy(ep_ai_unique, ep_i_unique, '.', ms=2, color=colors['blue'])
 # ##############################################################################
 #  PRIOR PREDICTIVE CHECKS
 # ##############################################################################
-# for g, d in ppc_data.groupby(['draw', 'model']):
-#    _ax = axes[g[1]]
-#    _ax.plot(d['IPTGuM'], d['fc_draw'], '-', lw=0.01, color=colors['red'], alpha=0.5)
 percs = [99, 95, 80, 50, 20, 10, 5]
 cmap_kakionly = {p:c for p, c in zip(percs, sns.color_palette('Reds', len(percs)))}
 cmap_kakiepai = {p:c for p, c, in zip(percs, sns.color_palette('Blues', len(percs)))}

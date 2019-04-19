@@ -13,7 +13,7 @@ data = pd.read_csv('../../data/csv/compiled_data.csv')
 IPTG = data[(data['mutant']=='Q294K') & (data['operator']=='O2')]['IPTGuM']
 
 # Define the constants relative for drawing samples
-n_draws = 800
+n_draws = 1000
 ka = np.random.lognormal(2, sigma=2, size=n_draws)
 ki = np.random.lognormal(0, sigma=2, size=n_draws)
 ep_ai = np.random.normal(0, 5, n_draws)
