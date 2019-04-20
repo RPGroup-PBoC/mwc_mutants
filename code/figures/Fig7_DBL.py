@@ -91,9 +91,9 @@ fig.text(0.48, 0.94, '(B)', fontsize=8)
 for dna, dna_idx in DNA_idx.items():
     for ind, ind_idx in IND_idx.items():
         # Get the mutant from the summarized data. 
-        _data = data[data['mutant']==f'{dna}-{ind}']
+        m_data = data[data['mutant']==f'{dna}-{ind}']
 
-        ax[dna_idx, ind_idx].errorbar(_data['IPTGuM'], _data['mean'], _data['sem'],
+        ax[dna_idx, ind_idx].errorbar(m_data['IPTGuM'], m_data['mean'], m_data['sem'],
             fmt='.', lw=1, capsize=1, linestyle='none', color=pboc['purple'],
             ms=3)
 
@@ -104,15 +104,25 @@ for dna, dna_idx in DNA_idx.items():
 arch = mut.thermo.SimpleRepression(R=260, ep_r=-13.9, ka=153, ki=0.53, n_sites=2,
     effector_conc=data['IPTGuM'].unique(), ep_ai=4.5)
 ref = arch.bohr_parameter()
+ref_conc = {g:r for g, r in zip(data['IPTGuM'].unique(), ref)}
 for dna, dna_idx in DNA_idx.items():
     for ind, ind_idx in IND_idx.items():
-        _data = deltaF[(deltaF['mutant']==f'{dna}-{ind}') & 
-                       (deltaF['parameter']=='delta_bohr_corrected')]
-
-        ax[dna_idx, ind_idx + 4].plot(ref, _data['median'], '.', 
-                                color=pboc['purple'], ms=3)
-        ax[dna_idx, ind_idx + 4].vlines(ref, _data['hpd_min'], _data['hpd_max'],
-                                        lw=1, color=pboc['purple'])
+        _data = deltaF[(deltaF['mutant']==f'{dna}-{ind}')] 
+                   
+        for g, d in _data.groupby(['IPTGuM']):
+                _d = d[d['parameter']=='delta_bohr_corrected2']
+                _mu = d[d['parameter']=='fc_mu']['median'].values[0]
+                _sig = d[d['parameter']=='fc_sigma']['median'].values[0]
+                if (_mu < _sig) | (1 - _mu < _sig):
+                        c='gray'
+                        a = 0.3
+                else:
+                        c=pboc['purple']
+                        a = 1
+                ax[dna_idx, ind_idx + 4].plot(ref_conc[g], _d['median'], '.', 
+                                color=c, alpha=a, ms=4)
+                ax[dna_idx, ind_idx + 4].vlines(ref_conc[g], _d['hpd_min'], _d['hpd_max'],
+                                        lw=1, color=c, alpha=a)
 
 # ##############################################################################
 # THEORY CURVES
@@ -146,6 +156,6 @@ for dna, dna_idx in DNA_idx.items():
         ax[dna_idx, ind_idx + 4].fill_between(ref_bohr, bohr_cred_region[0, :], 
                                         bohr_cred_region[1, :], alpha=0.5, 
                                         color=pboc['purple'])
-
+ref_conc
 plt.subplots_adjust(wspace=0.1, hspace=0.1)
 plt.savefig('../../figures/Fig7_DBL_deltaF.pdf', bbox_inches='tight')

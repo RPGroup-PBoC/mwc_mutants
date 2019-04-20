@@ -7,7 +7,7 @@ import pandas as pd
 n_draws = 1000
 n_data = 10
 fc_mu = np.random.uniform(0, 1, n_draws)
-fc_sigma = np.abs(np.random.normal(0, 0.1, n_draws))
+fc_sigma = np.abs(np.random.normal(0, 0.01, n_draws))
 
 dfs = []
 for i in range(n_draws):

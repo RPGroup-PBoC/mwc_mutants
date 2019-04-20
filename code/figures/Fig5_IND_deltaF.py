@@ -63,12 +63,12 @@ for o, ind in op_ind.items():
 # ##############################################################################
 # DELTA F DATA
 # ##############################################################################
-for g, d in data.groupby(['mutant', 'operator']):
-    param = d[d['parameter']=='delta_bohr'] 
+for g, d in data.groupby(['mutant', 'operator', 'IPTGuM']):
+    param = d[d['parameter']=='delta_bohr_corrected2'] 
     ref = mut.thermo.SimpleRepression(R=260, ep_r=constants[g[1]],
                                       ka=constants['Ka'], ki=constants['Ki'],
                                       ep_ai=constants['ep_AI'],
-                                      effector_conc=param['IPTGuM']).bohr_parameter()
+                                      effector_conc=param['IPTGuM'].values[0]).bohr_parameter()
     _ax = ax[mut_ind[g[0]], op_ind[g[1]]]
 
     # Determine conditional coloring
@@ -76,10 +76,20 @@ for g, d in data.groupby(['mutant', 'operator']):
         face='w'
     else:
         face = op_colors[g[1]]
+    _mu = d[d['parameter']=='fc_mu']['median'].values[0]
+    _sig = d[d['parameter']=='fc_sigma']['median'].values[0]
+    if (_mu < _sig) | (1 - _mu < _sig):
+        c = 'grey'
+        face='grey'
+        a = 0.3
+    else:
+        c=op_colors[g[1]]
+        face=face
+        a = 1
 
-    _ax.plot(ref, param['median'], 'o', markerfacecolor=face, color=op_colors[g[1]],
-            ms=4)
-    _ax.vlines(ref, param['hpd_min'], param['hpd_max'], color=op_colors[g[1]], lw=1)
+    _ax.plot(ref, param['median'], 'o', markerfacecolor=face, color=c,
+            ms=4, alpha=a)
+    _ax.vlines(ref, param['hpd_min'], param['hpd_max'], color=c, lw=1, alpha=a)
     
 # ##############################################################################
 # DELTA F CURVES

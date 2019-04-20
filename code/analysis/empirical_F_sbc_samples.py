@@ -54,8 +54,4 @@ sbc_df = pd.concat(sbc_dfs)
 sbc_df.to_csv('../../data/csv/empirical_F_sbc.csv', index=False)
 samples_df = pd.concat(samples_dfs)
 samples_df.to_csv('../../data/csv/empirical_F_sbc_samples.csv', index=False)
-
-data
-samples.head()
-
-sbc_dfs
+s

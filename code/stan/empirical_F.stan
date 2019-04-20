@@ -18,13 +18,13 @@ data {
     int<lower=1> N; // Number of measurements
     vector[N] foldchange; // Observed fold-change in gene expression.
 }
- 
+
 parameters {
     real<lower=0, upper=1> fc_mu; 
     real<lower=0> fc_sigma; 
 }
  
-model {
+model { 
     // Define the prior distributions
     fc_mu ~ uniform(0, 1);
     fc_sigma ~ normal(0, 0.1);
