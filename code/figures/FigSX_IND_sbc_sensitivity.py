@@ -31,7 +31,7 @@ for i in range(2):
     ax[0, i].set_ylabel('z-score', fontsize=8)
     ax[1, i].set_xlabel('rank statistic', fontsize=8)
     ax[1, i].set_ylabel('cumulative distribution', fontsize=8)
-    ax[1, i].set_xlim([0, 600])
+    ax[1, i].set_xlim([0, 800])
     ax[i, 0].set_title('$K_A$ and $K_I$ modified', fontsize=8, 
                     backgroundcolor=colors['pale_yellow'], y=1.08)
     ax[i, 1].set_title(r'$K_A$, $K_I$, and $\Delta\varepsilon_{AI}$ modified',
