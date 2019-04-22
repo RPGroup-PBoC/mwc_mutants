@@ -26,7 +26,11 @@ gs = gridspec.GridSpec(2, 2)
 ax1 = fig.add_subplot(gs[0, 0])
 ax2 = fig.add_subplot(gs[0, 1])
 ax3 = fig.add_subplot(gs[1, :])
-
+ax = [ax1, ax2, ax3]
+for a in ax:
+   a.xaxis.set_tick_params(labelsize=6)
+   a.yaxis.set_tick_params(labelsize=6)
+ax3.set_xlim(-0.3, 1.3)
 # Adjust limits
 ax1.set_ylim([0, 0.0155])
 ax2.set_ylim([0, 6])
@@ -36,6 +40,15 @@ ax2.set_xlim([0, 0.5])
 ax1.set_yticks([])
 ax2.set_yticks([])
 
+# Add labels
+ax1.set_xlabel('$\mu$', fontsize=8)
+ax2.set_xlabel('$\sigma$', fontsize=8)
+ax3.set_xlabel('fold-change', fontsize=8)
+ax3.set_ylabel('cumulative distribution', fontsize=8)
+
+# Add panel labels. 
+fig.text(-0.05, 0.95, '(A)', fontsize=8)
+fig.text(-0.05, 0.5, '(B)', fontsize=8)
 # ##############################################################################
 # PRIOR DISTRIBUTIONS
 # ##############################################################################
@@ -87,15 +100,13 @@ for g, d in _data.groupby('y'):
                    ignore_index=True)
 
 for g, d in df.groupby('percentile'):
-   ax3.fill_betweenx(np.linspace(0, 1.1, 10), d['fc_low'], d['fc_high'], color=c[g], zorder=z[g])
-
-
-    # ax11.fill_between(d[''], d['fc_high'], color=c[g], 
-                    # zorder=z[g], label=int(g), alpha=0.5)
-# df
-
-
+   ax3.fill_betweenx(np.linspace(0, 1.1, 10), d['fc_low'], d['fc_high'], 
+                color=c[g], zorder=z[g], label=int(g))
+leg = ax3.legend(title='percentile', fontsize=8)
+leg.set_zorder(1001)
+leg.get_title().set_fontsize(8)
 plt.tight_layout()
-
+plt.savefig('../../figures/FigSX_empirical_F_prior_predictive_checks.pdf',
+             bbox_inches='tight')
 
 

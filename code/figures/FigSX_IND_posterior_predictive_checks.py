@@ -147,9 +147,9 @@ ax = [ax1, ax2, ax3, ax4, ax5, ax6, ax7, ax8, ax9, ax10, ax11]
 
 # Adjust scaling
 ax11.set_ylim([0, 1.1])
-ax2.set_xscale('log')
-ax4.set_xscale('log')
-ax7.set_xscale('log')
+# ax2.set_xscale('log')
+# ax4.set_xscale('log')
+# ax7.set_xscale('log')
 ax11.set_xscale('symlog', linthreshx=1E-2)
 
 # Apply special formatting where needed

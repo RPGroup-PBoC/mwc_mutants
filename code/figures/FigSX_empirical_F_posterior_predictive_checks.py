@@ -6,6 +6,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import mut.bayes
 import mut.viz
 colors = mut.viz.color_selector('pboc')
 mut.viz.plotting_style()

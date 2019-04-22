@@ -15,13 +15,13 @@ data = pd.read_csv('../../data/csv/empirical_F_sbc.csv')
 # ##############################################################################
 # FIGURE INSTANTIATION
 # ##############################################################################
-fig, ax = plt.subplots(1, 2, figsize=(6, 3))
+fig, ax = plt.subplots(1, 2, figsize=(6, 2.5))
 for a in ax:
     a.xaxis.set_tick_params(labelsize=6)
     a.yaxis.set_tick_params(labelsize=6)
 
 # Set limits
-ax[0].set_xlim([0, 1])
+ax[0].set_xlim([0, 1.05])
 ax[0].set_ylim([-5, 5])
 ax[1].set_xlim([0, 800])
 ax[1].set_ylim([0, 1])
@@ -31,6 +31,10 @@ ax[0].set_xlabel('shrinkage', fontsize=8)
 ax[0].set_ylabel('z-score', fontsize=8)
 ax[1].set_xlabel('rank statistic', fontsize=8)
 ax[1].set_ylabel('cumulative distribution', fontsize=8)
+
+# Add panel labels
+fig.text(0, 0.95, '(A)', fontsize=8)
+fig.text(0.5, 0.95, '(B)', fontsize=8)
 
 # ##############################################################################
 # SENSITIVITY
@@ -75,4 +79,6 @@ for g, d in data.groupby('param'):
 leg = ax[1].legend(title='parameter', fontsize=8)
 leg.get_title().set_fontsize(8)
 plt.tight_layout()
+plt.savefig('../../figures/FigSX_empirical_F_sbc_sensitivity.pdf', 
+            bbox_inches='tight')
 

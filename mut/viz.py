@@ -46,33 +46,34 @@ def plotting_style(grid=True):
 def personal_style():
     """
     Sets the plotting style to my preference
-    """ 
+    """   
     rc = {'axes.facecolor': '#f1f2f6', 
           'font.family': 'sans-serif',
           'font.style': 'italic',
-          'axes.edgecolor': 'slategray',
+          'font.weight': 400,
+          'font.family': 'Arial Narrow',
+        #   'axes.edgecolor': 'slategray',
           'axes.spines.right': False,
           'axes.spines.top': False,
           'axes.axisbelow': True,
-          'axes.linewidth': 1,
+        #   'axes.linewidth': 0.75,
           'axes.titlesize': 8,
           'axes.grid': True,
           'lines.linewidth': 2,
           'lines.dash_capstyle': 'round',
           'grid.linestyle': '-',
           'grid.linewidth': 0.75,
-          'grid.alpha': 0.5,
-          'grid.color': '#B9BBBC',
+          'grid.color': '#ffffff',
           'axes.labelsize': 8,
-          'xtick.labelsize': 8,
-          'ytick.labelsize': 8,
+          'xtick.labelsize': 4,
+          'ytick.labelsize': 4,
           'legend.fontsize': 8,
           'legend.frameon': True,
           'xtick.color': '#4b4b4b',
           'ytick.color': '#4b4b4b',
           'axes.xmargin': 0.01,
           'axes.ymargin': 0.01,
-          'figure.dpi': 100}
+          'figure.dpi': 200}
 
     # plt.rc('mathtext', fontset='dejavuserif', sf='sans')
     plt.rc('text.latex', preamble=r'\usepackage{mathpazo}')
