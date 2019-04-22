@@ -7,10 +7,12 @@ import mut.viz
 import mut.thermo
 import matplotlib.pyplot as plt
 import seaborn as sns
+import imp
+imp.reload(mut.viz)
 constants = mut.thermo.load_constants()
 colors = mut.viz.color_selector('pboc')
 color_palette = sns.color_palette('deep', n_colors=18)
-mut.viz.plotting_style()
+mut.viz.personal_style()
 
 
 # Load the data
@@ -67,9 +69,9 @@ ax[1].plot(bohr_range, (1 + np.exp(-bohr_range))**-1, 'k-', zorder=1000,
 # FORMATTING 
 # #############################
 for a in ax:
-    a.xaxis.set_tick_params(labelsize=6)
-    a.yaxis.set_tick_params(labelsize=6)
-    a.grid(False)
+    # a.xaxis.set_tick_params(labelsize=6)
+    # a.yaxis.set_tick_params(labelsize=6)
+    # a.grid(False)
     a.set_yticks([0, 0.5, 1])
     
 ax[0].set_xticks([-6, -4, -2])
@@ -82,5 +84,6 @@ ax[0].set_xlim([1E-8, 1E-2])
 ax[0].set_xscale('log')
 ax[1].set_xlim([-8, 8])
 plt.tight_layout()
-plt.savefig('../../figures/fig1_collapse_v2.svg', bbox_inches='tight')
+# plt.savefig('../../figures/fig1_collapse_v2.svg', bbox_inches='tight')
+plt.savefig('/Users/gchure/Desktop/mock_figure.pdf')
 
