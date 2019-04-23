@@ -41,6 +41,7 @@ mut_ind = {'F164T': 3, 'Q294V': 2, 'Q294K':1, 'Q294R': 0}
 for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=8)
     a.yaxis.set_tick_params(labelsize=8)
+    a.set_xscale('symlog')
 
 for i in range(4):
     ax[i, 0].set_ylabel('$\Delta F$ [$k_BT$]', fontsize=8, labelpad=0.08)
@@ -49,10 +50,11 @@ for i in range(4):
 for m, a in mut_ind.items():
     ax[a, 0].text(-0.7, 0.65, m, fontsize=8, rotation='vertical',
                   backgroundcolor=pboc['pale_yellow'], transform=ax[a,0].transAxes)
-for i in range(4):
-    ax[i, 0].set_xticks([-5, -2.5, 0])
-    ax[i, 1].set_xticks([-3, 0, 2])
-    ax[i, 2].set_xticks([1, 2.5, 5])
+# for i in range(4):
+
+#     ax[i, 0].set_xticks([-5, -2.5, 0])
+#     ax[i, 1].set_xticks([-3, 0, 2])
+#     ax[i, 2].set_xticks([1, 2.5, 5])
 for i in range(3):
     for j in range(3):
         ax[j,i].set_xticklabels([])
@@ -87,9 +89,9 @@ for g, d in data.groupby(['mutant', 'operator', 'IPTGuM']):
         face=face
         a = 1
 
-    _ax.plot(ref, param['median'], 'o', markerfacecolor=face, color=c,
+    _ax.plot(d['IPTGuM'].unique()[0], param['median'], 'o', markerfacecolor=face, color=c,
             ms=4, alpha=a)
-    _ax.vlines(ref, param['hpd_min'], param['hpd_max'], color=c, lw=1, alpha=a)
+    _ax.vlines(d['IPTGuM'].unique()[0], param['hpd_min'], param['hpd_max'], color=c, lw=1, alpha=a)
     
 # ##############################################################################
 # DELTA F CURVES
@@ -110,7 +112,7 @@ for i, m in enumerate(mut_ind.keys()):
                                             ka=ka_median, ki=ki_median, 
                                               ep_ai=constants['ep_AI'],
                                               effector_conc=c_range).bohr_parameter()   
-        ax[mut_ind[m], op_ind[o]].plot(ref, ref - fit1, ':', color=op_colors[o],
+        ax[mut_ind[m], op_ind[o]].plot(c_range, ref - fit1, ':', color=op_colors[o],
                                         lw=1)
         _samps = kaki_epai_samps[kaki_epai_samps['mutant']==m]
         cred_region = np.zeros((2, len(c_range)))
@@ -122,7 +124,7 @@ for i, m in enumerate(mut_ind.keys()):
             delF = ref[k] - arch
             cred_region[:, k] = mut.stats.compute_hpd(delF, 0.95)
 
-        ax[mut_ind[m], op_ind[o]].fill_between(ref, cred_region[0, :],
+        ax[mut_ind[m], op_ind[o]].fill_between(c_range, cred_region[0, :],
                                                cred_region[1, :], color=op_colors[o],
                                                alpha=0.4)
 
