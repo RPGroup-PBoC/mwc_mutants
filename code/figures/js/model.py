@@ -16,7 +16,7 @@ pboc = mut.viz.color_selector('pboc')
 bokeh.plotting.output_file("model_explorer.html")
 
 # Define parameter ranges
-c_range = np.logspace(-3, 5, 500)
+c_range = np.logspace(-8, 8, 500)
 subsamp = list(np.arange(0, len(c_range), 25))
 bohr_range = np.linspace(-20, 20, 500)
 
@@ -45,7 +45,8 @@ p_bohr = bokeh.plotting.figure(width=425, height=300,
                                 x_range=[-15, 15], y_range=[-0.1, 1.1],
                                 title='    PHENOTYPIC DATA COLLAPSE    ')
 p_delBohr = bokeh.plotting.figure(width=425, height=300,
-                                  x_axis_label='reference free energy [kT]', y_axis_label='∆F [kT]',
+                                  x_axis_label='IPTG [µM]', y_axis_label='∆F [kT]',
+                                  x_axis_type='log',
                                   y_range=[-15, 15],
                                   title='    CHANGE IN FREE ENERGY    ')
 
@@ -67,9 +68,9 @@ p_bohr.circle(x='mut_bohr', y='mut_fc', source=source, view=view,
 # Pot the delta bohr
 dbohr_ref = bokeh.models.Span(location=0, dimension='width', line_color='black',
                                line_width=2)
-p_delBohr.line(x='ref_bohr', y='mut_delta_bohr', source=source, color=pboc['red'], 
+p_delBohr.line(x='c', y='mut_delta_bohr', source=source, color=pboc['red'], 
             legend='mutant strain', line_width=2)
-p_delBohr.circle(x='ref_bohr' , y='mut_delta_bohr', view=view, source=source,
+p_delBohr.circle(x='c' , y='mut_delta_bohr', view=view, source=source,
                 color=pboc['red'],  size=8, legend='mutant strain')
 dbohr_ref = bokeh.models.Span(location=0, dimension='width', line_color='black',
                                line_width=2)
@@ -202,7 +203,7 @@ callback  = CustomJS(args=callback_args, code="""
                                                         ref_ka, ref_ki, ref_ep_ai,
                                                         ref_n);
                     source.data['ref_bohr'][i] = ref_bohr;
-                    mut_delta_bohr[i] = ref_bohr - mut_bohr[i];
+                    mut_delta_bohr[i] = mut_bohr[i] - ref_bohr;
                 }
                 source.change.emit();
                 """)

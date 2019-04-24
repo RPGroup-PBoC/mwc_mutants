@@ -16,18 +16,16 @@
 
 data {
     // Dimensional parameters
-    int<lower=1> J; // Number of unique mutants
     int<lower=1> N; // Number of measurements
-    int<lower=1, upper=J> idx[N]; // Identification vector
     
     // Architectural parameters 
+    real<lower=0> R;  
+    real ep_RA;
     real<lower=0> Nns; // Number of non-specific binding sites
     
     // Allosteric parameters
-    real<lower=0> R;  
-    real ep_RA[J];
-    real<lower=0> Ka[J];
-    real<lower=0> Ki[J];
+    real<lower=0> Ka;
+    real<lower=0> Ki;
     real<lower=0> c[N];
     
     // Observed parameters
@@ -35,36 +33,27 @@ data {
 }
 
 transformed data {
-    real ep_a[J] = log(Ka);
-    real ep_i[J] = log(Ki);
+    real ep_a = log(Ka);
+    real ep_i = log(Ki);
 }
 
 parameters { 
-    real ep_AI[J]; // DNA binding energy in kBT
-    real<lower=0> sigma[J]; // Homoscedastic error
+    real ep_AI; // DNA binding energy in kBT
+    real<lower=0> sigma; // Homoscedastic error
 }
 
 model {
     vector[N] mu;
     
     // Define the priors
-    ep_AI ~ normal(0, 10);
+    ep_AI ~ normal(0, 5);
     sigma ~ normal(0, 1);
     
     // Evaluate the likelihood
     for (i in 1:N) {
-        mu[i] = fold_change(R, Nns, ep_RA[idx[i]], c[i], ep_a[idx[i]], ep_a[idx[i]], ep_AI[idx[i]], 2);
-        fc[i] ~ normal(mu[i], sigma[idx[i]]);
+        mu[i] = fold_change(R, Nns, ep_RA, c[i], ep_a, ep_a, ep_AI, 2);
+        fc[i] ~ normal(mu[i], sigma);
     } 
     
 }
 
-generated quantities {
-    vector[N] mu;
-    vector[N] y_rep;
-    
-    for (i in 1:N) {
-        mu[i] = fold_change(R, Nns, ep_RA[idx[i]], c[i], ep_a[idx[i]], ep_a[idx[i]], ep_AI[idx[i]], 2);
-        y_rep[i] = normal_rng(mu[i], sigma[idx[i]])
-    }
-}
