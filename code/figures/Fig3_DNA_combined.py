@@ -42,6 +42,8 @@ for i in range(3):
     ax[0, i].set_ylim([-0.2, 1.2])
     ax[1, i].set_ylim([-0.2, 1.2])
     ax[1, i].set_xlim([-8, 8])
+    ax[0, i].set_xlim([-0.001, 1E4])
+    ax[-1, i].set_xlim([-0.001, 1E4])
     ax[-1, i].set_ylim([-8, 8])
     ax[0, i].set_xticks([0, 1E-2, 1E0, 1E2, 1E4])
     ax[-1, i].set_xticks([0, 1E-2, 1E0, 1E2, 1E4])
@@ -50,7 +52,7 @@ for i in range(3):
 
     # Add labels   
     ax[0, i].set_xlabel("IPTG [µM]", fontsize=6)
-    ax[1, i].set_xlabel("free energy [$K_BT$", fontsize=6)
+    ax[1, i].set_xlabel("free energy [$k_BT$]", fontsize=6)
     ax[-1, i].set_xlabel("IPTG [µM]", fontsize=6)
 
 # Add ylabels
@@ -70,6 +72,13 @@ for m, a in axes.items():
 fig.text(0, 0.95, '(A)', fontsize=6)
 fig.text(0, 0.63, '(B)', fontsize=6)
 fig.text(0, 0.33, '(C)', fontsize=6)
+
+# ##############################################################################
+# GUIDE CURVES FOR ∆F
+# ##############################################################################
+for i in range(3):
+    ax[-1, i].hlines(0, -0.01, 1E4, 'k', linestyle=':', lw=0.75)
+
 # ##############################################################################
 # FOLD-CHANGE CURVES
 # ##############################################################################
@@ -88,7 +97,7 @@ for r, cor in rep_colors.items():
 # COLLAPSE CURVES
 # ##############################################################################
 for i in range(3):
-    ax[1, i].plot(bohr_range, F, 'k-', lw=1)
+    ax[1, i].plot(bohr_range, F, 'k-', lw=0.75)
 
 # ##############################################################################
 # FREE ENERGY PREDICTIONS
@@ -110,7 +119,7 @@ for g, d in data.groupby(['mutant', 'repressors']):
         face = rep_colors[g[1]]
     ax[0, axes[g[0]]].errorbar(d['IPTGuM'], d['mean'], d['sem'], fmt='.',
                                color=rep_colors[int(g[1])], markerfacecolor=face,
-                               ms=5, capsize=1, lw=1, linestyle='none',
+                               ms=5, markeredgewidth=0.5, capsize=1, lw=1, linestyle='none',
                                label=int(g[1]))
 
 # ##############################################################################
@@ -128,7 +137,7 @@ for g, d in data.groupby(['mutant', 'repressors']):
     else:
         face = rep_colors[g[1]]
     ax[1, axes[g[0]]].errorbar(bohr, d['mean'], d['sem'], fmt='.', 
-                               linestyle='none', lw=1, capsize=1, ms=5, 
+                               linestyle='none', lw=1, capsize=1, ms=5, markeredgewidth=0.5,
                                color=rep_colors[g[1]], markerfacecolor=face)
 
 # ##############################################################################
@@ -159,7 +168,8 @@ for g, d in empirical_bohr.groupby(['mutant', 'repressors', 'IPTGuM']):
         zorder=100
     _ax = ax[-1, axes[g[0]]]
     _ax.plot(_param['IPTGuM'], -_param['median'], marker=fmt, linestyle='none', 
-        color=color, markerfacecolor=face, alpha=alpha, ms=4, zorder=zorder)
+        color=color, markerfacecolor=face, alpha=alpha, ms=5, zorder=zorder, 
+        markeredgewidth=0.5)
     _ax.vlines(_param['IPTGuM'], -_param['hpd_min'], -_param['hpd_max'], 
             lw=lw, color=color,  alpha=alpha, zorder=zorder)
 
