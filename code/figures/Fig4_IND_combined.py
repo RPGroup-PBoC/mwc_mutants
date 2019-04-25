@@ -203,8 +203,6 @@ for g, d in bohr.groupby(['mutant', 'operator', 'IPTGuM']):
 # LEGEND INFORMATION
 # ##############################################################################
 leg = ax[0, 0].legend(fontsize=6, ncol=3, bbox_to_anchor=(1.8, 1.7)) #, title='operator'b)
-# leg.get_title().set_fontsize(6)
-# plt.tight_layout()
 plt.subplots_adjust(wspace=0.15, hspace=0.5)
-plt.savefig('../../figures/Fig4_IND_combined.pdf')
+plt.savefig('../../figures/Fig4_IND_combined.pdf', bbox_inches='tight')
 
