@@ -33,15 +33,15 @@ F = (1 + np.exp(-bohr_range))**-1
 # ##############################################################################
 # FIGURE INSTANTIATION
 # ##############################################################################
-fig, ax = plt.subplots(3, 4, figsize=(4.5, 4))
+fig, ax = plt.subplots(3, 4, figsize=(6, 4))
 for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=6)
     a.yaxis.set_tick_params(labelsize=6)
 
 # Add appropriate scaling
 for i in range(4):
-    ax[0, i].set_xscale('symlog', linthreshx=0.006)
-    ax[-1, i].set_xscale('symlog', linthreshx=0.006)
+    ax[0, i].set_xscale('symlog', linthreshx=0.01)
+    ax[-1, i].set_xscale('symlog', linthreshx=0.01)
     ax[-1, i].set_ylim([-8, 8])
     ax[0, i].set_ylim([-0.2, 1.2])
     ax[1, i].set_ylim([-0.2, 1.2])
@@ -154,7 +154,7 @@ for g, d in data.groupby(['mutant', 'operator', 'IPTGuM']):
     # Plot!
     _ax = ax[1, axes[g[0]]]
     _ax.errorbar(_bohr, d['mean'], d['sem'], fmt='.', markerfacecolor=face,
-                color=op_colors[g[1]], ms=5)
+                color=op_colors[g[1]], ms=4, markeredgewidth=0.5, lw=0.5, capsize=1)
 
 # ##############################################################################
 # FOLD-CHANGE DATA 
@@ -165,9 +165,9 @@ for g, d in data.groupby(['mutant', 'operator']):
         face = 'w'
     else:
         face = op_colors[g[1]]
-    _ax.errorbar(d['IPTGuM'], d['mean'], d['sem'], fmt='.', markersize=5, 
+    _ax.errorbar(d['IPTGuM'], d['mean'], d['sem'], fmt='.', 
         markerfacecolor=face, linestyle='none', color=op_colors[g[1]], capsize=1,
-        label=g[1])
+        label=g[1], markeredgewidth=0.5, markersize=4, lw=0.5)
 
 # ##############################################################################
 # DELTA F DATA
@@ -179,13 +179,13 @@ for g, d in bohr.groupby(['mutant', 'operator', 'IPTGuM']):
     sig = d[d['parameter']=='fc_sigma']['median'].values[0]
     if (mu < sig) | (1 - mu < sig):
         color = 'slategray'
-        alpha = 0.4
+        alpha = 0
         lw = 0
         fmt = 'x'
     else:
         color = op_colors[g[1]]
         alpha = 1 
-        lw = 0.75
+        lw = 0.5
         fmt = '.'
     if g[1] == 'O2':
         face = 'w'
@@ -193,16 +193,28 @@ for g, d in bohr.groupby(['mutant', 'operator', 'IPTGuM']):
     else:
         face = color
         zorder=100
+    if g[-1] == 0:
+        cap_min = -0.1
+        cap_max = 0.001
+    else:
+        cap_min = g[-1] * 0.8
+        cap_max = g[-1] * 1.2
 
     _ax.plot(_param['IPTGuM'], -_param['median'], linestyle='none', marker=fmt, color=color, 
-            markerfacecolor=face , alpha=alpha, ms=4, zorder=zorder)
+            markerfacecolor=face , alpha=alpha, ms=4, zorder=zorder,
+            markeredgewidth=0.5)
     _ax.vlines(_param['IPTGuM'], -_param['hpd_min'], -_param['hpd_max'], color=color,
             lw=lw, zorder=zorder)
+    _ax.hlines(-_param['hpd_min'], cap_min, cap_max, lw=lw, zorder=zorder, 
+               color=color)
+    _ax.hlines(-_param['hpd_max'], cap_min, cap_max, lw=lw, zorder=zorder, 
+               color=color)
+
 
 # ##############################################################################
 # LEGEND INFORMATION
 # ##############################################################################
-leg = ax[0, 0].legend(fontsize=6, ncol=3, bbox_to_anchor=(1.8, 1.7)) #, title='operator'b)
+leg = ax[0, 0].legend(fontsize=5, ncol=3, columnspacing=0.001, handletextpad=0.01) #, title='operator'b)
 plt.subplots_adjust(wspace=0.15, hspace=0.5)
 plt.savefig('../../figures/Fig4_IND_combined.pdf', bbox_inches='tight')
 
