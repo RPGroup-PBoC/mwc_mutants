@@ -69,7 +69,7 @@ for m, a in axes.items():
     y=1.08) 
 
 # Add panel labels
-fig.text(0, 0.95, '(A)', fontsize=6)
+fig.text(0, 0.90, '(A)', fontsize=6)
 fig.text(0, 0.63, '(B)', fontsize=6)
 fig.text(0, 0.33, '(C)', fontsize=6)
 
@@ -144,7 +144,7 @@ for g, d in data.groupby(['mutant', 'repressors']):
 # INFERRED F 
 # ##############################################################################
 for g, d in empirical_bohr.groupby(['mutant', 'repressors', 'IPTGuM']):
-    _param = d[d['parameter']=='delta_bohr_corrected2']
+    _param = d[d['parameter']=='delta_bohr']
     mu = d[d['parameter']=='fc_mu']['median'].values[0]
     sig = d[d['parameter']=='fc_sigma']['median'].values[0]
     if (mu < sig) | (1 - mu < sig):
@@ -167,10 +167,10 @@ for g, d in empirical_bohr.groupby(['mutant', 'repressors', 'IPTGuM']):
         face = color
         zorder=100
     _ax = ax[-1, axes[g[0]]]
-    _ax.plot(_param['IPTGuM'], -_param['median'], marker=fmt, linestyle='none', 
+    _ax.plot(_param['IPTGuM'], _param['median'], marker=fmt, linestyle='none', 
         color=color, markerfacecolor=face, alpha=alpha, ms=5, zorder=zorder, 
         markeredgewidth=0.5)
-    _ax.vlines(_param['IPTGuM'], -_param['hpd_min'], -_param['hpd_max'], 
+    _ax.vlines(_param['IPTGuM'], _param['hpd_min'], _param['hpd_max'], 
             lw=lw, color=color,  alpha=alpha, zorder=zorder)
 
 # ##############################################################################

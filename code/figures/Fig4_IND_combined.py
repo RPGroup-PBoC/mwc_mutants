@@ -42,7 +42,7 @@ for a in ax.ravel():
 for i in range(4):
     ax[0, i].set_xscale('symlog', linthreshx=0.01)
     ax[-1, i].set_xscale('symlog', linthreshx=0.01)
-    ax[-1, i].set_ylim([-8, 8])
+    ax[-1, i].set_ylim([-6, 5])
     ax[0, i].set_ylim([-0.2, 1.2])
     ax[1, i].set_ylim([-0.2, 1.2])
     ax[0, i].set_xticks([0, 1E-2, 1E0, 1E2, 1E4]) 
@@ -75,7 +75,7 @@ for i in range(3):
         ax[i, j+1].set_yticklabels([])
 
 # Add panel labels.
-fig.text(0.05, 1.0, '(A)', fontsize=6)
+fig.text(0.05, 0.95, '(A)', fontsize=6)
 fig.text(0.05, 0.63, '(B)', fontsize=6)
 fig.text(0.05, 0.33, '(C)', fontsize=6)
 
@@ -174,7 +174,7 @@ for g, d in data.groupby(['mutant', 'operator']):
 # ##############################################################################
 for g, d in bohr.groupby(['mutant', 'operator', 'IPTGuM']):
     _ax = ax[2, axes[g[0]]]
-    _param = d[d['parameter']=='delta_bohr_corrected2']
+    _param = d[d['parameter']=='delta_bohr']
     mu = d[d['parameter']=='fc_mu']['median'].values[0]
     sig = d[d['parameter']=='fc_sigma']['median'].values[0]
     if (mu < sig) | (1 - mu < sig):
@@ -200,14 +200,14 @@ for g, d in bohr.groupby(['mutant', 'operator', 'IPTGuM']):
         cap_min = g[-1] * 0.8
         cap_max = g[-1] * 1.2
 
-    _ax.plot(_param['IPTGuM'], -_param['median'], linestyle='none', marker=fmt, color=color, 
+    _ax.plot(_param['IPTGuM'], _param['median'], linestyle='none', marker=fmt, color=color, 
             markerfacecolor=face , alpha=alpha, ms=4, zorder=zorder,
             markeredgewidth=0.5)
-    _ax.vlines(_param['IPTGuM'], -_param['hpd_min'], -_param['hpd_max'], color=color,
+    _ax.vlines(_param['IPTGuM'], _param['hpd_min'], _param['hpd_max'], color=color,
             lw=lw, zorder=zorder)
-    _ax.hlines(-_param['hpd_min'], cap_min, cap_max, lw=lw, zorder=zorder, 
+    _ax.hlines(_param['hpd_min'], cap_min, cap_max, lw=lw, zorder=zorder, 
                color=color)
-    _ax.hlines(-_param['hpd_max'], cap_min, cap_max, lw=lw, zorder=zorder, 
+    _ax.hlines(_param['hpd_max'], cap_min, cap_max, lw=lw, zorder=zorder, 
                color=color)
 
 

@@ -13,7 +13,7 @@ model = mut.bayes.StanModel('../stan/empirical_F.stan') #, force_compile=True)
 
 # Define the parameters
 n_rep = 10
-n_points = 200
+n_points = 500
 
 # Generate the fake datasets
 F_mu = np.linspace(-8, 8, n_points)
@@ -27,7 +27,6 @@ for i in range(n_points):
     df = pd.DataFrame([])
     df['fold_change'] = fc_rand
     df['fc_mu'] = fc_mu[i]
-    df['fc_mu_ref'] = fc_mu2[i]
     df['fc_sig'] = sig[i]
     df['bohr']  = F_mu[i]
     df['draw'] = i
