@@ -16,7 +16,7 @@ n_rep = 10
 n_points = 500
 
 # Generate the fake datasets
-F_mu = np.linspace(-8, 8, n_points)
+F_mu = np.linspace(-12, 12, n_points)
 fc_mu = (1 + np.exp(-F_mu))**-1
 
 # Draw sigmas out of a half normal 

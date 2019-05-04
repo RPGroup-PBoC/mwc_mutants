@@ -50,7 +50,7 @@ cdf_data = pd.concat(dfs)
 
 # And compute the percentiles
 perc_df = pd.DataFrame([])
-for g, d in _data.groupby('y'):
+for g, d in cdf_data.groupby('y'):
     for p in percs:     
         remainder = 100 - p
         low = remainder / 2
@@ -126,3 +126,6 @@ leg = ax4.legend(title='percentile', fontsize=8, loc='upper left', handlelength=
 leg.get_title().set_fontsize(8)
 plt.savefig('../../figures/FigSX_empirical_F_posterior_predictive.pdf', 
             bbox_inches='tight')
+
+
+

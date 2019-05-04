@@ -15,8 +15,8 @@ mut.viz.plotting_style()
 #  Load the data
 data = pd.read_csv('../../data/csv/summarized_data.csv')
 data = data[(data['class'] == 'DNA') & (data['operator']=='O2')]
-samples = pd.read_csv('../../data/csv/Fig2_O2_DNA_binding_energy_samples.csv')
-stats = pd.read_csv('../../data/csv/Fig2_O2_DNA_binding_energy_stats.csv')
+samples = pd.read_csv('../../data/csv/DNA_binding_energy_samples.csv')
+stats = pd.read_csv('../../data/csv/DNA_binding_energy_summary.csv')
 
 # Determine the unique repressor copy numbers
 reps = np.sort(data['repressors'].unique())
@@ -34,7 +34,7 @@ for a in ax.ravel():
 for i in range(len(reps)):
     ax[i, 0].set_ylabel('fold-change', fontsize=8)
     ax[-1, i].set_xlabel('IPTG [M]', fontsize=8)
-    ax[i, 0].text(-0.7, 0.5, '$R = $' + str(int(reps[i])), fontsize=8, backgroundcolor=pboc['pale_yellow'],
+    ax[i, 0].text(-0.7, 0.55, '$R = $' + str(int(reps[i])), fontsize=8, backgroundcolor=pboc['pale_yellow'],
                  transform=ax[i,0].transAxes, rotation='vertical')
     ax[0, i].set_title('$R = $' + str(int(reps[i])), fontsize=8, backgroundcolor=pboc['pale_yellow'], y=1.08)
     ax[i, i].set_facecolor('#e4e7ec')
@@ -42,7 +42,7 @@ for i in range(4):
     ax[-1, i].set_xticks([1E-6, 1E-3])
     
 # Add predictor titles
-fig.text(-0.07, 0.55, 'predictor strain', fontsize=8, backgroundcolor='#E3DCD0', rotation='vertical')
+fig.text(-0.07, 0.53, 'fit strain', fontsize=8, backgroundcolor='#E3DCD0', rotation='vertical')
 fig.text(0.435, 0.95, 'comparison strain', fontsize=8, backgroundcolor='#E3DCD0', rotation='horizontal')
     
 # Plot the data. 
@@ -66,7 +66,8 @@ for g, d in data.groupby(['mutant']):
                 _d = data[(data['mutant']=='m') & (data['repressors'] == reps[j])]
                 
                 # Get the binding energies. 
-                epRA = stats[stats['parameter']=='ep_RA.{}.{}'.format(m, int(reps[i]))].values[0][1:].astype(float)
+                epRA = stats[(stats['parameter']=='ep_RA') & (stats['mutant']==m) & (stats['repressors']==reps[i])][['median', 'hpd_min', 'hpd_max']].values[0]
+
                 
                 # Compute the fold-change
                 epRA_mesh, c_mesh = np.meshgrid(epRA, c_range)
@@ -76,10 +77,10 @@ for g, d in data.groupby(['mutant']):
                                                 n_ns=constants['Nns']).fold_change()
                 
                 # Plot the fit. 
-                _ = ax[i, j].plot(c_range / 1E6, fc[:, 0], color=color[m], lw=0.75) 
+                # _ = ax[i, j].plot(c_range / 1E6, fc[:, 0], color=color[m], lw=0.75) 
                 _ = ax[i, j].fill_between(c_range / 1E6, fc[:, 1], fc[:, 2], color=color[m], alpha=0.2) 
 
             
 _  = ax[0, 3].legend(fontsize=8, bbox_to_anchor=(1.04, 0.95))
 plt.subplots_adjust(wspace=0.05, hspace=0.05)
-plt.savefig('FigS2_pairwise_predictions.pdf', bbox_inches='tight')
+plt.savefig('../../figures/FigSX_DNA_mutant_pairwise_predictions.pdf', bbox_inches='tight')

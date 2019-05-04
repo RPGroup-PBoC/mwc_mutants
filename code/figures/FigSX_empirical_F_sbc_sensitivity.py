@@ -12,6 +12,8 @@ mut.viz.plotting_style()
 # Load the SBC data
 data = pd.read_csv('../../data/csv/empirical_F_sbc.csv')
 
+np.median(data[data['param']=='fc_sigma']['shrinkage'])
+plt.hist(data[data['param']=='fc_sigma']['shrinkage'])
 # ##############################################################################
 # FIGURE INSTANTIATION
 # ##############################################################################
