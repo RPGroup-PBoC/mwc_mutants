@@ -22,7 +22,7 @@ KaKi_epAI_samples = pd.read_csv('../../data/csv/KaKi_epAI_samples.csv')
 # Determine the unique repressor copy numbers
 ops = np.sort(data['operator'].unique())
 c_range = np.logspace(-2, 4, 200)
-
+MODEL = 'KaKi_epAI'
 # ##############################################################################
 #  FIGURE WITH KAKI FIT ONLY
 # ##############################################################################
@@ -33,7 +33,7 @@ for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=8) 
     a.yaxis.set_tick_params(labelsize=8)
     a.set_xscale('log')
-    a.set_xlim([1E-8, 1E-2])
+    # a.set_xlim([1E-8, 1E-2])
 
 # Add appropriate labels
 for i in range(len(ops)):
@@ -43,8 +43,8 @@ for i in range(len(ops)):
                  transform=ax[i,0].transAxes, rotation='vertical')
     ax[0, i].set_title(ops[i], fontsize=8, backgroundcolor=pboc['pale_yellow'], y=1.08)
     ax[i, i].set_facecolor('#e4e7ec')
-for i in range(3):
-    ax[-1, i].set_xticks([1E-6, 1E-3])
+# for i in range(3):
+    # ax[-1, i].set_xticks([1E-6, 1E-3])
     
 # Add predictor titles
 fig.text(-0.04, 0.53, 'fit strain', fontsize=8, backgroundcolor='#E3DCD0', rotation='vertical')
@@ -62,7 +62,7 @@ for g, d in data.groupby(['mutant']):
             else:
                 face = color[g]
                 edge = color[g]
-            _ = ax[i, j].errorbar(_d['IPTGuM'] / 1E6, _d['mean'], _d['sem'], markerfacecolor=face,
+            _ = ax[i, j].errorbar(_d['IPTGuM'], _d['mean'], _d['sem'], markerfacecolor=face,
                                  markeredgecolor=edge, color=edge, lw=0.15, linestyle='none', fmt='o',
                                  ms=2.5, label=g)
            
@@ -71,16 +71,22 @@ for g, d in data.groupby(['mutant']):
                 _d = data[(data['mutant']==m) & (data['operator'] == ops[i])]
                 
                 # Get the binding energies. 
-                _samps = KaKi_only_samples[(KaKi_only_samples['mutant']==m) &\
+                if MODEL == 'KaKi_only':
+                    _samps = KaKi_only_samples[(KaKi_only_samples['mutant']==m) &\
                          (KaKi_only_samples['operator']==ops[i])]
+                    _samps['ep_AI'] = 4.5
+                else:
+                    _samps = KaKi_epAI_samples[(KaKi_epAI_samples['mutant']==m) &\
+                        (KaKi_epAI_samples['operator']==ops[i])]
                 Ka = _samps['Ka']
                 Ki = _samps['Ki']
+                epAI = _samps['ep_AI']
                 cred_region = np.zeros((2, len(c_range)))
                 for z, c in enumerate(c_range): 
                     # Compute the fold-change   
                     fc = mut.thermo.SimpleRepression(R=constants['RBS1027'], 
                                             ep_r=constants[ops[j]], ka=Ka, 
-                                                 ki=Ki, ep_ai=constants['ep_AI'],
+                                                 ki=Ki, ep_ai=epAI,
                                                 effector_conc=c, n_sites=constants['n_sites'],
                                                 n_ns=constants['Nns']).fold_change()
                     cred_region[:, z] = mut.stats.compute_hpd(fc, 0.95)
@@ -88,9 +94,15 @@ for g, d in data.groupby(['mutant']):
                 # Plot the fit. 
                 # _ = ax[i, j].plot(c_range / 1E6, fc[:, 0], color=color[m], lw=0.75) 
                 _ = ax[i, j].fill_between(c_range, cred_region[0, :], 
-                                   cred_region[1, :], color=color[m], alpha=0.5) 
+                                   cred_region[1, :], color=color[m], alpha=0.2) 
 
-            
-_  = ax[0, 3].legend(fontsize=8, bbox_to_anchor=(1.04, 0.95))
+cred_region[0, :]
+cred_region[1, :]
+_  = ax[0, 2].legend(fontsize=8, bbox_to_anchor=(1.04, 0.95))
 plt.subplots_adjust(wspace=0.05, hspace=0.05)
-plt.savefig('FigSX_IND_mutant_pairwise_predictions.pdf', bbox_inches='tight')
+
+if MODEL == 'KaKi_only':
+   plt.savefig('../../figures/FigSX_KaKi_mutant_pairwise_predictions.pdf', bbox_inches='tight')
+else:
+   plt.savefig('../../figures/FigSX_KaKi_epAI_mutant_pairwise_predictions.pdf', bbox_inches='tight')
+    
