@@ -35,16 +35,16 @@ view = CDSView(source=source, filters=[IndexFilter(subsamp)])
 
 
 # Instantiate the figure canvas
-p_fc = bokeh.plotting.figure(width=200, height=200, x_axis_type='log', 
+p_fc = bokeh.plotting.figure(width=325, height=325, x_axis_type='log', 
                             x_axis_label='IPTG [µM]', y_axis_label='fold-change',
                             x_range=[1E-2, 1E5], y_range=[-0.1, 1.1],
                             title='    INDUCTION PROFILE    ')
-p_bohr = bokeh.plotting.figure(width=200, height=200,
+p_bohr = bokeh.plotting.figure(width=325, height=325,
                                 x_axis_label='free energy [kT]', 
                                 y_axis_label='fold-change',
                                 x_range=[-15, 15], y_range=[-0.1, 1.1],
                                 title='    PHENOTYPIC DATA COLLAPSE    ')
-p_delBohr = bokeh.plotting.figure(width=200, height=200,
+p_delBohr = bokeh.plotting.figure(width=325, height=325,
                                   x_axis_label='IPTG [µM]', y_axis_label='∆F [kT]',
                                   x_axis_type='log',
                                   y_range=[-15, 15],
@@ -209,8 +209,8 @@ callback  = CustomJS(args=callback_args, code="""
                 """)
 
 # Define the buttons
-ref_reset = Button(label='reset reference to default', callback=reset_ref)
-mut_reset = Button(label='reset mutant to reference', callback=reset_mut)
+ref_reset = Button(label='double-click to reset wild-type', callback=reset_ref)
+mut_reset = Button(label='double-click to set mutant to wild-type', callback=reset_mut)
 ref_reset.js_on_click(callback)
 mut_reset.js_on_click(callback)
 
@@ -223,10 +223,11 @@ mut_controls = [mut_reset, mut_R_slider,  mut_epRA_slider, mut_ka_slider, mut_ki
 for rc, mc in zip(ref_controls[1:], mut_controls[1:]):
     rc.callback = callback
     mc.callback = callback
-ref_inputs = widgetbox(ref_controls, name='Reference State Controls')
-mut_inputs = widgetbox(mut_controls)
-layout = bokeh.layouts.layout([[ref_inputs, mut_inputs, p_fc], 
-                               [p_bohr, p_delBohr]])
+ref_inputs = widgetbox(ref_controls,  width=350)
+mut_inputs = widgetbox(mut_controls,  width=350)
+layout = bokeh.layouts.layout([[ref_inputs, mut_inputs],
+                               [p_fc, p_bohr, p_delBohr]
+                               ])
 
 # #############################
 # THEME DETAILS
@@ -256,14 +257,14 @@ theme_json = {'attrs':
             },
             'Text': {
                 'text_font_style': 'normal',
-               'text_font': 'Helvetica'
+               'text_font': 'Helvetica',
             },
             'Title': {
                 'background_fill_color': '#FFEDC0',
                 'text_font_style': 'normal',
                 'align': 'center',
                 'text_font': 'Helvetica',
-                'offset': 2,
+                'offset': 2
             }}}
 
 theme = Theme(json=theme_json)

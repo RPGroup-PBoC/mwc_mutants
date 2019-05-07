@@ -98,6 +98,9 @@ pre {
  */
 a {
   background-color: transparent;
+  color: #B193C4;
+  text-decoration: none;
+  font-weight: 700;
   /* 1 */
   -webkit-text-decoration-skip: objects;
   /* 2 */
@@ -140,7 +143,7 @@ strong {
 code,
 kbd,
 samp {
-  font-family: monospace, monospace;
+  font-family: courier;
   /* 1 */
   font-size: 1em;
   /* 2 */
