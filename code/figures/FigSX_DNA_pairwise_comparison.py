@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import mut.viz
 import mut.thermo
 constants = mut.thermo.load_constants()
+mut_colors = mut.viz.color_selector('mut')
 colors = mut.viz.color_selector('pboc')
 mut.viz.plotting_style()
 
@@ -80,8 +81,8 @@ for i, r1 in enumerate(repressors):
             _data = data[(data['mutant']==m) & (data['repressors']==r2)]
             ax[i, j].errorbar(_data['IPTGuM'], _data['mean'], _data['sem'], 
                             linestyle='none', fmt='.', ms=4, capsize=1, 
-                            linewidth=1, markerfacecolor=face, color=mut_colors[m])
-
+                            linewidth=1, markerfacecolor=face, color=mut_colors[m],
+                            label=m)
 
 plt.tight_layout()
 

@@ -22,7 +22,9 @@ KaKi_epAI_samples = pd.read_csv('../../data/csv/KaKi_epAI_samples.csv')
 # Determine the unique repressor copy numbers
 ops = np.sort(data['operator'].unique())
 c_range = np.logspace(-2, 4, 200)
-MODEL = 'KaKi_epAI'
+c_range[0] = 0
+MODEL = 'KaKi_only'
+
 # ##############################################################################
 #  FIGURE WITH KAKI FIT ONLY
 # ##############################################################################
@@ -32,8 +34,8 @@ fig, ax = plt.subplots(len(ops),len(ops), figsize=(7,5), sharex=True, sharey=Tru
 for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=8) 
     a.yaxis.set_tick_params(labelsize=8)
-    a.set_xscale('log')
-    # a.set_xlim([1E-8, 1E-2])
+    a.set_xscale('symlog', linthreshx=1E-2)
+
 
 # Add appropriate labels
 for i in range(len(ops)):
@@ -43,8 +45,8 @@ for i in range(len(ops)):
                  transform=ax[i,0].transAxes, rotation='vertical')
     ax[0, i].set_title(ops[i], fontsize=8, backgroundcolor=pboc['pale_yellow'], y=1.08)
     ax[i, i].set_facecolor('#e4e7ec')
-# for i in range(3):
-    # ax[-1, i].set_xticks([1E-6, 1E-3])
+for i in range(3):
+    ax[-1, i].set_xticks([0, 1E-2, 1E0, 1E2, 1E4])
     
 # Add predictor titles
 fig.text(-0.04, 0.53, 'fit strain', fontsize=8, backgroundcolor='#E3DCD0', rotation='vertical')
