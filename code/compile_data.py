@@ -24,11 +24,20 @@ col_names = ['date', 'username', 'class', 'IPTGuM',
 
 # Generate list of "Accepted" experiments.
 accepted = []
+info_df = pd.DataFrame([])
 files = glob.glob('processing/*flow*')
 for _, d in enumerate(files):
     info = mut.io.scrape_frontmatter(f'{d}')
+    out = d.split('/')[1].split('_')
+    run = int(out[1][1])
+    info['date'] = out[0]
+    info['run'] = run
     if info['status'].lower() == 'accepted':
         accepted.append(glob.glob(f'{d}/output/*.csv')[0])
+        info_df = info_df.append(info, ignore_index=True)
+
+info_df = info_df[['date', 'run', 'status']]
+info_df.to_csv('../data/csv/valid_data_idx.csv')
 
 # Get all valid files in processing folder.
 all_data = pd.concat([pd.read_csv(f, comment="#") for f in accepted],sort=False)
