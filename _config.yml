@@ -3,7 +3,7 @@ description: > # this means to ignore newlines until "baseurl:"
   This website is an online repositor for the manuscript "The energetics of
   molecular adaptation in transcriptional regulation"
 permalink: ':title/'
-baseurl:  #"/" # the subpath of your site, e.g. /blog
+baseurl:  "/" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 site-twitter: #if your site has a twitter account, enter it here
 
@@ -33,4 +33,4 @@ plugins:
 paginate: 8
 paginate_path: "/page/:num"
 
-exclude: ["node_modules", "gulpfile.js", "package.json", "yarn.lock", "data"]
+exclude: ["node_modules", "gulpfile.js", "package.json", "yarn.lock", "data_files"]

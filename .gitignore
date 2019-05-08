@@ -62,6 +62,7 @@ graphicspath.tex
 /data/misc/*
 data/images/
 /data/plate_reader/*
+/data_files/
 doc/induction_paper/graphicspath.tex
 /code/figures/dropbox_path.txt
 
