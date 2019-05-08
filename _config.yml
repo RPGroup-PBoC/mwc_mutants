@@ -3,14 +3,14 @@ description: > # this means to ignore newlines until "baseurl:"
   This website is an online repositor for the manuscript "The energetics of
   molecular adaptation in transcriptional regulation"
 permalink: ':title/'
-baseurl: "/" # the subpath of your site, e.g. /blog
+baseurl:  #"/" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 site-twitter: #if your site has a twitter account, enter it here
 
 # Author Settings
-author: Rob Phillips Lab
-author-img: rpgroup_icon.png # add your photo
-about-author: Physical Biology of the Cell # add description
+# author: Rob Phillips Lab
+author-img: logo.png # add your photo
+# about-author: Physical Biology of the Cell # add description
 # social-twitter: # add your Twitter handle
 # social-facebook: # add your Facebook handle
 social-github: RPGroup-PBoC # add your Github handle
