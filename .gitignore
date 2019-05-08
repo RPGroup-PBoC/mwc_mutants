@@ -55,6 +55,7 @@ graphicspath.tex
 
 #Ignore local copies of the raw data
 /data/flow/*
+/data_files/*
 /data/microscopy/*
 /data/csv/*samples.csv
 /data/*samples.csv
