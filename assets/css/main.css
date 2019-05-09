@@ -896,6 +896,7 @@ table tfoot td {
 
 .post, .article-page {
   background-color: #fff;
+
 }
 
 ::-moz-selection {
@@ -1125,28 +1126,30 @@ footer .copyright {
       -ms-flex-align: stretch;
           align-items: stretch;
   min-height: 11rem;
-  /* -webkit-border-radius: 10px; */
-          /* border-radius: 10px; */
+  -webkit-border-radius: 10px;
+          border-radius: 10px;
+
   overflow: hidden;
   -webkit-transition: all .3s ease;
   -o-transition: all .3s ease;
   transition: all .3s ease;
   /* -webkit-box-shadow: 0 1px 1px 0 rgba(31, 35, 46, 0.15); */
           /* box-shadow: 0 1px 1px 0 rgba(31, 35, 46, 0.15); */
+  border: 1px solid #D1D3D4;
 }
 
 .post:hover {
-  -webkit-transform: translate(0px, -2px);
-      -ms-transform: translate(0px, -2px);
-          transform: translate(0px, -2px);
+  /* -webkit-transform: translate(0px, -2px); */
+      /* -ms-transform: translate(0px, -2px); */
+          /* transform: translate(0px, -2px); */
   /* -webkit-box-shadow: 0 15px 45px -10px rgba(10, 16, 34, 0.2); */
           /* box-shadow: 0 15px 45px -10px rgba(10, 16, 34, 0.2); */
 }
 
 .post .post-thumbnail {
-  width: 30%;
+  width: 20%;
   max-width: 100%;
-  min-height: 11rem;
+  min-height: 1rem;
   -webkit-background-size: cover;
           background-size: cover;
   background-position: 50% 50%;
@@ -1164,14 +1167,14 @@ footer .copyright {
 
 .post .post-content .post-title {
   margin: 0 0 10px;
-  font-size: 30px;
+  font-size: 20px;
   font-weight: 400;
 }
 
 .post .post-content .post-title a {
-  font-family: 'PT Serif', serif;
+  font-family: Lato, sans-serif;
   text-decoration: none;
-  color: #263959;
+  color: #B193C4;
 }
 
 .post .post-content p {
