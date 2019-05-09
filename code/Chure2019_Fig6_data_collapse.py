@@ -27,7 +27,7 @@ new_gods = pd.read_csv('../../data/RazoMejia_2018.csv', comment='#')
 new_gods['repressors'] *= 2
 new_gods.rename(columns={'IPTG_uM':'IPTGuM', 'fold_change_A':'fold_change'},
     inplace=True)
-new_gods = new_gods.groupby(['repressors', 'operator', 'IPTGuM']).agg(('mean', 'sem')).reset_index()
+
 # Define plotting constants
 bohr_range = np.linspace(-10, 10, 200)
 

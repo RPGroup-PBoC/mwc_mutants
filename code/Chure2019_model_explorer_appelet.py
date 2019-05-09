@@ -91,10 +91,10 @@ ref_R_slider = Slider(start=1, end=2000, value=260, step=1,
 title='Repressors per cell', bar_color=pboc['blue'])
 ref_epAI_slider = Slider(start=-10, end=10, value=4.5, step=0.1,
 title='Allosteric state energy difference [kT]', bar_color=pboc['blue'])
-ref_ka_slider = Slider(start=0.1, end=1000, value=139, step=0.1,
-    title='Ka [µM]', bar_color=pboc['blue'])
-ref_ki_slider = Slider(start=0.01, end=100, value=0.53, step=0.01,
-    title='Ki [µM]', bar_color=pboc['blue'])
+ref_ka_slider = Slider(start=-2, end=3.7, value=np.log10(139), step=0.1,
+    title='Log10(Ka/1µM)', bar_color=pboc['blue'])
+ref_ki_slider = Slider(start=-3, end=2.7, value=np.log10(0.53), step=0.01,
+    title='Log10(Ki/1µM)', bar_color=pboc['blue'])
 ref_n_slider = Slider(start=1, end=10, value=2, step=1,
     title='Number of allosteric sites', bar_color=pboc['blue'])
 
@@ -103,10 +103,10 @@ mut_epRA_slider = Slider(start=-20, end=-2, value=-13.9, step=0.1,
 title='DNA binding energy [kT]', bar_color=pboc['light_red'])
 mut_R_slider = Slider(start=1, end=2000, value=260, step=1,
 title='Repressors per cell', bar_color=pboc['light_red'])
-mut_ka_slider = Slider(start=0.1, end=1000, value=139, step=0.1,
-    title='Ka [µM]', bar_color=pboc['light_red'])
-mut_ki_slider = Slider(start=0.01, end=100, value=0.53, step=0.01,
-    title='Ki [µM]', bar_color=pboc['light_red'])
+mut_ka_slider = Slider(start=-2, end=3.7, value=np.log10(139), step=0.01,
+    title='Log10(Ka / 1µM)', bar_color=pboc['light_red'])
+mut_ki_slider = Slider(start=-3, end=2.7, value=np.log10(0.53), step=0.01,
+    title='Log10(Ki / 1µM)', bar_color=pboc['light_red'])
 mut_epAI_slider = Slider(start=-10, end=10, value=4.5, step=0.1,
     title='Allosteric state energy difference [kT]', bar_color=pboc['light_red'])
 mut_n_slider = Slider(start=1, end=10, value=2, step=1,
@@ -129,8 +129,8 @@ callback_args = {'source':source,
 reset_ref = CustomJS(args=callback_args, code="""
         refepRA.value = -13.9;
         refR.value = 260;
-        refKa.value = 139;
-        refKi.value = 0.53;
+        refKa.value = Math.log10(139);
+        refKi.value = Math.log10(0.53);
         refepAI.value = 4.5;
         ref_n_sites.value = 2;
         """)
@@ -151,8 +151,8 @@ callback  = CustomJS(args=callback_args, code="""
                 var ref_fc = data['ref_fc'];
                 var ref_ep_r = refepRA.value;
                 var ref_R = refR.value;
-                var ref_ka = refKa.value;
-                var ref_ki = refKi.value;
+                var ref_ka = Math.pow(10,refKa.value);
+                var ref_ki = Math.pow(10, refKi.value);
                 var ref_ep_ai= refepAI.value;
                 var ref_n = ref_n_sites.value;
 
@@ -162,8 +162,8 @@ callback  = CustomJS(args=callback_args, code="""
                 var mut_delta_bohr = data['mut_delta_bohr'];
                 var mut_ep_r = mutepRA.value;
                 var mut_R = mutR.value;
-                var mut_ka = mutKa.value;
-                var mut_ki = mutKi.value;
+                var mut_ka = Math.pow(10, mutKa.value);
+                var mut_ki = Math.pow(10, mutKi.value);
                 var mut_ep_ai= mutepAI.value;
                 var mut_n = mut_n_sites.value;
 
@@ -207,8 +207,8 @@ callback  = CustomJS(args=callback_args, code="""
                 """)
 
 # Define the buttons
-ref_reset = Button(label='reset reference to default', callback=reset_ref)
-mut_reset = Button(label='reset mutant to reference', callback=reset_mut)
+ref_reset = Button(label='double-click to reset wild type', callback=reset_ref)
+mut_reset = Button(label='double-click to set mutant to wild type', callback=reset_mut)
 ref_reset.js_on_click(callback)
 mut_reset.js_on_click(callback)
 
@@ -221,7 +221,7 @@ mut_controls = [mut_reset, mut_R_slider,  mut_epRA_slider, mut_ka_slider, mut_ki
 for rc, mc in zip(ref_controls[1:], mut_controls[1:]):
     rc.callback = callback
     mc.callback = callback
-ref_inputs = widgetbox(ref_controls, name='Reference State Controls')
+ref_inputs = widgetbox(ref_controls)
 mut_inputs = widgetbox(mut_controls)
 layout = bokeh.layouts.layout([[ref_inputs, mut_inputs, p_fc], 
                                [p_bohr, p_delBohr]])
@@ -267,3 +267,4 @@ theme_json = {'attrs':
 theme = Theme(json=theme_json)
 bokeh.io.curdoc().theme = theme
 bokeh.io.save(layout)
+
