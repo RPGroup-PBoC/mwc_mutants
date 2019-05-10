@@ -4,6 +4,7 @@
 
 # The Energetics of Molecular Adaptation in Transcriptional Regulation
 [![Build Status](https://travis-ci.org/RPGroup-PBoC/mwc_mutants.svg?branch=publication)](https://travis-ci.org/RPGroup-PBoC/mwc_mutants)
+[![DOI](https://zenodo.org/badge/68966180.svg)](https://zenodo.org/badge/latestdoi/68966180)
 
 Welcome to the GitHub repository for the MWC mutants project! This repository
 contains the entire project history as well as curated scripts to make
@@ -68,7 +69,7 @@ analyze data and generate figures. It is broken up into several subdirectories w
 ### **`data`**
 This directory contains all processed and simulated data used in this work. The
 raw flow cytometry data is stored on the [CaltechDATA](http://data.caltech.edu)
-research data repository under the [DOI: XXXXXX]().
+research data repository under the [DOI: 10.22002/D1.1241](https://data.caltech.edu/records/1241).
 
 ### **`figures`**
 This folder contains `.pdf` files of all main and supplementary text figures. No
