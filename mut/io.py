@@ -1,21 +1,8 @@
 import numpy as np
-import skimage.io
-import paramiko
 import frontmatter
 import pandas as pd
-import scp
 import yaml
 import os
-
-import numpy as np
-import skimage.io
-import paramiko
-import frontmatter
-import pandas as pd
-import scp
-import yaml
-import os
-
 
 def scrape_frontmatter(dirname, file='README.md'):
     """

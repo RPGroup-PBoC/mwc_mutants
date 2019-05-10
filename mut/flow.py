@@ -4,7 +4,6 @@ import pandas as pd
 from ._fit_bivariate_normal_AstroML import fit_bivariate_normal
 import scipy.stats
 
-
 # #######################
 # Automated Gating
 # #######################

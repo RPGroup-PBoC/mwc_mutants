@@ -3,7 +3,6 @@ A module for computing properties of various transcriptional
 regulatory architectures.
 """
 import numpy as np
-import scipy.optimize
 
 class MWC(object):
     R"""
@@ -360,8 +359,6 @@ class SimpleRepression(object):
         bohr = self.ep_r - np.log(pact) - np.log(self.R / self.n_ns)
         return bohr
 
-
-    
 def load_constants():
     """Returns a dictionary of various constants incuding binding energies and copy numbers"""
     return dict(O1=-15.3, O2=-13.9, O3=-9.7, 

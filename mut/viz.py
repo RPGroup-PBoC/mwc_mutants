@@ -2,15 +2,11 @@ import bokeh.io
 import bokeh.plotting
 import bokeh.layouts
 import bokeh.palettes
-import skimage.io
-import skimage.measure
 import seaborn as sns
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 import matplotlib
-import altair as alt
-
 
 def plotting_style(grid=True):
     """
@@ -41,81 +37,6 @@ def plotting_style(grid=True):
     plt.rc('text.latex', preamble=r'\usepackage{sfmath}')
     plt.rc('mathtext', fontset='stixsans', sf='sans')
     sns.set_style('darkgrid', rc=rc)
-
-
-def personal_style():
-    """
-    Sets the plotting style to my preference
-    """   
-    rc = {'axes.facecolor': '#f1f2f6', 
-          'font.family': 'sans-serif',
-          'font.style': 'italic',
-          'font.weight': 400,
-          'font.family': 'Arial Narrow',
-        #   'axes.edgecolor': 'slategray',
-          'axes.spines.right': False,
-          'axes.spines.top': False,
-          'axes.axisbelow': True,
-        #   'axes.linewidth': 0.75,
-          'axes.titlesize': 8,
-          'axes.grid': True,
-          'lines.linewidth': 2,
-          'lines.dash_capstyle': 'round',
-          'grid.linestyle': '-',
-          'grid.linewidth': 0.75,
-          'grid.color': '#ffffff',
-          'axes.labelsize': 8,
-          'xtick.labelsize': 4,
-          'ytick.labelsize': 4,
-          'legend.fontsize': 8,
-          'legend.frameon': True,
-          'xtick.color': '#4b4b4b',
-          'ytick.color': '#4b4b4b',
-          'axes.xmargin': 0.01,
-          'axes.ymargin': 0.01,
-          'figure.dpi': 200}
-
-    # plt.rc('mathtext', fontset='dejavuserif', sf='sans')
-    plt.rc('text.latex', preamble=r'\usepackage{mathpazo}')
-    matplotlib.style.use(rc)
-    flat = ['#64767C', '#484B3E','#95B7D8', '#699FCE','#6B5E86','#8389B4',  '#A6DCE8', '#72A2B6',
-            '#6D7960']
-    sns.set_palette(flat)
-    return flat      
-         
-def altair_config():
-    """Sets the style of Altair plots to the PBoC style"""
-    pboc = {'config': {
-                'view': {
-                     'fill':'#E3DCD1'
-                       }, 
-                 'axis': {
-                     'gridColor':'#ffffff', 
-                     'gridWidth':1, 
-                     'gridOpacity':0.75,
-                     'domain':False, 
-                     'tickColor': '#ffffff', 
-                     'labelFont':'Lucida Sans Unicode', 
-                     'titleFont':'Lucida Sans Unicode',
-                     'titleFontWeight': 'normal'
-                        },
-                 'text':{
-                     'font':'Lucida Sans Unicode', 
-                     'fontWeight': 'normal'
-                         },
-                 'legend': {
-                     'titleFont': 'Lucida Sans Unicode',
-                     'labelFont':'Lucida Sans Unicode', 
-                     'titleFontWeight': 'normal'
-                       }
-                    }
-           }
-    return pboc
-
-def format_ticks(ax):
-    for x, y in zip(ax.get_xticklabels(), ax.get_yticklabels()):
-        x.set_color('black')
-        y.set_color('black')
 
 def color_selector(style):
     """
@@ -157,4 +78,3 @@ def color_selector(style):
               'pale_red': '#F1D4C9', 'purple': '#AB85AC',
               'light_purple': '#D4C2D9', 'dark_green':'#7E9D90', 'dark_brown':'#905426'}
     return colors
-

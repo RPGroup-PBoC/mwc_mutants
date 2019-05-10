@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import glob
 
-
 def ecdf(data):
     """
     Computes the empirical cumulative distribution function for a collection of provided data.
@@ -21,104 +20,6 @@ def ecdf(data):
     """
     return np.sort(data), np.arange(0, len(data)) / len(data)
 
-
-def _log_prior_trace(trace, model):
-    """
-    Computes the contribution of the log prior to the log posterior.
-
-    Parameters
-    ----------
-    trace : PyMC3 trace object.
-        Trace from the PyMC3 sampling.
-    model : PyMC3 model object
-        Model under which the sampling was performed
-
-    Returns
-    -------
-    log_prior_vals : nd-array
-        Array of log-prior values computed elementwise for each point in the
-        trace.
-
-    Notes
-    -----
-    This function was modified from one produced by Justin Bois.
-    http://bebi103.caltech.edu
-    """
-    # Iterate through each trace.
-    try:
-        points = trace.points()
-    except:
-        points = trace
-
-    # Get the unobserved variables.
-    priors = [var.logp for var in model.unobserved_RVs if type(
-        var) == pm.model.FreeRV]
-
-    def logp_vals(pt):
-        if len(model.unobserved_RVs) == 0:
-            return pm.theanof.floatX(np.array([]), dtype='d')
-
-        return np.array([logp(pt) for logp in priors])
-
-    # Compute the logp for each value of the prior.
-    log_prior = (logp_vals(pt) for pt in points)
-    return np.stack(log_prior)
-
-
-def _log_post_trace(trace, model):
-    R"""
-    Computes the log posterior of a PyMC3 sampling trace.
-
-    Parameters
-    ----------
-    trace : PyMC3 trace object
-        Trace from MCMC sampling
-    model: PyMC3 model object
-        Model under which the sampling was performed.
-
-    Returns
-    -------
-    log_post : nd-array
-        Array of log posterior values computed elementwise for each point in
-        the trace
-
-    Notes
-    -----
-    This function was modified from one produced by Justin Bois
-    http://bebi103.caltech.edu
-    """
-
-    # Compute the log likelihood. Note this is improperly named in PyMC3.
-    log_like = pm.stats._log_post_trace(trace, model).sum(axis=1)
-
-    # Compute the log prior
-    log_prior = _log_prior_trace(trace, model)
-
-    return (log_prior.sum(axis=1) + log_like)
-
-
-def trace_to_dataframe(trace, model):
-    R"""
-    Converts a PyMC3 sampling trace object to a pandas DataFrame
-
-    Parameters
-    ----------
-    trace, model: PyMC3 sampling objects.
-        The MCMC sampling trace and the model context.
-
-    Returns
-    -------
-    df : pandas DataFrame
-        A tidy data frame containing the sampling trace for each variable  and
-        the computed log posterior at each point.
-    """
-
-    # Use the Pymc3 utilitity.
-    df = pm.trace_to_dataframe(trace)
-
-    # Include the log prop
-    df['logp'] = _log_post_trace(trace, model)
-    return df
 
 
 def compute_statistics(df, varnames=None, logprob_name='logp'):
@@ -190,7 +91,6 @@ def compute_hpd(trace, mass_frac):
 
     # Return interval
     return np.array([d[min_int], d[min_int + n_samples]])
-
 
 
 def compute_mean_sem(df):
