@@ -13,7 +13,7 @@ author-img: logo.png # add your photo
 social-github: RPGroup-PBoC # add your Github handle
 
 # Tracker
-analytics: 
+# analytics: 
 
 # Build Settings
 markdown: kramdown
