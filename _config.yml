@@ -8,17 +8,9 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 site-twitter: #if your site has a twitter account, enter it here
 
 # Author Settings
-# author: Rob Phillips Lab
-author-img: logo.png # add your photo
-# about-author: Physical Biology of the Cell # add description
-# social-twitter: # add your Twitter handle
-# social-facebook: # add your Facebook handle
-social-github: RPGroup-PBoC # add your Github handle
-# social-linkedin: # add your Linkedin handle
-# social-email: # add your Email address
 
-# Disqus
-# discus-identifier: mr-brown # add your discus identifier
+author-img: logo.png # add your photo
+social-github: RPGroup-PBoC # add your Github handle
 
 # Tracker
 # analytics: # Google Analytics

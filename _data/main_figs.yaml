@@ -73,7 +73,7 @@
   desc: 
     Used to generate Figure 6, illustrating full data collapse of previous
     measurements from Garcia and Phillips 2011, Brewster et al. 2014, Razo-Mejia
-    et al. 2018, and this work.
+    et al. 2018, and this work
   pic: main_fig6.png
   req:
     - ds:
