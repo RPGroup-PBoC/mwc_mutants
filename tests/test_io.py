@@ -20,9 +20,9 @@ def test_scrape_frontmatter():
         assert test.items() == test.items()
 
     for k, v in zip(dicts.keys(), dicts.values()):
-        cmp_dict(v, k, './test_data', False)
-        cmp_dict(v, k, './test_data/', False)
+        cmp_dict(v, k, 'tests/test_data')
+        cmp_dict(v, k, 'tests/test_data/')
 
     with pytest.raises(UserWarning):
-        assert scrape_frontmatter('./test_data', file='test_wrongstatus.md')
-        assert scrape_frontmatter('./test_data', file='test_nostatus.md')
+        assert scrape_frontmatter('tests/test_data', file='test_wrongstatus.md')
+        assert scrape_frontmatter('tests/test_data', file='test_nostatus.md')
