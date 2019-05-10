@@ -21,20 +21,20 @@ def test_MWC():
     # Test the pact functions.
     ka, ki, c, ep_ai, n = (100, 1, 100, -1, 2)
     test_pact = pact(c, ka, ki, ep_ai, n)
-    assert test_pact == mwc.thermo.MWC(effector_conc=c, ka=ka,
+    assert test_pact == mut.thermo.MWC(effector_conc=c, ka=ka,
                                        ki=ki, ep_ai=ep_ai, n_sites=n).pact()
 
     # Test the log transform.
     ep_a, ep_i = 100, -1
     test_pact = pact(c, np.exp(ep_a), np.exp(ep_i), ep_ai, n)
-    assert test_pact == mwc.thermo.MWC(
+    assert test_pact == mut.thermo.MWC(
         c, ep_a, ep_i, ep_ai, n, log_transform=True).pact()
 
     # Test saturation and leakiness.
     leak = (1 + np.exp(-ep_ai))**-1
     sat = (1 + np.exp(-ep_ai) * (ka / ki)**n)**-1
-    assert sat == mwc.thermo.MWC(c, ka, ki, ep_ai).saturation()
-    assert leak == mwc.thermo.MWC(c, ka, ki, ep_ai).leakiness()
+    assert sat == mut.thermo.MWC(c, ka, ki, ep_ai).saturation()
+    assert leak == mut.thermo.MWC(c, ka, ki, ep_ai).leakiness()
 
     # Test that everything works with single-arrays.
     c_range = np.logspace(0, 5, 10)
@@ -47,22 +47,22 @@ def test_MWC():
     test_ki_pact = pact(c, ka, ki_range, ep_ai, n)
     test_ep_ai_pact = pact(c, ka, ki, ep_ai_range, n)
     test_n_pact = pact(c, ka, ki, ep_ai, n_range)
-    assert (test_c_pact == mwc.thermo.MWC(c_range, ka, ki, ep_ai,
+    assert (test_c_pact == mut.thermo.MWC(c_range, ka, ki, ep_ai,
                                           n).pact()).all()
-    assert (test_ka_pact == mwc.thermo.MWC(c, ka_range, ki, ep_ai,
+    assert (test_ka_pact == mut.thermo.MWC(c, ka_range, ki, ep_ai,
                                            n).pact()).all()
-    assert (test_ki_pact == mwc.thermo.MWC(c, ka, ki_range, ep_ai,
+    assert (test_ki_pact == mut.thermo.MWC(c, ka, ki_range, ep_ai,
                                            n).pact()).all()
-    assert (test_ep_ai_pact == mwc.thermo.MWC(c, ka, ki, ep_ai_range,
+    assert (test_ep_ai_pact == mut.thermo.MWC(c, ka, ki, ep_ai_range,
                                               n).pact()).all()
-    assert (test_n_pact == mwc.thermo.MWC(c, ka, ki, ep_ai,
+    assert (test_n_pact == mut.thermo.MWC(c, ka, ki, ep_ai,
                                           n_range).pact()).all()
 
     # Test meshed variables.
     c, ka, ki, ep_ai, n = np.meshgrid(c_range, ka_range, ki_range,
                                       ep_ai_range, n_range)
     test_pact = pact(c, ka, ki, ep_ai, n)
-    assert (test_pact == mwc.thermo.MWC(c, ka, ki, ep_ai, n).pact()).all()
+    assert (test_pact == mut.thermo.MWC(c, ka, ki, ep_ai, n).pact()).all()
 
     # Ensure that the values for pact are in the range zero to one.
     max_val, min_val = np.max(test_pact), np.min(test_pact)
