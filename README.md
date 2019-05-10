@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="460" height="300" src="logo.png">
+  <img src="logo.png">
 </p>
 
 # The Energetics of Molecular Adaptation in Transcriptional Regulation
