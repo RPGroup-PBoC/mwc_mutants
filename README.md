@@ -1,10 +1,10 @@
-<center>
-
-![](logo.png)
-
-</center>
+<p align="center">
+  <img width="460" height="300" src="logo.png">
+</p>
 
 # The Energetics of Molecular Adaptation in Transcriptional Regulation
+[![Build Status](https://travis-ci.org/RPGroup-PBoC/mwc_mutants.svg?branch=publication)](https://travis-ci.org/RPGroup-PBoC/mwc_mutants)
+
 Welcome to the GitHub repository for the MWC mutants project! This repository
 contains the entire project history as well as curated scripts to make
 reproducibility feasible. 
