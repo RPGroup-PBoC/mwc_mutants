@@ -13,10 +13,10 @@ def test_MWC():
 
     # Test exceptions.
     with pytest.raises(RuntimeError):
-        mwc.thermo.MWC(-1, -1, -1, -1, -1)
+        mut.thermo.MWC(-1, -1, -1, -1, -1)
 
     with pytest.raises(ValueError):
-        mwc.thermo.MWC(0, 0, 0, 0, 0)
+        mut.thermo.MWC(0, 0, 0, 0, 0)
 
     # Test the pact functions.
     ka, ki, c, ep_ai, n = (100, 1, 100, -1, 2)
