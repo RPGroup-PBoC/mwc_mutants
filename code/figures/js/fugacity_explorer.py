@@ -14,6 +14,7 @@ colors = mut.viz.color_selector('pboc')
 
 # Load mitch's data
 daber_data = pd.read_csv('../../../data/csv/Daber2011_data.csv')
+daber_data['IPTGuM'] *= 2
 wt = daber_data[daber_data['mutant']=='wt']
 ind_data = daber_data[(daber_data['mutant']=='F161T') | (daber_data['mutant']=='Q291V') |
                  (daber_data['mutant']=='Q291R') | (daber_data['mutant']=='Q291K')] 
