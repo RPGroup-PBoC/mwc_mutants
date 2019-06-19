@@ -210,7 +210,8 @@ old_ax = bokeh.plotting.figure(width=450, height=300,
 fug_ax = bokeh.plotting.figure(width=450, height=300, 
                                   x_axis_type='log', y_axis_type='log',
                                   x_axis_label='repressors per cell', y_axis_label='leakiness',
-                                  title='variable promoter copy number (O1 operator)')
+                                  title='variable promoter copy number (O1 operator)',
+                                  x_range = [1, 1E3])
 
 # Plot the theory
 o1_ax.multi_line(xs='IPTGuM', ys='fold_change', line_width=1, source=O1_theo, line_color=pal)
