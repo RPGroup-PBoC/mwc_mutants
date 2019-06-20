@@ -4,7 +4,7 @@ from os import path
 __version__ = '0.0.01'
 
 setup(
-    name='pboc',
+    name='mut',
     version=__version__,
     description='Various python utilities useful for physical biology',
     license='BSD',
