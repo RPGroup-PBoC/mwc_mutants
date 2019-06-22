@@ -6,7 +6,7 @@ import pickle
 import pystan
 import bokeh.plotting
 import tqdm
-from .stats import compute_statistics
+from .stats import compute_statistics, compute_hpd
 
 class StanModel(object):
     R"""

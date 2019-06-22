@@ -47,7 +47,6 @@ for a in ax.ravel():
     a.set_xscale('log')
     a.set_xlabel('$c \, / \, K_A^\mathrm{(wt)}$', fontsize=12)
 
-
 wt = 2 * np.exp(-ep_ai) * ka**2 * dF_dc(ka ,ki, ep_ai, c_range)
 mut1 = 2 * np.exp(-ep_ai) * ka**2 * dF_dc(ka*theta1 ,ki*theta1, ep_ai, c_range)
 mut2 = 2 * np.exp(-ep_ai) * ka**2 * dF_dc(ka*theta2 ,ki*theta2, ep_ai, c_range)
