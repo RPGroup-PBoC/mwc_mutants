@@ -51,7 +51,8 @@ for i in range(3):
         ax[i, j].set_yticks([0, 0.5, 1])
 
 # Set the titles and axis labels. 
-for m, idx in IND_idx.items():
+IND_titles = {'F161T':0, 'Q291V':1, 'Q291K':2}
+for m, idx in IND_titles.items():
         ax[0, idx].set_title(m, fontsize=6, y=1.04, 
                            backgroundcolor=pboc['pale_yellow'])
         ax[0, idx + 4].set_title(m, fontsize=6, y=1.04, 
@@ -72,7 +73,8 @@ for i in range(2):
         ax[j, i+5].set_yticklabels([])
 
 # Mutant Identifiers
-for m, idx in DNA_idx.items():
+DNA_titles = {'Y17I':0, 'Q18A':1, 'Q18M':2}
+for m, idx in DNA_titles.items():
         ax[idx, 0].text(-0.8, 0.62, m, fontsize=6,rotation='vertical', 
             backgroundcolor=pboc['pale_yellow'], transform=ax[idx, 0].transAxes)
         ax[idx, 4].text(-0.8, 0.62, m, fontsize=6,rotation='vertical', 

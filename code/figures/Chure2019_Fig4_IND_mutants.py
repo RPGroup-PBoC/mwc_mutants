@@ -53,10 +53,11 @@ for i in range(4):
 
 # Define the axes
 axes = {'F164T':3, 'Q294V':2, 'Q294K':1, 'Q294R':0}
+titles = {'F161T':3, 'Q291V':2, 'Q291K':1, 'Q291R':0}
 op_colors = {'O1':_colors[0], 'O2':_colors[1], 'O3':_colors[2]}
 
 # Add labels
-for m, a in axes.items():
+for m, a in titles.items():
     ax[0, a].set_title(m, fontsize=6, backgroundcolor=colors['pale_yellow'], 
                        y=1.08)
 ax[0, 0].set_ylabel('fold-change', fontsize=6)

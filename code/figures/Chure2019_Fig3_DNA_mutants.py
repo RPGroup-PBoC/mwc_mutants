@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# %%
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -61,9 +62,9 @@ ax[2, 0].set_ylabel('$\Delta F$ [$k_BT$]', fontsize=6)
 
 # Define the axes
 axes = {'Q21M':0, 'Y20I':1, 'Q21A':2}
-
+titles = {'Q18M':0, 'Y17I':1, 'Q18A':2}
 # Add titles
-for m, a in axes.items():
+for m, a in titles.items():
     ax[0, a].set_title(m, fontsize=6, backgroundcolor=colors['pale_yellow'],
     y=1.08) 
 

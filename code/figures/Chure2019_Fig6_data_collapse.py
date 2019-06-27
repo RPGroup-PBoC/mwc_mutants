@@ -27,6 +27,7 @@ new_gods = pd.read_csv('../../data/RazoMejia_2018.csv', comment='#')
 new_gods['repressors'] *= 2
 new_gods.rename(columns={'IPTG_uM':'IPTGuM', 'fold_change_A':'fold_change'},
     inplace=True)
+new_gods = new_gods[new_gods['repressors'] > 0]
 
 # Define plotting constants
 bohr_range = np.linspace(-10, 10, 200)
@@ -67,11 +68,13 @@ for g, d in old_gods.groupby('author'):
 # ##############################################################################
 # RAZO-MEJIA ET AL 2018
 # ##############################################################################
+new_gods = new_gods.groupby(['operator', 'repressors', 'IPTGuM']).agg(('mean', 'sem')).reset_index()
 ops = [constants[o] for o in new_gods['operator'].values]
 bohr = mut.thermo.SimpleRepression(R=new_gods['repressors'], ep_r=ops,
                                    ka=constants['Ka'], ki=constants['Ki'],
                                    ep_ai=constants['ep_AI'], 
                              effector_conc=new_gods['IPTGuM']).bohr_parameter() 
+
 ax.errorbar(bohr, new_gods['fold_change']['mean'], 
             new_gods['fold_change']['sem'], fmt='o',  color=pboc_colors['green'],
                     markeredgewidth=0.75, alpha=0.5,
@@ -83,6 +86,12 @@ ax.errorbar(bohr, new_gods['fold_change']['mean'],
 # ##############################################################################
 op_glyphs = {'O1':'^', 'O2':'v', 'O3':'D'}
 for g, d in data[data['class']=='DNA'].groupby(['mutant']):
+    if g == 'Q21A':
+        _g = 'Q18A'
+    elif g == 'Q21M':
+        _g = 'Q18M'
+    elif g == 'Y20I':
+        _g = 'Y17I'
     ep_RA = epRA_stats[(epRA_stats['mutant']==g) &
                 (epRA_stats['parameter']=='ep_RA')]['median'].values[0]
     bohr = mut.thermo.SimpleRepression(R=d['repressors'], ep_r=ep_RA, 
@@ -90,13 +99,21 @@ for g, d in data[data['class']=='DNA'].groupby(['mutant']):
                                            ep_ai=constants['ep_AI'],
                                            effector_conc=d['IPTGuM']).bohr_parameter()
     ax.errorbar(bohr, d['mean'], d['sem'], fmt='^', color=mut_colors[g],
-                label=g, ms=5, markeredgewidth=0.75, markerfacecolor='w',
+                label=_g, ms=5, markeredgewidth=0.75, markerfacecolor='w',
                 lw=0.75)
 
 # ##############################################################################
 #  IND MUTS
 # ##############################################################################
 for g, d in data[data['class']=='IND'].groupby(['mutant']):
+    if g == 'Q294K':
+        _g = 'Q291K'
+    elif g == 'Q294R':
+        _g = 'Q291K'
+    elif g == 'Q294V':
+        _g = 'Q291V'
+    elif g == 'F164T':
+        _g = 'F161T'
     _stats = allo_stats[(allo_stats['mutant']==g)]
     ka = _stats[_stats['parameter']=='Ka']['median'].values[0]
     ki = _stats[_stats['parameter']=='Ki']['median'].values[0]
@@ -114,6 +131,16 @@ for g, d in data[data['class']=='IND'].groupby(['mutant']):
 # DBL MUTS
 # ##############################################################################
 for g, d in data[data['class']=='DBL'].groupby(['mutant']):
+    _dna, _ind =  g.split('-')
+    orig = _dna[0]
+    end= _dna[-1]
+    pos = int(_dna[1:-1])-3
+    new_dna = orig + str(pos) + end
+    orig = _ind[0]
+    end= _ind[-1]
+    pos = int(_ind[1:-1])-3
+    new_ind = orig + str(pos) + end
+    mut_name = f'{new_dna}-{new_ind}'
     ep_RA = epRA_stats[(epRA_stats['mutant']==g.split('-')[0]) & 
                            (epRA_stats['parameter']=='ep_RA')]['median'].values[0]
     _stats = allo_stats[(allo_stats['mutant']==g.split('-')[1])]
@@ -125,7 +152,7 @@ for g, d in data[data['class']=='DBL'].groupby(['mutant']):
                                            ep_ai=ep_AI,
                                            effector_conc=d['IPTGuM']).bohr_parameter()
     ax.errorbar(bohr, d['mean'], d['sem'], fmt='*', color=mut_colors[g],
-                label=g, ms=6, markeredgewidth=0.75,  markerfacecolor='w',
+                label=mut_name, ms=6, markeredgewidth=0.75,  markerfacecolor='w',
                  lw=0.75)
 
 # ##############################################################################
