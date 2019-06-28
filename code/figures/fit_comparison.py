@@ -19,6 +19,7 @@ fug_data = fug_data[fug_data['operator'] != 'Oid']
 # Load the summary information
 razo_samples = pd.read_csv('../../data/csv/razomejia_epai_summary.csv')
 matt_samples = pd.read_csv('../../data/csv/matthews_epai_summary.csv')
+daber_samples = pd.read_csv('../../data/csv/daber_epai_summary.csv')
 
 # Summarize the ssr data
 ssr_summ = ssr_data.groupby(['operator', 'repressors', 'IPTGuM', 'author'
@@ -71,7 +72,8 @@ op_mark = {'O1': 'o', 'Oid': 'o'}
 
 # Add legend information
 ax[1, 0].plot([], [], 'k-', label=r'$\Delta\varepsilon_{AI} = 4.5\, k_BT$' + '\n Razo-Mejia\n et al. 2018')
-ax[1, 0].plot([], [], 'k:', label=r'$\Delta\varepsilon_{AI} = -0.15\, k_BT$' + "\n O'Gorman\n et al. 1980")
+ax[1, 0].plot([], [], 'k--', label=r'$\Delta\varepsilon_{AI} = -1.75\, k_BT$' + "\n Daber \n et al. 2011")
+ax[1, 0].plot([], [], 'k:', label=r'$\Delta\varepsilon_{AI} = 0.35\, k_BT$' + "\n O'Gorman\n et al. 1980")
 ax[1, 0].legend(loc='center', fontsize=8)
 
 for r, c in rep_colors.items():
@@ -112,9 +114,9 @@ c_range[0] = 0
 rep_range = np.logspace(0, 3.5, 200)
 
 # Parse out the parameter values
-linestyles = ['-', ':']
-linewidths = [0.75, 1.4]
-for i, stats in enumerate([razo_samples, matt_samples]):
+linestyles = ['-', '--', ':']
+linewidths = [0.75, 1, 1.5]
+for i, stats in enumerate([razo_samples, daber_samples, matt_samples]):
     # Retrieve the parameters
     ka = stats[stats['parameter']=='ka']['median'].values[0]
     ki = stats[stats['parameter']=='ki']['median'].values[0]

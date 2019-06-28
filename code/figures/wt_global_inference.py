@@ -39,11 +39,11 @@ data['idx'] = data.groupby('operator').ngroup() + 1
 data.to_csv('../../data/csv/RazoMejia2018_Garcia2011_Brewster2014_tidy.csv', index=False)
 #%%
 # Load the stan model
-model = mut.bayes.StanModel('../stan/global_inference.stan', force_compile=True)
+model = mut.bayes.StanModel('../stan/global_inference.stan')
 # Define the data dictionary.
 data_dict = {'N':len(data), 'J':data['idx'].max(), 'idx':data['idx'],
             'fc':data['fold_change'], 'c':data['IPTGuM'], 'R':data['repressors'],
-            'ep_ai': np.log(0.7), 'n_ns':4.6E6, 'n':int(2)}
+            'ep_ai': 4.5, 'n_ns':4.6E6, 'n':int(2), 'offset':0, 'prefix':0}
 
 # Sample the model
 _, samples = model.sample(data_dict)
@@ -51,19 +51,19 @@ _, samples = model.sample(data_dict)
 # Save the samples to disk along with the summary
 summ = model.summarize_parameters(parnames=['ka', 'ki', 'ep_r', 
                                     'ep_r', 'ep_r', 'ep_r'])
-summ
+
 # %%
-samples['ep_ai'] = np.log(0.7)
+samples['ep_ai'] = 4.5
 samples.rename(columns={'ep_r[1]':'ep_r.O1', 'ep_r[2]':'ep_r.O2',
                         'ep_r[3]':'ep_r.O3', 'ep_r[4]':'ep_r.Oid'}, inplace=True)
-summ['ep_ai'] = np.log(0.7)
+summ['ep_ai'] = 4.5 
 summ.loc[(summ['parameter']=='ep_r') & (summ['dimension']==1), 'operator'] = 'O1'
 summ.loc[(summ['parameter']=='ep_r') & (summ['dimension']==2), 'operator'] = 'O2'
 summ.loc[(summ['parameter']=='ep_r') & (summ['dimension']==3), 'operator'] = 'O3'
 summ.loc[(summ['parameter']=='ep_r') & (summ['dimension']==4), 'operator'] = 'Oid'
 
-samples.to_csv('../../data/csv/matthews_epai_epri_samples.csv')
-summ.to_csv('../../data/csv/matthews_epai_epri_summary.csv')
+samples.to_csv('../../data/csv/razomejia_epai_samples.csv')
+summ.to_csv('../../data/csv/razomejia_epai_summary.csv')
 
 # %%
 summ
@@ -211,4 +211,3 @@ bokeh.io.show(lay)
 data_sum.head()
 
 #%%
-k

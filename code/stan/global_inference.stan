@@ -31,8 +31,8 @@ functions {
     * @param ep_r The binding energy of the repressor to the DNA in kBT.
     * @return repression The level of repression given these parameters.
     **/
-    real repression(real pact, real R, real Nns, real ep_r, real offset) {
-        return 1 + pact * (R / Nns) * exp(-ep_r) + (1 - pact) * (R / Nns) *
+    real repression(real pact, real R, real Nns, real ep_r, real offset, int prefix) {
+        return 1 + pact * (R / Nns) * exp(-ep_r) + prefix * (1 - pact) * (R / Nns) *
         exp(-(ep_r + offset));
       }
 
@@ -53,12 +53,12 @@ functions {
     *        sites.
     **/
     real fold_change(real R, real Nns, real ep_r, real c, real ep_a, real ep_i,
-                    real ep_ai, int n_sites, real offset) {
+                    real ep_ai, int n_sites, real offset, int prefix) {
         // Compute the various componenets piecewise for simplicity.
         real pact;
         real rep;
         pact = prob_act(c, ep_a, ep_i, ep_ai, n_sites);
-        rep = repression(pact, R, Nns, ep_r, offset);
+        rep = repression(pact, R, Nns, ep_r, offset, prefix);
         return rep^-1;
         }
       }
@@ -67,9 +67,12 @@ data {
     int<lower=0> N; // total number of data points
     int<lower=0> J; // Number of unique operators
     int<lower=0, upper=J> idx[N]; // Identification vector for operator
+    int<lower=0, upper=1>  prefix; // To use inactive repressor binding or not. 
+
 
     // Preset constants
     real ep_ai; // Energy difference between states
+    real offset;
     real<lower=0> n_ns; // Number of nonspecific binding sites
     int<lower=1> n; // Number of allosteric sites.
 
@@ -97,7 +100,7 @@ model {
     vector[N] mu;
     for (i in 1:N) { 
         mu[i] = fold_change(R[i], n_ns, ep_r[idx[i]], c[i], ep_a, ep_i, ep_ai,
-        n, log(1000));
+        n, offset, prefix);
     }
 
     // Set the priors
