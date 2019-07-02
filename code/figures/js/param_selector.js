@@ -48,7 +48,7 @@ else {
         var ka_val = 60;
         var ki_val = 4; 
         var krr_val = 2.3;
-        var epri = 1 / 100000;
+        var epri = Math.log(1 / 100000);
         description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 60 µM<br/> Ki = 4 µM<br/> K_RR* = 2.3<br/> Inactive repressor DNA binding 1 / 100,000 strength of active"
     }
 
@@ -56,7 +56,7 @@ else {
         var ka_val = 60;
         var ki_val = 4; 
         var krr_val = 2.4;
-        var epri = 1 / 10000;
+        var epri = Math.log(1 / 10000);
         description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 60 µM<br/> Ki = 4 µM<br/> K_RR* = 2.4<br/> Inactive repressor DNA binding 1 / 10,000 strength of active"
     }
 
@@ -64,7 +64,7 @@ else {
         var ka_val = 79;
         var ki_val = 4; 
         var krr_val = 1.3;
-        var epri = 1 / 1000;
+        var epri = Math.log(1 / 1000);
         description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 79 µM<br/> Ki = 4 µM<br/> K_RR* = 2.4<br/> Inactive repressor DNA binding 1 / 1000 strength of active"
     }
 
@@ -72,7 +72,7 @@ else {
         var ka_val = 812;
         var ki_val = 0.3; 
         var krr_val = 0.01;
-        var epri = 1 / 100;
+        var epri = Math.log(1 / 100);
         description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 79 µM<br/> Ki = 4 µM<br/> K_RR* = 0.01<br/> Inactive repressor DNA binding 1 / 100 strength of active"
     }
 
@@ -88,7 +88,7 @@ else {
         var ka_val = 133;
         var ki_val = 4;
         var krr_val = 0.7;
-        var epri = 1 / 1000;
+        var epri = Math.log(1 / 1000);
         description.text = "<b>O'Gorman <i> et al.</i>, JBC, 1980</b><br/>Ka = 133 µM<br/> Ki = 4 µM<br/> K_RR* = 0.7<br/> Inactive repressor DNA binding 1 / 1000 strength of active"
     }
 }
@@ -105,7 +105,7 @@ function foldChange(R, epr, epri) {
     for (var i = 0; i < inducer.length; i++) {
     var numer = Math.pow(1 + inducer[i] / ka_val, n);
     var denom = numer + krr_val * Math.pow(1 + inducer[i] / ki_val, n);
-    fc[i] =  1 / (1 + (numer / denom) * (R / nns) * Math.exp(-epr) + pref * (1 - (numer / denom)) * (R / nns) * Math.exp(-epri * epr));
+    fc[i] =  1 / (1 + (numer / denom) * (R / nns) * Math.exp(-epr) + pref * (1 - (numer / denom)) * (R / nns) * Math.exp(-(epr - epri)));
     }
     return fc;
 }

@@ -1,24 +1,41 @@
 # -*- coding: utf-8 -*-
+"""
+This scripts generates an interactive figure to explore how different parameter
+values control the shapes of wild-type LacI induction curves.
+"""
 # %%
-import sys
-sys.path.insert(0, '../../../')
+# ##############################################################################
+# IMPORTS AND CONSTANT DEFINITIONS
+# ##############################################################################
 import numpy as np
 import pandas as pd
 import bokeh.io
 import bokeh.plotting
-from bokeh.models.widgets import TextInput, Slider, Toggle, Button, RadioButtonGroup, Dropdown, Div
+from bokeh.models.widgets import (TextInput, Slider, Toggle, 
+                                 Button, RadioButtonGroup, Dropdown, Div)
 from bokeh.models import CustomJS, ColumnDataSource
 import bokeh.transform
 import bokeh.palettes
 import bokeh.layouts
+from bokeh.themes import Theme
 import mut.thermo
 constants = mut.thermo.load_constants()
 constants['Oid'] = -17
 bokeh.plotting.output_file("param_selector.html")
+# bokeh.io.output_notebook()
 
-# Load the data set (Razo-Mejia et al 2018)
+# ##############################################################################
+# DATA LOADING, CLEANING, AND SOURCE DEFINITION
+# ##############################################################################
+# Load the data set (Razo-Mejia et al 2018) and clean
 data = pd.read_csv('../../../data/csv/RazoMejia2018_data.csv')
 data = data.sort_values(['repressors'])
+data = data[data['repressors'] > 0]
+data['repressors'] *= 2
+data['repressors'] = data['repressors'].astype('str')
+data.rename(columns={'fold_change_A':'fold_change', 'IPTG_uM':'IPTGuM'}, inplace=True)
+
+# Load the fugacity data and leakiness data
 old_gods = pd.read_csv('../../../data/csv/Garcia2011_Brewster2014_data.csv')
 garcia = old_gods[old_gods['author']=='garcia']
 brewster = old_gods[old_gods['author']=='brewster']
@@ -26,11 +43,8 @@ fug_data = pd.read_csv('../../../data/csv/fugacity_data.csv')
 fug_data = fug_data[fug_data['operator']=='O1']
 fug_data['N'] = fug_data['N'].astype(str)
 
-# Clean the data
-data = data[data['repressors'] > 0]
-data['repressors'] *= 2
-data['repressors'] = data['repressors'].astype('str')
-data.rename(columns={'fold_change_A':'fold_change', 'IPTG_uM':'IPTGuM'}, inplace=True)
+# Load the global sampling statistics for three different choices of KRR
+razo_stats = pd.read_csv('../../../data/csv/razomejia_epai_summary.csv')
 
 # Assign the color idx
 pal = bokeh.transform.factor_cmap('repressors', palette=bokeh.palettes.Dark2_6, 
@@ -256,7 +270,48 @@ div_row = bokeh.layouts.row(div3, div4)
 layout = bokeh.layouts.column(div1, widget_layout, razo_plots, old_god_plots)
 # bokeh.io.show(layout)
 
+# #############################
+# THEME DETAILS
+# ############################
+theme_json = {'attrs':
+            {'Figure': {
+                'background_fill_color': '#E3DCD0',
+                'outline_line_color': '#FFFFFF',
+            },
+            'Axis': {
+            'axis_line_color': "white",
+            'major_tick_in': 7,
+            'major_tick_line_width': 2.5,
+            'major_tick_line_color': "white",
+            'minor_tick_line_color': "white",
+            'axis_label_text_font': 'Helvetica',
+            'axis_label_text_font_style': 'normal'
+            },
+            'Grid': {
+                'grid_line_color': None,
+            },
+            'Legend': {
+                'background_fill_color': '#E3DCD0',
+                'border_line_color': '#FFFFFF',
+                'border_line_width': 1.5,
+                'background_fill_alpha': 0.5
+            },
+            'Text': {
+                'text_font_style': 'normal',
+               'text_font': 'Helvetica'
+            },
+            'Title': {
+                'background_fill_color': '#FFEDC0',
+                'text_font_style': 'normal',
+                'align': 'center',
+                'text_font': 'Helvetica',
+                'offset': 2,
+            }}}
+
+theme = Theme(json=theme_json)
+bokeh.io.curdoc().theme = theme
 bokeh.io.save(layout)
+# bokeh.io.show(layout)
 
 
 #%%
