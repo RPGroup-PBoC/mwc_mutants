@@ -30,7 +30,7 @@ else if (input_option == 1) {
         var ka_val = 139;
         var ki_val = 0.53;
         var krr_val = 0.01;
-        description.text = "<b> Razo-Mejia <i>et al.</i>, Cell Systems, 2018</b><br/> Ka = 139 µM<br/> Ki = 0.53 µM<br/> K_RR*=0.01<br/> Inactive repressor DNA binding is negligible";
+        description.text = "<b> Razo-Mejia <i>et al.</i>, Cell Systems, 2018</b><br/> Ka = 139 µM<br/> Ki = 0.53 µM<br/> Δε_AI= 4.5 kT<br/> Inactive repressor DNA binding is negligible";
         var epri = 0;
     }
 
@@ -38,7 +38,7 @@ else if (input_option == 1) {
         var ka_val = 60;
         var ki_val = 4.2; 
         var krr_val = 2.3;
-        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 60 µM<br/> Ki = 4 µM<br/> K_RR* = 2.3<br/> Inactive repressor DNA binding is negligible"
+        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 60 µM<br/> Ki = 4 µM<br/> ∆ε_AI = -0.83 kT<br/> Inactive repressor DNA binding is negligible"
         var epri = 0
     }
 
@@ -47,7 +47,7 @@ else if (input_option == 1) {
         var ki_val = 4; 
         var krr_val = 2.3;
         var epri = Math.log(1 / 100000);
-        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 60 µM<br/> Ki = 4 µM<br/> K_RR* = 2.3<br/> Inactive repressor DNA binding 1 / 100,000 strength of active"
+        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 60 µM<br/> Ki = 4 µM<br/> Δε_AI = -0.83 kT <br/> Inactive repressor DNA binding 1 / 100,000 strength of active"
     }
 
     else if (drop_option == 'one_not_enough_x10000') {
@@ -55,7 +55,7 @@ else if (input_option == 1) {
         var ki_val = 4; 
         var krr_val = 2.4;
         var epri = Math.log(1 / 10000);
-        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 60 µM<br/> Ki = 4 µM<br/> K_RR* = 2.4<br/> Inactive repressor DNA binding 1 / 10,000 strength of active"
+        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 60 µM<br/> Ki = 4 µM<br/> Δε_AI = -0.87 kT <br/> Inactive repressor DNA binding 1 / 10,000 strength of active"
     }
 
     else if (drop_option == 'one_not_enough_x1000') {
@@ -63,7 +63,7 @@ else if (input_option == 1) {
         var ki_val = 4; 
         var krr_val = 1.3;
         var epri = Math.log(1 / 1000);
-        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 79 µM<br/> Ki = 4 µM<br/> K_RR* = 2.4<br/> Inactive repressor DNA binding 1 / 1000 strength of active"
+        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 79 µM<br/> Ki = 4 µM<br/> ∆ε_AI = -0.87 kT <br/> Inactive repressor DNA binding 1 / 1000 strength of active"
     }
 
     else if (drop_option == 'one_not_enough_x100') {
@@ -71,7 +71,7 @@ else if (input_option == 1) {
         var ki_val = 0.3; 
         var krr_val = 0.01;
         var epri = Math.log(1 / 100);
-        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 79 µM<br/> Ki = 4 µM<br/> K_RR* = 0.01<br/> Inactive repressor DNA binding 1 / 100 strength of active"
+        description.text = "<b>Daber, Sharp, and Lewis. J. Mol. Biol. 2009</b><br/>Ka = 79 µM<br/> Ki = 4 µM<br/> Δε_AI = -4.6 kT <br/> Inactive repressor DNA binding 1 / 100 strength of active"
     }
 
     else if (drop_option == 'daber_muts')  {
@@ -79,7 +79,7 @@ else if (input_option == 1) {
         var ki_val = 2;
         var krr_val = 5.8;
         var epri = 0
-        description.text = "<b> Daber, Sochor, and  Lewis. J. Mol. Biol. 2011</b><br/>Ka = 16 µM<br/> Ki = 2 µM<br/> K_RR* = 5.8<br/> Inactive repressor DNA binding is negligible"
+        description.text = "<b> Daber, Sochor, and  Lewis. J. Mol. Biol. 2011</b><br/>Ka = 16 µM<br/> Ki = 2 µM<br/> Δε_AI = -1.75 kT<br/> Inactive repressor DNA binding is negligible"
     }
 
     else if (drop_option == 'ogorman') {
@@ -87,7 +87,7 @@ else if (input_option == 1) {
         var ki_val = 4;
         var krr_val = 0.7;
         var epri = Math.log(1 / 1000);
-        description.text = "<b>O'Gorman <i> et al.</i>, JBC, 1980</b><br/>Ka = 133 µM<br/> Ki = 4 µM<br/> K_RR* = 0.7<br/> Inactive repressor DNA binding 1 / 1000 strength of active"
+        description.text = "<b>O'Gorman <i> et al.</i>, JBC, 1980</b><br/>Ka = 133 µM<br/> Ki = 4 µM<br/> ∆ε_AI = 0.35 kT <br/> Inactive repressor DNA binding 1 / 1000 strength of active"
     }
 }
 

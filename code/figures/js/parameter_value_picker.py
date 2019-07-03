@@ -195,34 +195,28 @@ krr_input.callback = callback
 ka_input.js_on_change('value', callback)
 ki_input.js_on_change('value', callback)
 krr_input.js_on_change('value', callback)
-# ka_slider.callback = callback
-# ki_slider.callback = callback
-# krr_slider.callback = callback
-# ka_slider.js_on_change('value', callback)
-# ki_slider.js_on_change('value', callback)
-# krr_slider.js_on_change('value', callback)
 drop.js_on_change("value", callback)
 drop2.js_on_change("value", callback)
 
 # Set up the figure canvas
 o1_ax = bokeh.plotting.figure(width=300, height=300, x_axis_type='log',
                             x_axis_label='IPTG [µM]', y_axis_label='fold-change',
-                            title='Operator O1 : Δε_RA = -15.3 kT')
+                            title='Operator O1 : Δε_RA = -15.3 kT', toolbar_location=None)
 o2_ax = bokeh.plotting.figure(width=300, height=300, x_axis_type='log',
                             x_axis_label='IPTG [µM]', y_axis_label='fold-change',
-                            title='Operator O2 : Δε_RA = -13.9 kT')
+                            title='Operator O2 : Δε_RA = -13.9 kT', toolbar_location=None)
 o3_ax = bokeh.plotting.figure(width=300, height=300, x_axis_type='log',
                             x_axis_label='IPTG [µM]', y_axis_label='fold-change',
-                            title='Operator O3 : Δε_RA = -9.7 kT')
+                            title='Operator O3 : Δε_RA = -9.7 kT', toolbar_location=None)
 old_ax = bokeh.plotting.figure(width=450, height=300, 
                                   x_axis_type='log', y_axis_type='log',
                                   x_axis_label='repressors per cell', y_axis_label='leakiness',
-                                  title="Single promoter, no inducer")
+                                  title="Single promoter, no inducer", toolbar_location=None)
 fug_ax = bokeh.plotting.figure(width=450, height=300, 
                                   x_axis_type='log', y_axis_type='log',
                                   x_axis_label='repressors per cell', y_axis_label='leakiness',
                                   title='variable promoter copy number (O1 operator)',
-                                  x_range = [1, 1E3])
+                                  x_range = [1, 1E3], toolbar_location=None)
 
 # Plot the theory
 o1_ax.multi_line(xs='IPTGuM', ys='fold_change', line_width=1, source=O1_theo, line_color=pal)
