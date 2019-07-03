@@ -18,11 +18,12 @@ import bokeh.transform
 import bokeh.palettes
 import bokeh.layouts
 from bokeh.themes import Theme
+from bokeh.resources import INLINE
 import mut.thermo
 constants = mut.thermo.load_constants()
 constants['Oid'] = -17
 bokeh.plotting.output_file("param_selector.html")
-# bokeh.io.output_notebook()
+# bokeh.io.output_notebook(resources=INLINE)
 
 # ##############################################################################
 # DATA LOADING, CLEANING, AND SOURCE DEFINITION
@@ -136,15 +137,15 @@ fug_theo = ColumnDataSource({'repressors':xs, 'leakiness':ys, 'N':cs})
 # Instantiate the direct text inputs
 ka_input = TextInput(value="139", title='Ka [µM]')
 ki_input = TextInput(value="0.53", title='Ki [µM]')
-krr_input = TextInput(value="0.001", title='K_RR* (exp{-βΔε})')
+krr_input = TextInput(value="5", title='Δε_AI [kT]')
 
 # Instantiate the slider inputs
-ka_slider = Slider(start=0, end=500, step=0.01, value=139, title='Ka [µM]')
-ki_slider = Slider(start=0, end=500, step=0.01, value=0.53, title='Ki [µM]')
-krr_slider = Slider(start=0.000001, end=10, step=0.01, value=0.01, title='K_RR* (exp{-βΔε})')
+# ka_slider = Slider(start=0, end=500, step=0.01, value=139)
+# ki_slider = Slider(start=0, end=500, step=0.01, value=0.53)
+# krr_slider = Slider(start=-10, end=10, step=0.01, value=0.01)
 
 # Instantiate the selector buttons
-selector = RadioButtonGroup(labels=['Use Numeric Input', 'Use Slider Input', 'Use Literature Values'], active=0)
+selector = RadioButtonGroup(labels=['Use Numeric Input', 'Use Literature Values', 'Use Fit Values'], active=0)
 drop = Dropdown(label='Select Literature Source', menu=[('Razo-Mejia et al. 2018', 'razo'), 
                                                         ('Daber, Sharp, and Lewis 2009 (Δε_RI = 0)', 'one_not_enough_x0'),
                                                         ('Daber, Sharp, and Lewis 2009 (Δε_RI = Δε_RA / 100,000)', 'one_not_enough_x100000'),
@@ -154,27 +155,21 @@ drop = Dropdown(label='Select Literature Source', menu=[('Razo-Mejia et al. 2018
                                                         ('Daber, Sochor, and Lewis 2011', 'daber_muts'),
                                                         ("O'Gorman et al. 1980", 'ogorman')],
                                                         button_type='warning')
+drop2 = Dropdown(label='Select ∆ε_AI Ground Truth', menu=[('Razo-Mejia et al. 2018 (∆ε_AI = 4.5 kT)', 'razo'), 
+                                                        ('Daber, Sochor, and Lewis 2011 (∆ε_AI = -1.75 kT)', 'daber_muts'),
+                                                        ("O'Gorman et al. 1980  (∆ε_AI = 0.35 kT)", 'ogorman')],
+                                                        button_type='warning')
 
 # Describe the parameter values.
 vals = Div(text="""Literature values appear here when selection is made.""", width =300, height=150)
-div1 = Div(text="""
-<b>This interactive figure allows you to explore how changing parameter values of the simple repression thermodynamic model match <i>in vivo</i> data collected in the Phillips Group. To use, first select the mode of entry (Numeric, Slider, or from Literature Values) followed by your selection of parameters. The data should update as soon as a selection is made.</b>
-""", width = 900, height=50)
-div2 = Div(text=""" <center><b>These data come from Razo-Mejia <i>et al.</i> 2018 in which
-the fold-change in gene expression was measured <i> in vivo</i>.</b></center>""", width=900, height=75)
-div3 = Div(text=""" <center><b>These data come Garcia and Phillips 2011 and Brewster <i>et al.</i> 2014. They show the fold-change in gene expression measured for LacI tetramers (circles) and dimers (diamonds) for four different operators in the absence of inducer. In these experiments, there is a single specific binding site in the genome. the fold-change in gene expression was measured <i> in vivo</i>.</b></center>""", width=450, height=75)
-div4 = Div(text="""<center><b>These data come from Brewster <i>et al.</i> 2014 in which the fold-chang in gene expression for a simple repression architecture with the native O1 operator sequence was present in the cell with either 64 (green) or 52 (orange) copies of the promoter.</b></center>""", width=400, height=75)
+vals2 = Div(text="""Estimated parameter values will appear here when selection is made""", width =300, height=150)
 
-# Execute button
-execute = Button(label='Update Plots', button_type='success')
 
 # Generate layouts for widgets
-box1 = bokeh.layouts.widgetbox([ka_input, ki_input,
+box1 = bokeh.layouts.widgetbox([ka_input, ki_input, 
                                  krr_input])
-box2 = bokeh.layouts.widgetbox([ka_slider, ki_slider, 
-                                krr_slider])
-
-box3 = bokeh.layouts.widgetbox([drop, vals])
+box2 = bokeh.layouts.widgetbox([drop, vals])
+box3 = bokeh.layouts.widgetbox([drop2, vals2])
 row1 = bokeh.layouts.row(box1, box2, box3)
 widget_layout = bokeh.layouts.column(selector, row1)
 
@@ -186,9 +181,9 @@ with open('param_selector.js') as file:
 callback = CustomJS(args=dict(o1_source=O1_theo, o2_source=O2_theo, 
                             o3_source=O3_theo, Ka_numer=ka_input, 
                             Ki_numer=ki_input, Krr_numer=krr_input,
-                            Ka_slider=ka_slider, Ki_slider=ki_slider, 
-                            Krr_slider=krr_slider, Radio=selector, 
-                            c_range=c_range, Drop=drop, Desc=vals, 
+                             Radio=selector, 
+                            c_range=c_range, Drop=drop, Fit= drop2, 
+                            Desc=vals, FitDesc=vals2,
                             rep_range=rep_range, leak_source=leak_theo,
                             fug_source=fug_theo), code=cb)
 
@@ -199,13 +194,14 @@ krr_input.callback = callback
 ka_input.js_on_change('value', callback)
 ki_input.js_on_change('value', callback)
 krr_input.js_on_change('value', callback)
-ka_slider.callback = callback
-ki_slider.callback = callback
-krr_slider.callback = callback
-ka_slider.js_on_change('value', callback)
-ki_slider.js_on_change('value', callback)
-krr_slider.js_on_change('value', callback)
+# ka_slider.callback = callback
+# ki_slider.callback = callback
+# krr_slider.callback = callback
+# ka_slider.js_on_change('value', callback)
+# ki_slider.js_on_change('value', callback)
+# krr_slider.js_on_change('value', callback)
 drop.js_on_change("value", callback)
+drop2.js_on_change("value", callback)
 
 # Set up the figure canvas
 o1_ax = bokeh.plotting.figure(width=300, height=300, x_axis_type='log',
@@ -266,8 +262,7 @@ fug_ax.legend.location = 'bottom_left'
 # Define the plot layouts
 razo_plots = bokeh.layouts.row(o1_ax, o2_ax, o3_ax)
 old_god_plots = bokeh.layouts.row(old_ax, fug_ax)
-div_row = bokeh.layouts.row(div3, div4)
-layout = bokeh.layouts.column(div1, widget_layout, razo_plots, old_god_plots)
+layout = bokeh.layouts.column(widget_layout, razo_plots, old_god_plots)
 # bokeh.io.show(layout)
 
 # #############################
@@ -310,7 +305,7 @@ theme_json = {'attrs':
 
 theme = Theme(json=theme_json)
 bokeh.io.curdoc().theme = theme
-bokeh.io.save(layout)
+bokeh.io.save(layout, inline=True)
 # bokeh.io.show(layout)
 
 

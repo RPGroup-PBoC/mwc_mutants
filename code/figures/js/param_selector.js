@@ -3,31 +3,27 @@ var inducer = c_range;
 var nns = 4600000;
 var n = 2;
 var operators = ['O1', 'O2', 'O3', 'Oid']
-var energies = [-15.3, -13.9, -9.7, -17]
-var repressors = [22, 60, 124, 260, 1220, 1740];
 
 // Define sliders and inputs, and 
 var input_option = Radio.active; 
 var drop_option = Drop.value;
+var fit_option = Fit.value;
 var description = Desc;
+var fit_description = FitDesc;
 var epri = 0;
-
+var repressors = [22, 60, 124, 260, 1220, 1740];
 if  (input_option == 0 ) {
+    var operators = ['O1', 'O2', 'O3', 'Oid']
+    var energies = [-15.3, -13.9, -9.7, -17]
     var ka_val = parseFloat(Ka_numer.value); 
     var ki_val = parseFloat(Ki_numer.value); 
-    var krr_val = parseFloat(Krr_numer.value); 
-    var epri = 0
-
+    var krr_val = Math.exp(parseFloat(Krr_numer.value)); 
+    var epri = 0;
 }
 
 else if (input_option == 1) {
-    var ka_val = Ka_slider.value; 
-    var ki_val = Ki_slider.value;
-    var krr_val = Krr_slider.value; 
-    var epri = 0
-}
-
-else {
+    var operators = ['O1', 'O2', 'O3', 'Oid']
+    var energies = [-15.3, -13.9, -9.7, -17]
     if (drop_option == 'razo') {
         var ka_val = 139;
         var ki_val = 0.53;
@@ -93,6 +89,35 @@ else {
     }
 }
 
+else { 
+    var epri = 0;
+    if (fit_option == 'razo') { 
+    var energies = [-15.1, -13.4, -9.21, -17.1]
+    var ka_val = 225;
+    var ki_val = 0.81
+    var krr_val = Math.exp(-4.5);
+    fit_description.text = "<b>Global fit using Razo-Mejia <i> et al.</i>, Cell Sys.,  2018 ∆ε_AI = 4.5 kT </b><br/>∆ε_RA (O1 operator) = -15.1 \u00B1 0.1 kT <br/> ∆ε_RA (O2 operator) = -13.4 \u00B1 0.1 kT<br/> ∆ε_RA (O3 operator) = -9.21 \u00B1 0.06 kT<br/> ∆ε_RA (Oid operator) = -17 \u00B1 5 kT<br/> Ka = 225 \u00B1 20 µM<br/> Ki = 0.81 \u00B1 0.05 µM<br/>"
+
+    } 
+
+    if (fit_option == 'ogorman') {
+    var energies = [-15.7, -14.0, -9.85, -19];
+    var ka_val = 270;
+    var ki_val = 5.5;
+    var krr_val = Math.exp(-0.35);
+    fit_description.text = "<b>Global fit using O'Gorman <i> et al.</i>, JBC, 1980 ∆ε_AI = 0.35 kT </b><br/>∆ε_RA (O1 operator) = -15.7 \u00B1 0.1 kT <br/> ∆ε_RA (O2 operator) = -13.4 \u00B1 0.1 kT<br/> ∆ε_RA (O3 operator) = -9.85 \u00B1 0.06 kT<br/> ∆ε_RA (Oid operator) = -19 \u00B1 5 kT<br/> Ka = 270 \u00B1 20 µM<br/> Ki = 5.5 \u00B1 0.4 µM<br/>"
+    }
+
+    else if (fit_option == 'daber_muts') {
+    var energies = [-17.1, -15.4, -11.29, -20]
+    var ka_val = 290;
+    var ki_val = 8.2;
+    var krr_val = Math.exp(1.75);
+
+    fit_description.text = "<b>Global fit using Daber <i> et al.</i>, J. Mol. Biol., 2011 ∆ε_AI = -1.75 kT </b><br/>∆ε_RA (O1 operator) = -17.1 \u00B1 0.1 kT <br/> ∆ε_RA (O2 operator) = -13.4 \u00B1 0.1 kT<br/> ∆ε_RA (O3 operator) = -9.85 \u00B1 0.06 kT<br/> ∆ε_RA (Oid operator) = -20 \u00B1 5 kT<br/> Ka = 270 \u00B1 20 µM<br/> Ki = 8.2 \u00B1 0.4 µM<br/>"
+    }
+}
+
 // Define the function for computing the fold-change
 function foldChange(R, epr, epri) {
     fc = []
@@ -136,7 +161,7 @@ function updateLeakiness(source) {
             var ra = rep_range[j] * pact / nns;
             var ri = rep_range[j] * (1 - pact) / nns;
 
-            _ys[j] = 1 / (1 + ra * Math.exp(-energies[i]) + pref * ri * Math.exp(-epri * energies[i]));
+            _ys[j] = 1 / (1 + ra * Math.exp(-energies[i]) + pref * ri * Math.exp(-(energies[i] - epri)));
             console.log(_ys[j])
     }
     ys[i] = _ys;
@@ -164,8 +189,8 @@ function computeFugacity(pact, ep,  epri, M) {
     else {
         var pref = 0;
     }
-    var x = Math.exp(15.3);
-    var xi = Math.exp(-epri * (-15.3));
+    var x = Math.exp(-energies[0]);
+    var xi = Math.exp(-(energies[0] - epri));
     for (var j = 0; j < rep_range.length; j++) {
 
         var ra = rep_range[j] * pact;
@@ -196,8 +221,8 @@ function updateFoldChangeFugacity(source) {
     source.change.emit();
     }
 // Define the three sources
-updateFoldChange(o1_source, -15.3, epri);
-updateFoldChange(o2_source, -13.9, epri);
-updateFoldChange(o3_source, -9.7, epri);
+updateFoldChange(o1_source, energies[0], epri);
+updateFoldChange(o2_source, energies[1], epri);
+updateFoldChange(o3_source, energies[2], epri);
 updateLeakiness(leak_source);
 updateFoldChangeFugacity(fug_source);
