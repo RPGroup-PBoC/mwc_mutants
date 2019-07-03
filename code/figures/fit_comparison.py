@@ -139,7 +139,7 @@ for i, stats in enumerate([razo_samples, daber_samples, matt_samples]):
         x = np.exp(-o1)
         pact = 1 / (1 + np.exp(-ep_ai))
         r = pact * rep_range
-        B = rep_range * (1 + x) - n * x - 4.6E6
+        B = r * (1 + x) - n * x - 4.6E6
         A = x * (r - n - 4.6E6)
         numer = -B - np.sqrt(B * B - 4 * A * r)
         denom = 2 * A

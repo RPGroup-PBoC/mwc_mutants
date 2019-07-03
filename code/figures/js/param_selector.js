@@ -2,7 +2,7 @@
 var inducer = c_range;
 var nns = 4600000;
 var n = 2;
-var operators = ['O1', 'O2', 'O3', 'Oid']
+var operators = ['O1', 'O2', 'O3', 'Oid'];
 
 // Define sliders and inputs, and 
 var input_option = Radio.active; 
@@ -12,22 +12,24 @@ var description = Desc;
 var fit_description = FitDesc;
 var epri = 0;
 var repressors = [22, 60, 124, 260, 1220, 1740];
+var operators = ['O1', 'O2', 'O3', 'Oid']
+
+// Case 1 -> Use numeric input
 if  (input_option == 0 ) {
-    var operators = ['O1', 'O2', 'O3', 'Oid']
     var energies = [-15.3, -13.9, -9.7, -17]
     var ka_val = parseFloat(Ka_numer.value); 
     var ki_val = parseFloat(Ki_numer.value); 
-    var krr_val = Math.exp(parseFloat(Krr_numer.value)); 
+    var krr_val = Math.exp(-parseFloat(Krr_numer.value)); 
     var epri = 0;
 }
 
+// Case I -> Choose literature values
 else if (input_option == 1) {
-    var operators = ['O1', 'O2', 'O3', 'Oid']
     var energies = [-15.3, -13.9, -9.7, -17]
     if (drop_option == 'razo') {
         var ka_val = 139;
         var ki_val = 0.53;
-        var krr_val = 0.01
+        var krr_val = 0.01;
         description.text = "<b> Razo-Mejia <i>et al.</i>, Cell Systems, 2018</b><br/> Ka = 139 µM<br/> Ki = 0.53 µM<br/> K_RR*=0.01<br/> Inactive repressor DNA binding is negligible";
         var epri = 0;
     }
@@ -89,10 +91,13 @@ else if (input_option == 1) {
     }
 }
 
-else { 
+
+// Case 2: Choose global fit values. 
+else if (input_option==2) { 
     var epri = 0;
+
     if (fit_option == 'razo') { 
-    var energies = [-15.1, -13.4, -9.21, -17.1]
+    var energies = [-15.121, -13.4, -9.21, -17.1]
     var ka_val = 225;
     var ki_val = 0.81
     var krr_val = Math.exp(-4.5);
@@ -102,18 +107,17 @@ else {
 
     if (fit_option == 'ogorman') {
     var energies = [-15.7, -14.0, -9.85, -19];
-    var ka_val = 270;
-    var ki_val = 5.5;
+    var ka_val = 267;
+    var ki_val = 5.45;
     var krr_val = Math.exp(-0.35);
     fit_description.text = "<b>Global fit using O'Gorman <i> et al.</i>, JBC, 1980 ∆ε_AI = 0.35 kT </b><br/>∆ε_RA (O1 operator) = -15.7 \u00B1 0.1 kT <br/> ∆ε_RA (O2 operator) = -13.4 \u00B1 0.1 kT<br/> ∆ε_RA (O3 operator) = -9.85 \u00B1 0.06 kT<br/> ∆ε_RA (Oid operator) = -19 \u00B1 5 kT<br/> Ka = 270 \u00B1 20 µM<br/> Ki = 5.5 \u00B1 0.4 µM<br/>"
     }
 
     else if (fit_option == 'daber_muts') {
-    var energies = [-17.1, -15.4, -11.29, -20]
-    var ka_val = 290;
-    var ki_val = 8.2;
-    var krr_val = Math.exp(1.75);
-
+    var energies = [-17.111, -15.4, -11.29, -20]
+    var ka_val = 288.92;
+    var ki_val = 8.1927;
+    var krr_val = Math.exp(1.75785); 
     fit_description.text = "<b>Global fit using Daber <i> et al.</i>, J. Mol. Biol., 2011 ∆ε_AI = -1.75 kT </b><br/>∆ε_RA (O1 operator) = -17.1 \u00B1 0.1 kT <br/> ∆ε_RA (O2 operator) = -13.4 \u00B1 0.1 kT<br/> ∆ε_RA (O3 operator) = -9.85 \u00B1 0.06 kT<br/> ∆ε_RA (Oid operator) = -20 \u00B1 5 kT<br/> Ka = 270 \u00B1 20 µM<br/> Ki = 8.2 \u00B1 0.4 µM<br/>"
     }
 }
@@ -172,15 +176,10 @@ function updateLeakiness(source) {
 }
 
 
-// Define function to compute the fugacity. 
-function computePact() {
-    var numer = Math.pow(1 + 0 / ki_val, n);
-    var denom = Math.pow(1 + 0 / ka_val, n);
-    var prob = Math.pow(1 + krr_val* numer / denom, -1);
-    return prob;
-    }
-
-function computeFugacity(pact, ep,  epri, M) {
+// Define some functions for computing quantities.
+function computeFugacity(ep,  epri, M) {
+    // Compute the residual active probability. 
+    var pact = (1 / (1 + krr_val));
     var fug = [];
     if (epri != 0) {
         var pref = 1;
@@ -189,20 +188,19 @@ function computeFugacity(pact, ep,  epri, M) {
     else {
         var pref = 0;
     }
-    var x = Math.exp(-energies[0]);
-    var xi = Math.exp(-(energies[0] - epri));
+    var x = Math.exp(-ep);
+    var xi = Math.exp(-(ep - epri));
     for (var j = 0; j < rep_range.length; j++) {
-
         var ra = rep_range[j] * pact;
         var ri = rep_range[j] * (1 - pact);
-        var B_act = (ra * (1 + x) - M * x - nns) 
-        var B_inact = (ri * (1 + xi) - M * xi - nns) 
+        var B_act = (ra * (1 + x) - M * x - 4600000) 
+        var B_inact = (ri * (1 + xi) - M * xi - 4600000) 
         var C_act = ra;
         var C_inact = ri;
-        var A_act = x * (ra - M - nns);
-        var A_inact = xi * (ri - M - nns);
-        var numer_act = -B_act - Math.sqrt(B_act*B_act - 4 * A_act * C_act);
-        var numer_inact = -B_inact - Math.sqrt(B_inact*B_inact - 4 * A_inact * C_inact);
+        var A_act = x * (ra - M - 4600000);
+        var A_inact = xi * (ri - M - 4600000);
+        var numer_act = -B_act - Math.sqrt(Math.pow(B_act, 2) - 4 * A_act * C_act);
+        var numer_inact = -B_inact - Math.sqrt(Math.pow(B_inact, 2) - 4 * A_inact * C_inact);
         var denom_act = 2 * A_act;
         var denom_inact = 2 * A_inact;
         fug[j] = 1 / (1 + (numer_act / denom_act) * x + pref * (numer_inact /denom_inact) * xi) 
@@ -212,10 +210,9 @@ function computeFugacity(pact, ep,  epri, M) {
 
 var M = [64, 52]
 function updateFoldChangeFugacity(source) {
-    var pact = 1 / (1 + krr_val);
     ys = [];
     for (var j = 0; j < M.length; j++) {
-        ys[j] = computeFugacity(pact, -15.3, epri, M[j]);
+        ys[j] = computeFugacity(energies[0], epri, M[j]);
     }
     source.data['leakiness'] = ys;
     source.change.emit();

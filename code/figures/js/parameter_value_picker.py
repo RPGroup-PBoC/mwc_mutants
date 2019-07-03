@@ -4,6 +4,7 @@ This scripts generates an interactive figure to explore how different parameter
 values control the shapes of wild-type LacI induction curves.
 """
 # %%
+# cd code/figures/js
 # ##############################################################################
 # IMPORTS AND CONSTANT DEFINITIONS
 # ##############################################################################
@@ -147,14 +148,14 @@ krr_input = TextInput(value="5", title='Δε_AI [kT]')
 # Instantiate the selector buttons
 selector = RadioButtonGroup(labels=['Use Numeric Input', 'Use Literature Values', 'Use Fit Values'], active=0)
 drop = Dropdown(label='Select Literature Source', menu=[('Razo-Mejia et al. 2018', 'razo'), 
-                                                        ('Daber, Sharp, and Lewis 2009 (Δε_RI = 0)', 'one_not_enough_x0'),
-                                                        ('Daber, Sharp, and Lewis 2009 (Δε_RI = Δε_RA / 100,000)', 'one_not_enough_x100000'),
-                                                        ('Daber, Sharp, and Lewis 2009 (Δε_RI = Δε_RA / 10,000)', 'one_not_enough_x10000'),
-                                                        ('Daber, Sharp, and Lewis 2009 (Δε_RI = Δε_RA / 1000)', 'one_not_enough_x1000'),
-                                                        ('Daber, Sharp, and Lewis 2009 (Δε_RI = Δε_RA / 100)', 'one_not_enough_x100'),
-                                                        ('Daber, Sochor, and Lewis 2011', 'daber_muts'),
-                                                        ("O'Gorman et al. 1980", 'ogorman')],
-                                                        button_type='warning')
+                ('Daber, Sharp, and Lewis 2009 (Δε_RI = 0)', 'one_not_enough_x0'),
+                 ('Daber, Sharp, and Lewis 2009 (Δε_RI = Δε_RA / 100,000)', 'one_not_enough_x100000'),
+                 ('Daber, Sharp, and Lewis 2009 (Δε_RI = Δε_RA / 10,000)', 'one_not_enough_x10000'),
+                 ('Daber, Sharp, and Lewis 2009 (Δε_RI = Δε_RA / 1000)', 'one_not_enough_x1000'),
+                 ('Daber, Sharp, and Lewis 2009 (Δε_RI = Δε_RA / 100)', 'one_not_enough_x100'),
+                 ('Daber, Sochor, and Lewis 2011', 'daber_muts'),
+                 ("O'Gorman et al. 1980", 'ogorman')],
+                 button_type='warning')
 drop2 = Dropdown(label='Select ∆ε_AI Ground Truth', menu=[('Razo-Mejia et al. 2018 (∆ε_AI = 4.5 kT)', 'razo'), 
                                                         ('Daber, Sochor, and Lewis 2011 (∆ε_AI = -1.75 kT)', 'daber_muts'),
                                                         ("O'Gorman et al. 1980  (∆ε_AI = 0.35 kT)", 'ogorman')],
@@ -307,6 +308,9 @@ theme = Theme(json=theme_json)
 bokeh.io.curdoc().theme = theme
 bokeh.io.save(layout, inline=True)
 # bokeh.io.show(layout)
+
+
+#%%
 
 
 #%%
