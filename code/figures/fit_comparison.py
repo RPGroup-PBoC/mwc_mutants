@@ -49,7 +49,7 @@ for i in range(3):
 
 for i in range(2):
     ax[1, i+1].set_xlabel('repressors per cell', fontsize=8)
-    ax[1, i+1].set_ylabel('leakiness', fontsize=8)
+    ax[1, i+1].set_ylabel('fold-change', fontsize=8)
     ax[1, i+1].set_yscale('log')
     ax[1, i+1].set_xscale('log')
 
@@ -151,6 +151,11 @@ for i, stats in enumerate([razo_samples, daber_samples, matt_samples]):
 ax[1, 2].set_xlim([1, 800])
 ax[1, 2].set_ylim([3, 1E-3])
 plt.subplots_adjust(hspace=0.3, wspace=0.38)
+fig.text(0.05, 0.92, '(A)', fontsize=8)
+fig.text(0.35, 0.92, '(B)', fontsize=8)
+fig.text(0.66, 0.92, '(C)', fontsize=8)
+fig.text(0.34, 0.47, '(D)', fontsize=8)
+fig.text(0.62, 0.47, '(E)', fontsize=8)
 plt.savefig('../../figures/FigR2_parameter_comparison.pdf', bbox_inches='tight',
             facecolor='white')
 #%%
