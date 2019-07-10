@@ -42,7 +42,17 @@ op_colors = {'O1':sns_colors[0], 'O2':sns_colors[1], 'O3':sns_colors[2]}
 
 # Set titles
 for m, a in muts.items():
-    ax[0, a].set_title(m, fontsize=6, backgroundcolor=pboc['pale_yellow'], y=1.06)
+    if m == 'F164T':
+        label = 'F161T'
+    elif m == 'Q294K':
+        label = 'Q291K'
+    elif m == 'Q294V':
+        label = 'Q291V'
+    elif m == 'Q294R':
+        label = 'Q291R'
+    else:
+        label = m
+    ax[0, a].set_title(label, fontsize=6, backgroundcolor=pboc['pale_yellow'], y=1.06)
 for o, a in ops.items():
     ax[a, 0].text(-0.53, 0.5, o, fontsize=6, rotation='vertical', 
                   backgroundcolor=pboc['pale_yellow'],
@@ -101,5 +111,5 @@ for g, d in data.groupby(['mutant', 'operator']):
                     color=op_colors[g[1]], alpha=0.5)
 
 plt.subplots_adjust(hspace=0.05, wspace=0.05)
-plt.savefig('../../figures/Chure2019_FigS19_deltaF_comparison.pdf', 
+plt.savefig('../../figures/Chure2019_FigS20_deltaF_comparison.pdf', 
 bbox_inches='tight')

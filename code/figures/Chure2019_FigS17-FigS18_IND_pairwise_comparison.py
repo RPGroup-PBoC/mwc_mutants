@@ -63,9 +63,19 @@ for g, d in data.groupby(['mutant']):
             else:
                 face = color[g]
                 edge = color[g]
+            if g == 'F164T':
+                label = 'F161T'
+            elif g == 'Q294K':
+                label = 'Q291K'
+            elif g == 'Q294V':
+                label = 'Q291V'
+            elif g == 'Q294R':
+                label = 'Q291R'
+            else:
+                label = g
             _ = ax[i, j].errorbar(_d['IPTGuM'], _d['mean'], _d['sem'], markerfacecolor=face,
                                  markeredgecolor=edge, color=edge, lw=0.15, linestyle='none', fmt='o',
-                                 ms=2.5, label=g)
+                                 ms=2.5, label=label)
            
             # Plot the best-fit lines. 
             for k, m in enumerate(data['mutant'].unique()):
@@ -103,9 +113,9 @@ _  = ax[0, 2].legend(fontsize=8, bbox_to_anchor=(1.04, 0.95))
 plt.subplots_adjust(wspace=0.05, hspace=0.05)
 
 if MODEL == 'KaKi_only':
-   plt.savefig('../../figures/Chure2019_FigS17_KaKi_IND_pairwise_predictions.pdf', 
-               bbox_inches='tight')
+   plt.savefig('../../figures/Chure2019_FigS18_KaKi_IND_pairwise_predictions.pdf', 
+               bbox_inches='tight', facecolor='white')
 elif MODEL == 'KaKi_epAI':
-   plt.savefig('../../figures/Chure2019_FigS18_KaKi_epAI_IND_pairwise_predictions.pdf', 
-            bbox_inches='tight')
+   plt.savefig('../../figures/Chure2019_FigS19_KaKi_epAI_IND_pairwise_predictions.pdf', 
+            bbox_inches='tight', facecolor='white')
     

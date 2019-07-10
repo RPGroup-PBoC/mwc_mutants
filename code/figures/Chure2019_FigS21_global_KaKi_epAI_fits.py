@@ -44,7 +44,17 @@ ax[1, 0].set_ylabel(r'$\Delta F$ [$k_BT$]', fontsize=8)
 # Define the axes. 
 axes = {'Q294K':0, 'Q294R':1, 'F164T':2, 'Q294V':3}
 for m, a in axes.items():
-    ax[0, a].set_title(m, fontsize=8, backgroundcolor=colors['pale_yellow'],
+        if m == 'Q294K':
+                label = 'Q291K'
+        elif m == 'Q294R':
+                label = 'Q291R'
+        elif m == 'Q294V':
+                label = 'Q291V'
+        elif m == 'F164T':
+                label = 'F161T'
+        else:
+                label = m
+        ax[0, a].set_title(label, fontsize=8, backgroundcolor=colors['pale_yellow'],
         y=1.08)
 
 # ##############################################################################
@@ -107,8 +117,7 @@ for g, d in empirical_F.groupby(['mutant', 'operator', 'IPTGuM']):
 leg = ax[0, 0].legend(title='operator', fontsize=6)
 leg.get_title().set_fontsize(6)
 plt.tight_layout()
-plt.savefig('../../figures/Chure2019_FigS21_global_KaKi_epAI_fits.pdf', 
-           bbox_inches='tight')
+plt.savefig('../../figures/Chure2019_FigS23_global_KaKi_epAI_fits.pdf', 
+           bbox_inches='tight', facecolor='white')
 
 
-           epRA_stats

@@ -43,7 +43,15 @@ ax[1, 0].set_ylabel(r'$\Delta F$ [$k_BT$]', fontsize=8)
 # Define the axes. 
 axes = {'Q21M':0, 'Q21A':1, 'Y20I':2}
 for m, a in axes.items():
-    ax[0, a].set_title(m, fontsize=8, backgroundcolor=colors['pale_yellow'],
+    if m == 'Q21M':
+        label = 'Q18M'
+    elif m == 'Q21A':
+        label = 'Q18A'
+    elif m == 'Y20I':
+        label = 'Y17I'
+    else:
+        label = m
+    ax[0, a].set_title(label, fontsize=8, backgroundcolor=colors['pale_yellow'],
         y=1.08)
 
 # ##############################################################################
@@ -101,5 +109,5 @@ for g, d in empirical_F.groupby(['mutant', 'repressors', 'IPTGuM']):
 leg = ax[0, 0].legend(title='rep. / cell', fontsize=6)
 leg.get_title().set_fontsize(6)
 plt.tight_layout()
-plt.savefig('../../figures/Chure2019_FigS20_DNA_global_fit.pdf', 
-            bbox_inches='tight')
+plt.savefig('../../figures/Chure2019_FigS22_DNA_global_fit.pdf', 
+            bbox_inches='tight', facecolor='white')

@@ -58,9 +58,17 @@ for g, d in data.groupby(['mutant']):
             else:
                 face = color[g]
                 edge = color[g]
+            if g == 'Y20I':
+                label = 'Y17I'
+            elif g == 'Q21A':
+                label = 'Q18A'
+            elif g == 'Q21M':
+                label = 'Q18M'
+            else:
+                label = g
             _ = ax[i, j].errorbar(_d['IPTGuM'], _d['mean'], _d['sem'], markerfacecolor=face,
                                  markeredgecolor=edge, color=edge, lw=0.15, linestyle='none', fmt='o',
-                                 ms=2.5, label=g)
+                                 ms=2.5, label=label)
            
             # Plot the best-fit lines. 
             for k, m in enumerate(data['mutant'].unique()):
@@ -84,4 +92,5 @@ for g, d in data.groupby(['mutant']):
             
 _  = ax[0, 3].legend(fontsize=8, bbox_to_anchor=(1.04, 0.95))
 plt.subplots_adjust(wspace=0.05, hspace=0.05)
-plt.savefig('../../figures/Chure2019_FigS11_DNA_pairwise_comparison.pdf', bbox_inches='tight')
+plt.savefig('../../figures/Chure2019_FigS12_DNA_pairwise_comparison.pdf', 
+            facecolor='white', bbox_inches='tight')

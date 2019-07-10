@@ -37,7 +37,15 @@ rows = {60:0, 124:1, 260:2, 1220:3}
 
 # Add titles and row labels. 
 for m, a in cols.items():
-    ax[0, a].set_title(m, fontsize=6, y=1.08, backgroundcolor=colors['pale_yellow'])
+    if m == 'Y20I':
+        label = 'Y17I'
+    elif m == 'Q21A':
+        label = 'Q18A'
+    elif m == 'Q21M':
+        label = 'Q18M'
+    else:
+        label = m 
+    ax[0, a].set_title(label, fontsize=6, y=1.08, backgroundcolor=colors['pale_yellow'])
     
 for r, a in rows.items():
     ax[a, 0].text(-0.3, 0.57, f'R = {int(r)}', fontsize=6, rotation='vertical',
@@ -93,5 +101,5 @@ for c, ca in cols.items():
                         epRA['hpd_max'] - constants['O2'], alpha=0.75, 
                         color=rep_colors[r])
 plt.subplots_adjust(hspace=0.05, wspace=0.03)
-plt.savefig('../../figures/Chure2019_FigS12_DNA_deltaF_pairwise_comparison.pdf', 
-            bbox_inches='tight')
+plt.savefig('../../figures/Chure2019_FigS13_DNA_deltaF_pairwise_comparison.pdf', 
+            bbox_inches='tight', facecolor='white')
