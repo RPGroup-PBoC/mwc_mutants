@@ -36,7 +36,7 @@ for a in ax.ravel():
     a.xaxis.set_tick_params(labelsize=6)
     a.yaxis.set_tick_params(labelsize=6)
     a.set_xscale('symlog', linthreshx=1E-3)
-    a.set_xticks([0, 1E-1, 1E1, 1E3])
+    a.set_xticks([0, 1E0, 1E3])
     a.set_xlim([-0.0005, 1E4])
 
 
@@ -54,9 +54,18 @@ for i in range(3):
 
 # Set the titles and axis labels. 
 for m, idx in IND_idx.items():
-        ax[0, idx].set_title(m, fontsize=6, y=1.04, 
+        if m == 'Q294K':
+                label = 'Q291K'
+        elif m == 'Q294V':
+                label = 'Q291V'
+        elif m == 'F164T':
+                label = 'F161T'
+        else:
+                label = m
+
+        ax[0, idx].set_title(label, fontsize=6, y=1.04, 
                            backgroundcolor=pboc['pale_yellow'])
-        ax[0, idx + 4].set_title(m, fontsize=6, y=1.04, 
+        ax[0, idx + 4].set_title(label, fontsize=6, y=1.04, 
                            backgroundcolor=pboc['pale_yellow'])
         ax[-1, idx].set_xlabel('IPTG [µM]', fontsize=6)
         ax[-1, idx + 4].set_xlabel('IPTG [µM]', fontsize=6)
@@ -75,9 +84,17 @@ for i in range(2):
 
 # Mutant Identifiers
 for m, idx in DNA_idx.items():
-        ax[idx, 0].text(-0.8, 0.62, m, fontsize=6,rotation='vertical', 
+        if m == 'Y20I':
+                label = 'Y17I'
+        elif m == 'Q21A':
+                label = 'Q18A'
+        elif m == 'Q21M':
+                label = 'Q18M'
+        else:
+                label = m
+        ax[idx, 0].text(-0.8, 0.45, label, fontsize=6,rotation='vertical', 
             backgroundcolor=pboc['pale_yellow'], transform=ax[idx, 0].transAxes)
-        ax[idx, 4].text(-0.8, 0.62, m, fontsize=6,rotation='vertical', 
+        ax[idx, 4].text(-0.8, 0.45, label, fontsize=6,rotation='vertical', 
             backgroundcolor=pboc['pale_yellow'], transform=ax[idx, 4].transAxes)
         ax[idx, 0].set_ylabel('fold-change', fontsize=6, labelpad=0.1)
         ax[idx, 4].set_ylabel('$\Delta F$ [$k_BT$]', fontsize=6, labelpad=0.01)
@@ -164,4 +181,4 @@ for dna, dna_idx in DNA_idx.items():
                                         bohr_cred_region[1, :], alpha=0.3, 
                                         color=pboc['blue'])
 plt.subplots_adjust(wspace=0.1, hspace=0.1)
-plt.savefig('../../figures/Fig5_DBL_combined.pdf', bbox_inches='tight')
+plt.savefig('../../figures/Fig5_DBL_combined.pdf', facecolor='white', bbox_inches='tight')

@@ -34,7 +34,7 @@ NEW_GODS = 1
 DNA_MUTS = 1
 IND_MUTS = 1
 DBL_MUTS = 1
-bohr_range = np.linspace(-10, 10, 200)
+bohr_range = np.linspace(-30, 30, 500)
 
 # Define colors and glyphs
 glyphs = {'garcia':'>', 'brewster':'s'}
@@ -48,6 +48,7 @@ fig, ax = plt.subplots(1, 1, figsize=(3.42, 3))
 ax.xaxis.set_tick_params(labelsize=6)
 ax.yaxis.set_tick_params(labelsize=6)
 ax.set_ylim([-0.05, 1.25])
+ax.set_xlim([-12, 12])
 ax.set_xlabel('free energy [$k_BT$]', fontsize=8)
 ax.set_ylabel('fold-change', fontsize=8)
 
@@ -89,18 +90,35 @@ if NEW_GODS == 1:
 op_glyphs = {'O1':'^', 'O2':'v', 'O3':'D'}
 if DNA_MUTS == 1:
     for g, d in data[data['class']=='DNA'].groupby(['mutant']):
+        if g == 'Y20I':
+            label = 'Y17I'
+        elif g == 'Q21A':
+            label = 'Q18A'
+        elif g == 'Q21M':
+            label = 'Q18M'
+          
         ep_RA = epRA_stats[(epRA_stats['mutant']==g) &
-                (epRA_stats['parameter']=='ep_RA')]['median'].values[0]
+      (epRA_stats['parameter']=='ep_RA')]['median'].values[0]
         bohr = mut.thermo.SimpleRepression(R=d['repressors'], ep_r=ep_RA, 
                                            ka=constants['Ka'], ki=constants['Ki'],
                                            ep_ai=constants['ep_AI'],
                                            effector_conc=d['IPTGuM']).bohr_parameter()
         ax.errorbar(bohr, d['mean'], d['sem'], fmt='^', color=mut_colors[g],
-                label=g, ms=5, markeredgewidth=0.75, markerfacecolor='w',
+                label=label, ms=5, markeredgewidth=0.75, markerfacecolor='w',
                 lw=0.75)
 
 if IND_MUTS == 1:
     for g, d in data[data['class']=='IND'].groupby(['mutant']):
+        if g == 'Q294R':
+            label = 'Q291R'
+        elif g == 'Q294V':
+            label = 'Q291V'
+        elif g == 'Q294K':
+            label = 'Q291K'
+        elif g == 'F164T':
+            label = 'F161T'
+        else: 
+            label = g
         _stats = allo_stats[(allo_stats['mutant']==g)]
         ka = _stats[_stats['parameter']=='Ka']['median'].values[0]
         ki = _stats[_stats['parameter']=='Ki']['median'].values[0]
@@ -111,11 +129,33 @@ if IND_MUTS == 1:
                                            ep_ai=ep_AI,
                                            effector_conc=d['IPTGuM']).bohr_parameter()
         ax.errorbar(bohr, d['mean'], d['sem'], fmt='p', color=mut_colors[g],
-                label=g, ms=5, markeredgewidth=1,  markerfacecolor='w',
+                label=label, ms=5, markeredgewidth=1,  markerfacecolor='w',
                 lw=0.75)
 
 if DBL_MUTS == 1:
     for g, d in data[data['class']=='DBL'].groupby(['mutant']):
+        dna, ind = g.split('-')
+        # Change the numbering of the mutants
+        if dna == 'Y20I':
+            label = 'Y17I'
+        elif dna == 'Q21A':
+            label = 'Q18A'
+        elif dna == 'Q21M':
+            label = 'Q18M'
+        else:
+            label = dna 
+ 
+        if ind == 'Q294R':
+            label += '-Q291R'
+        elif ind == 'Q294V':
+            label += '-Q291V'
+        elif ind == 'Q294K':
+            label += '-Q291K'
+        elif ind == 'F164T':
+            label += '-F161T'
+        else:
+            label += f'-{ind}' 
+        
         ep_RA = epRA_stats[(epRA_stats['mutant']==g.split('-')[0]) & 
                            (epRA_stats['parameter']=='ep_RA')]['median'].values[0]
         _stats = allo_stats[(allo_stats['mutant']==g.split('-')[1])]
@@ -126,12 +166,12 @@ if DBL_MUTS == 1:
                                            ka=ka, ki=ki,
                                            ep_ai=ep_AI,
                                            effector_conc=d['IPTGuM']).bohr_parameter()
-        ax.errorbar(bohr, d['mean'], d['sem'], fmt='*', color=mut_colors[g],
-                label=g, ms=6, markeredgewidth=0.75,  markerfacecolor='w',
+        ax.errorbar(bohr, d['mean'], d['sem'], fmt='X', color=mut_colors[g],
+                label=label, ms=4.5, markeredgewidth=0.75,  markerfacecolor='w',
                  lw=0.75)
 
 ax.legend(loc='upper left', fontsize=5)
-plt.savefig('../../figures/Fig6_collapse.pdf', bbox_inches='tight')
+plt.savefig('../../figures/Fig6_collapse.pdf', facecolor='white', bbox_inches='tight')
 plt.tight_layout()
 
 
