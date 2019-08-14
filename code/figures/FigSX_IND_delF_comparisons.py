@@ -11,6 +11,7 @@ import seaborn as sns
 constants = mut.thermo.load_constants()
 pboc = mut.viz.color_selector('pboc')
 colors = mut.viz.color_selector('mut')
+mut.viz.plotting_style()
 sns_colors = sns.color_palette('deep', n_colors=4)
 
 # Load delta F data
@@ -100,4 +101,4 @@ for g, d in data.groupby(['mutant', 'operator']):
                     color=op_colors[g[1]], alpha=0.5)
 
 plt.subplots_adjust(hspace=0.05, wspace=0.05)
-plt.savefig('../../figures/FigSX_IND_deltaF_comparisons.pdf', bbox_inches='tight')
+plt.savefig('../../figures/FigSX_IND_deltaF_comparisons.pdf', bbox_inches='tight', facecolor='white')
