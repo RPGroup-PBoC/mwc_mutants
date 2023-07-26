@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: mut
+Version: 0.0.9
+Summary: Python utilities used in the work "The Energetics of Molecular Adaptation in Transcriptional Regulation"
+Author: Griffin Chure
+Author-email: gchure@caltech.edu
+License: BSD
+Classifier: Development Status :: 2 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3
